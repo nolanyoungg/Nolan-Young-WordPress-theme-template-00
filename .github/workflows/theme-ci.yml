@@ -1,0 +1,80 @@
+name: Theme CI
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  production-build:
+    name: Production build and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked Node dependencies
+        run: npm ci
+
+      - name: Run final production build
+        run: npm run build
+
+      - name: Verify committed generated assets are current
+        run: git diff --exit-code -- assets/css assets/js
+
+      - name: Create installable WordPress theme ZIP
+        run: npm run package
+
+      - name: Upload installable theme artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolan-young-theme-template-01
+          path: dist/nolan-young-theme-template-01.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  php-syntax:
+    name: PHP syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Validate every PHP file
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            php -l "$file"
+          done < <(find . -type f -name '*.php' \
+            -not -path './node_modules/*' \
+            -not -path './vendor/*' \
+            -not -path './dist/*' -print0)
