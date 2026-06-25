@@ -95,3 +95,6 @@ jobs:
             -not -path './node_modules/*' \
             -not -path './vendor/*' \
             -not -path './dist/*' -print0)
+
+# This workflow intentionally validates both the source tree and the generated
+# WordPress installation archive before changes can be treated as release-ready.
