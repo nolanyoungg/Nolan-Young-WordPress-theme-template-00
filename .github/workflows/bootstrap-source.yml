@@ -18,16 +18,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Confirm bootstrap archive exists
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f source-bootstrap.zip
-
       - name: Expand source archive into repository root
         shell: bash
         run: |
           set -euo pipefail
+
+          if [ ! -f source-bootstrap.zip ]; then
+            echo "Bootstrap archive is no longer present; nothing to import."
+            exit 0
+          fi
+
           work_dir="$(mktemp -d)"
           unzip -q source-bootstrap.zip -d "$work_dir"
 
@@ -39,11 +39,11 @@ jobs:
 
           rsync -a --delete \
             --exclude='.git/' \
+            --exclude='.github/workflows/' \
             --exclude='source-bootstrap.zip' \
             "$source_dir/" ./
 
           rm -f source-bootstrap.zip TEST_INIT.txt
-          rm -f .github/workflows/bootstrap-source.yml
 
       - name: Commit authoritative source tree
         shell: bash
