@@ -1,0 +1,59 @@
+name: Normalize Package Lock
+
+on:
+  push:
+    branches:
+      - fix-theme-ci-production-build
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix-theme-ci-production-build
+          fetch-depth: 0
+
+      - name: Replace environment-specific npm mirror URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          lockfile = Path('package-lock.json')
+          content = lockfile.read_text(encoding='utf-8')
+          internal_prefix = 'https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public/'
+          public_prefix = 'https://registry.npmjs.org/'
+
+          replacements = content.count(internal_prefix)
+          if replacements == 0:
+              print('Lockfile is already portable.')
+          else:
+              lockfile.write_text(content.replace(internal_prefix, public_prefix), encoding='utf-8')
+              print(f'Replaced {replacements} internal registry URLs.')
+
+          updated = lockfile.read_text(encoding='utf-8')
+          if 'internal.api.openai.org' in updated:
+              raise SystemExit('Internal npm registry references remain in package-lock.json.')
+          PY
+
+      - name: Commit portable lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- package-lock.json; then
+            echo "No lockfile change required."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "fix: make npm lockfile portable outside build environment"
+          git push origin HEAD:fix-theme-ci-production-build
