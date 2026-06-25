@@ -30,20 +30,37 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
 
-      - name: Install locked Node dependencies
-        run: npm ci
+      - name: Report tool versions
+        run: |
+          node --version
+          npm --version
 
-      - name: Run final production build
-        run: npm run build
+      - name: Install locked Node dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build, validate, and package production theme
+        run: npm run package
 
       - name: Verify committed generated assets are current
         run: git diff --exit-code -- assets/css assets/js
 
-      - name: Create installable WordPress theme ZIP
-        run: npm run package
+      - name: Verify WordPress ZIP integrity and root folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="dist/nolan-young-theme-template-01.zip"
+          test -f "$archive"
+          unzip -t "$archive"
+
+          unexpected_roots="$(unzip -Z1 "$archive" | awk -F/ 'NF { print $1 }' | sort -u | grep -v '^nolan-young-theme-template-01$' || true)"
+          if [ -n "$unexpected_roots" ]; then
+            echo "Unexpected ZIP root entries:" >&2
+            echo "$unexpected_roots" >&2
+            exit 1
+          fi
 
       - name: Upload installable theme artifact
         uses: actions/upload-artifact@v4
