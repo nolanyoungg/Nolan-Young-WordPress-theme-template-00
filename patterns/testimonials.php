@@ -1,5 +1,11 @@
 <?php
 /**
+ * Testimonial block pattern.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
+
+/**
  * Title: Testimonial
  * Slug: nolan-young-theme-template-01/testimonial
  * Categories: testimonials, text
