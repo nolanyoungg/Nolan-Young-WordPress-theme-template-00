@@ -8,6 +8,13 @@ on:
       - package.json
       - composer.json
       - .github/workflows/refresh-lockfiles.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - package.json
+      - composer.json
+      - .github/workflows/refresh-lockfiles.yml
 
 permissions:
   contents: write
