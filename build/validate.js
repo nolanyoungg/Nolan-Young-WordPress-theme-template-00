@@ -6,6 +6,7 @@ const path = require( 'node:path' );
 const root = path.resolve( __dirname, '..' );
 
 const requiredFiles = [
+	'.wp-env.json',
 	'style.css',
 	'functions.php',
 	'theme.json',
@@ -19,8 +20,12 @@ const requiredFiles = [
 	'README.md',
 	'CHANGELOG.md',
 	'webpack.config.js',
+	'playwright.config.js',
 	'package.json',
 	'package-lock.json',
+	'composer.json',
+	'composer.lock',
+	'phpcs.xml.dist',
 	'phpunit.xml.dist',
 	'build/clean.js',
 	'build/dev.js',
@@ -41,6 +46,8 @@ const requiredFiles = [
 	'template-parts/header/mega-menu-blog.php',
 	'src/js/components/mega-menu.js',
 	'src/scss/components/_mega-menu.scss',
+	'tests/bootstrap.php',
+	'tests/e2e/frontend.spec.js',
 	'languages/nolan-young-theme-template-01.pot',
 ];
 
@@ -59,6 +66,8 @@ const nonEmptyFiles = [
 	'assets/css/editor-rtl.css',
 	'assets/js/bundle.js',
 	'README.md',
+	'composer.lock',
+	'tests/e2e/frontend.spec.js',
 ];
 
 for ( const relativePath of nonEmptyFiles ) {
@@ -72,6 +81,9 @@ for ( const relativePath of nonEmptyFiles ) {
 const packageJson = JSON.parse(
 	fs.readFileSync( path.join( root, 'package.json' ), 'utf8' )
 );
+const packageLock = JSON.parse(
+	fs.readFileSync( path.join( root, 'package-lock.json' ), 'utf8' )
+);
 const themeJson = JSON.parse(
 	fs.readFileSync( path.join( root, 'theme.json' ), 'utf8' )
 );
@@ -84,8 +96,10 @@ const requiredScripts = {
 	'build:assets': 'wp-scripts build',
 	build: 'npm run clean && npm run lint && npm run build:assets && npm run validate',
 	check: 'npm run lint && npm run validate',
-	'lint:node': 'node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js',
+	'lint:node': 'node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js && node --check playwright.config.js',
 	test: 'npm run build',
+	'wp-env': 'wp-env',
+	'test:e2e': 'wp-scripts test-playwright',
 	package: 'npm run build && node build/package-theme.js',
 };
 
@@ -97,8 +111,30 @@ for ( const [ scriptName, expectedCommand ] of Object.entries( requiredScripts )
 	}
 }
 
-if ( packageJson.devDependencies?.webpack !== '5.107.2' ) {
-	throw new Error( 'webpack 5.107.2 must be declared directly in devDependencies.' );
+if ( packageJson.engines?.node !== '>=20.18.0' || packageJson.engines?.npm !== '>=10.0.0' ) {
+	throw new Error( 'package.json must require Node >=20.18.0 and npm >=10.0.0.' );
+}
+
+for ( const dependency of [
+	'@axe-core/playwright',
+	'@playwright/test',
+	'@wordpress/env',
+	'@wordpress/scripts',
+	'archiver',
+	'webpack',
+	'webpack-remove-empty-scripts',
+] ) {
+	if ( ! packageJson.devDependencies?.[ dependency ] ) {
+		throw new Error( `${ dependency } must be declared directly in devDependencies.` );
+	}
+}
+
+if (
+	packageLock.name !== packageJson.name ||
+	packageLock.version !== packageJson.version ||
+	packageLock.packages?.['']?.version !== packageJson.version
+) {
+	throw new Error( 'package-lock.json metadata must match package.json.' );
 }
 
 if ( themeJson.version !== 3 ) {
@@ -194,5 +230,5 @@ for ( const metadataPath of [
 }
 
 console.log(
-	`Validated ${ requiredFiles.length } required files, ${ phpFiles.length } PHP files, theme.json, style.css metadata, asset metadata, architecture boundaries, and the 1200x900 screenshot.`
+	`Validated ${ requiredFiles.length } required files, ${ phpFiles.length } PHP files, locked dependencies, browser tests, theme.json, style.css metadata, asset metadata, architecture boundaries, and the 1200x900 screenshot.`
 );
