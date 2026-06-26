@@ -70,20 +70,24 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  php-syntax:
-    name: PHP syntax
+  php-quality:
+    name: PHP syntax, standards, and compatibility
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Set up PHP
+      - name: Set up PHP and Composer
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           coverage: none
+          tools: composer:v2
+
+      - name: Install locked PHP quality dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Validate every PHP file
         shell: bash
@@ -96,5 +100,69 @@ jobs:
             -not -path './vendor/*' \
             -not -path './dist/*' -print0)
 
-# This workflow intentionally validates both the source tree and the generated
-# WordPress installation archive before changes can be treated as release-ready.
+      - name: Run WordPress coding standards and PHP compatibility
+        run: composer lint:php
+
+  wordpress-integration:
+    name: WordPress PHPUnit, browser, and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    defaults:
+      run:
+        working-directory: nolan-young-theme-template-01
+
+    steps:
+      - name: Check out source with runtime theme slug
+        uses: actions/checkout@v4
+        with:
+          path: nolan-young-theme-template-01
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: nolan-young-theme-template-01/package-lock.json
+
+      - name: Set up PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install locked development dependencies
+        run: |
+          npm ci --no-audit --no-fund
+          composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Start isolated WordPress environments
+        run: npm run wp-env -- start
+
+      - name: Activate theme in development and test sites
+        run: |
+          npm run wp-env -- run cli wp theme activate nolan-young-theme-template-01
+          npm run wp-env -- run tests-cli wp theme activate nolan-young-theme-template-01
+
+      - name: Run WordPress PHPUnit suite
+        run: npm run wp-env -- run tests-cli --env-cwd=wp-content/themes/nolan-young-theme-template-01 php vendor/bin/phpunit -c phpunit.xml.dist
+
+      - name: Run frontend, mobile-menu, and accessibility smoke tests
+        run: npm run test:e2e -- --project=chromium
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: nolan-young-theme-template-01/playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Stop isolated WordPress environments
+        if: always()
+        run: npm run wp-env -- stop
