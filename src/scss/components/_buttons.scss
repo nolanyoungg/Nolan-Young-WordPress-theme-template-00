@@ -15,7 +15,10 @@ input[type="submit"] {
 	line-height: 1.2;
 	text-decoration: none;
 	cursor: pointer;
-	transition: background var(--nytt01-transition), border-color var(--nytt01-transition), transform var(--nytt01-transition);
+	transition:
+		background var(--nytt01-transition),
+		border-color var(--nytt01-transition),
+		transform var(--nytt01-transition);
 }
 
 .nytt01-button:hover,

@@ -1,6 +1,6 @@
 {
   "name": "nolan-young-theme-template-01",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "description": "Development tooling for the Nolan Young WordPress 7.0 classic theme with theme.json.",
   "license": "GPL-2.0-or-later",
@@ -13,19 +13,25 @@
     "build": "npm run clean && npm run lint && npm run build:assets && npm run validate",
     "check": "npm run lint && npm run validate",
     "lint": "npm run lint:js && npm run lint:node && npm run lint:css",
-    "lint:js": "wp-scripts lint-js \"src/js/**/*.js\" webpack.config.js",
-    "lint:node": "node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js",
+    "lint:js": "wp-scripts lint-js \"src/js/**/*.js\" webpack.config.js playwright.config.js \"tests/e2e/**/*.js\"",
+    "lint:node": "node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js && node --check playwright.config.js",
     "lint:css": "wp-scripts lint-style \"src/scss/**/*.scss\"",
-    "format": "wp-scripts format \"src/js/**/*.js\" \"src/scss/**/*.scss\" webpack.config.js",
+    "format": "wp-scripts format \"src/js/**/*.js\" \"src/scss/**/*.scss\" \"tests/e2e/**/*.js\" webpack.config.js playwright.config.js",
     "validate": "node build/validate.js",
     "test": "npm run build",
+    "wp-env": "wp-env",
+    "test:e2e": "wp-scripts test-playwright",
+    "test:e2e:headed": "wp-scripts test-playwright --headed",
     "package": "npm run build && node build/package-theme.js"
   },
   "engines": {
-    "node": ">=18.12.0",
-    "npm": ">=8.19.2"
+    "node": ">=20.18.0",
+    "npm": ">=10.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.61.1",
+    "@wordpress/env": "11.9.0",
     "@wordpress/scripts": "32.4.1",
     "archiver": "8.0.0",
     "webpack": "5.107.2",

@@ -15,13 +15,16 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 	exit( 1 );
 }
 
+$nytt01_theme_root = dirname( __DIR__ );
+$nytt01_theme_slug = basename( $nytt01_theme_root );
+
 require_once $_tests_dir . '/includes/functions.php';
 
 tests_add_filter(
 	'muplugins_loaded',
-	static function () {
-		register_theme_directory( dirname( dirname( __DIR__ ) ) );
-		switch_theme( 'nolan-young-theme-template-01' );
+	static function () use ( $nytt01_theme_root, $nytt01_theme_slug ) {
+		register_theme_directory( dirname( $nytt01_theme_root ) );
+		switch_theme( $nytt01_theme_slug );
 	}
 );
 

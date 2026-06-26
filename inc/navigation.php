@@ -92,9 +92,18 @@ function nytt01_get_services_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'service-1.svg' ),
 			'url'         => home_url( '/services/service-1/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Overview', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-1/' ) ),
-				array( 'label' => esc_html__( 'Capabilities', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-1/#capabilities' ) ),
-				array( 'label' => esc_html__( 'Process', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-1/#process' ) ),
+				array(
+					'label' => esc_html__( 'Overview', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-1/' ),
+				),
+				array(
+					'label' => esc_html__( 'Capabilities', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-1/#capabilities' ),
+				),
+				array(
+					'label' => esc_html__( 'Process', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-1/#process' ),
+				),
 			),
 		),
 		array(
@@ -103,9 +112,18 @@ function nytt01_get_services_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'service-2.svg' ),
 			'url'         => home_url( '/services/service-2/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Experience review', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-2/#review' ) ),
-				array( 'label' => esc_html__( 'Accessibility', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-2/#accessibility' ) ),
-				array( 'label' => esc_html__( 'Optimization', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-2/#optimization' ) ),
+				array(
+					'label' => esc_html__( 'Experience review', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-2/#review' ),
+				),
+				array(
+					'label' => esc_html__( 'Accessibility', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-2/#accessibility' ),
+				),
+				array(
+					'label' => esc_html__( 'Optimization', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-2/#optimization' ),
+				),
 			),
 		),
 		array(
@@ -114,9 +132,18 @@ function nytt01_get_services_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'service-3.svg' ),
 			'url'         => home_url( '/services/service-3/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'WordPress development', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-3/#wordpress' ) ),
-				array( 'label' => esc_html__( 'Integrations', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-3/#integrations' ) ),
-				array( 'label' => esc_html__( 'Release systems', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-3/#releases' ) ),
+				array(
+					'label' => esc_html__( 'WordPress development', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-3/#wordpress' ),
+				),
+				array(
+					'label' => esc_html__( 'Integrations', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-3/#integrations' ),
+				),
+				array(
+					'label' => esc_html__( 'Release systems', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-3/#releases' ),
+				),
 			),
 		),
 		array(
@@ -125,9 +152,18 @@ function nytt01_get_services_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'service-4.svg' ),
 			'url'         => home_url( '/services/service-4/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Maintenance', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-4/#maintenance' ) ),
-				array( 'label' => esc_html__( 'Performance', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-4/#performance' ) ),
-				array( 'label' => esc_html__( 'Technical support', 'nolan-young-theme-template-01' ), 'url' => home_url( '/services/service-4/#support' ) ),
+				array(
+					'label' => esc_html__( 'Maintenance', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-4/#maintenance' ),
+				),
+				array(
+					'label' => esc_html__( 'Performance', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-4/#performance' ),
+				),
+				array(
+					'label' => esc_html__( 'Technical support', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/services/service-4/#support' ),
+				),
 			),
 		),
 	);
@@ -153,9 +189,18 @@ function nytt01_get_about_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'about-us.svg' ),
 			'url'         => home_url( '/about/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Our story', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/#story' ) ),
-				array( 'label' => esc_html__( 'Values', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/#values' ) ),
-				array( 'label' => esc_html__( 'Approach', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/#approach' ) ),
+				array(
+					'label' => esc_html__( 'Our story', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/#story' ),
+				),
+				array(
+					'label' => esc_html__( 'Values', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/#values' ),
+				),
+				array(
+					'label' => esc_html__( 'Approach', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/#approach' ),
+				),
 			),
 		),
 		array(
@@ -164,9 +209,18 @@ function nytt01_get_about_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'meet-the-team.svg' ),
 			'url'         => home_url( '/about/team/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Leadership', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/team/#leadership' ) ),
-				array( 'label' => esc_html__( 'Design', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/team/#design' ) ),
-				array( 'label' => esc_html__( 'Engineering', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/team/#engineering' ) ),
+				array(
+					'label' => esc_html__( 'Leadership', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/team/#leadership' ),
+				),
+				array(
+					'label' => esc_html__( 'Design', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/team/#design' ),
+				),
+				array(
+					'label' => esc_html__( 'Engineering', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/team/#engineering' ),
+				),
 			),
 		),
 		array(
@@ -175,9 +229,18 @@ function nytt01_get_about_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'careers.svg' ),
 			'url'         => home_url( '/about/careers/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Open roles', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/careers/#open-roles' ) ),
-				array( 'label' => esc_html__( 'Culture', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/careers/#culture' ) ),
-				array( 'label' => esc_html__( 'Benefits', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/careers/#benefits' ) ),
+				array(
+					'label' => esc_html__( 'Open roles', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/careers/#open-roles' ),
+				),
+				array(
+					'label' => esc_html__( 'Culture', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/careers/#culture' ),
+				),
+				array(
+					'label' => esc_html__( 'Benefits', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/careers/#benefits' ),
+				),
 			),
 		),
 		array(
@@ -186,9 +249,18 @@ function nytt01_get_about_mega_menu_items() {
 			'image'       => nytt01_get_navigation_image_uri( 'future-work.svg' ),
 			'url'         => home_url( '/about/future-work/' ),
 			'subitems'    => array(
-				array( 'label' => esc_html__( 'Research', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/future-work/#research' ) ),
-				array( 'label' => esc_html__( 'Experiments', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/future-work/#experiments' ) ),
-				array( 'label' => esc_html__( 'Roadmap', 'nolan-young-theme-template-01' ), 'url' => home_url( '/about/future-work/#roadmap' ) ),
+				array(
+					'label' => esc_html__( 'Research', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/future-work/#research' ),
+				),
+				array(
+					'label' => esc_html__( 'Experiments', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/future-work/#experiments' ),
+				),
+				array(
+					'label' => esc_html__( 'Roadmap', 'nolan-young-theme-template-01' ),
+					'url'   => home_url( '/about/future-work/#roadmap' ),
+				),
 			),
 		),
 	);

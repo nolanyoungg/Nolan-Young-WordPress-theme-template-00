@@ -32,7 +32,7 @@ function nytt01_customize_register( $wp_customize ) {
 			'default' => esc_html__( 'Web experiences built to perform.', 'nolan-young-theme-template-01' ),
 			'label'   => esc_html__( 'Hero heading', 'nolan-young-theme-template-01' ),
 		),
-		'hero_text' => array(
+		'hero_text'    => array(
 			'default' => esc_html__( 'A production-ready foundation for service businesses, agencies, and product teams that need a fast, accessible WordPress presence.', 'nolan-young-theme-template-01' ),
 			'label'   => esc_html__( 'Hero description', 'nolan-young-theme-template-01' ),
 		),

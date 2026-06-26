@@ -1,5 +1,11 @@
 <?php
 /**
+ * Featured-work block pattern.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
+
+/**
  * Title: Featured work grid
  * Slug: nolan-young-theme-template-01/featured-work
  * Categories: featured, portfolio

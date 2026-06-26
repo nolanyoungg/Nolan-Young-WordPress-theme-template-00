@@ -201,9 +201,9 @@ function nytt01_get_default_primary_menu_items() {
 		}
 
 		$prepared_items[] = array(
-			'menu-item-title'  => $menu_item['title'],
-			'menu-item-url'    => home_url( '/' . trailingslashit( sanitize_title( $menu_item['slug'] ) ) ),
-			'menu-item-type'   => 'custom',
+			'menu-item-title'   => $menu_item['title'],
+			'menu-item-url'     => home_url( '/' . trailingslashit( sanitize_title( $menu_item['slug'] ) ) ),
+			'menu-item-type'    => 'custom',
 			'menu-item-status'  => 'publish',
 			'menu-item-classes' => ! empty( $menu_item['mega_key'] ) ? 'nytt01-mega-' . sanitize_html_class( $menu_item['mega_key'] ) : '',
 		);
