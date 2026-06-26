@@ -1,0 +1,69 @@
+name: Format Hardening Branch
+
+on:
+  push:
+    branches:
+      - hardening-10-of-10
+    paths:
+      - phpcs.xml.dist
+      - playwright.config.js
+      - tests/e2e/frontend.spec.js
+      - .github/workflows/format-hardening.yml
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out hardening branch
+        uses: actions/checkout@v4
+        with:
+          ref: hardening-10-of-10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Set up PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install locked dependencies
+        run: |
+          npm ci --no-audit --no-fund
+          composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Format new JavaScript test files
+        run: npx prettier --write playwright.config.js tests/e2e/frontend.spec.js
+
+      - name: Apply safe PHP coding-standard fixes
+        run: vendor/bin/phpcbf --extensions=php || true
+
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+
+          if git diff --cached --quiet; then
+            echo "No formatter changes were required."
+            exit 0
+          fi
+
+          git commit -m "style: apply automated hardening formatters"
+          git push origin HEAD:hardening-10-of-10
