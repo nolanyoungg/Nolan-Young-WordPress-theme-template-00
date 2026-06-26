@@ -44,10 +44,10 @@ $first_subitems_label = sprintf(
 			<div class="nytt01-mega-menu__option-list">
 				<?php foreach ( $items as $index => $item ) : ?>
 					<?php
-					$item_id        = $panel_id . '-option-' . (int) $index;
-					$is_active      = 0 === $index;
-					$item_subitems  = ! empty( $item['subitems'] ) && is_array( $item['subitems'] ) ? array_values( $item['subitems'] ) : array();
-					$cta_label      = sprintf(
+					$item_id       = $panel_id . '-option-' . (int) $index;
+					$is_active     = 0 === $index;
+					$item_subitems = ! empty( $item['subitems'] ) && is_array( $item['subitems'] ) ? array_values( $item['subitems'] ) : array();
+					$cta_label     = sprintf(
 						/* translators: %s: Mega-menu item title. */
 						esc_html__( 'Explore %s', 'nolan-young-theme-template-01' ),
 						$item['title']
