@@ -22,7 +22,6 @@
     "wp-env": "wp-env",
     "test:e2e": "wp-scripts test-playwright",
     "test:e2e:headed": "wp-scripts test-playwright --headed",
-    "test:php:playground": "wp-playground php --auto-mount --wp=7.0 --php=8.2 -- /wordpress/wp-content/themes/nolan-young-theme-template-01/vendor/bin/phpunit -c /wordpress/wp-content/themes/nolan-young-theme-template-01/phpunit.xml.dist",
     "package": "npm run build && node build/package-theme.js"
   },
   "engines": {
