@@ -66,4 +66,5 @@ jobs:
           fi
 
           git commit -m "style: apply automated hardening formatters"
+          git pull --rebase origin hardening-10-of-10
           git push origin HEAD:hardening-10-of-10
