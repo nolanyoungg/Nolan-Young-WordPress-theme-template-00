@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$nytt01_posts = get_posts(
+$nytt01_posts_query = new WP_Query(
 	array(
 		'post_type'           => 'post',
 		'posts_per_page'      => 3,
@@ -25,10 +25,10 @@ $nytt01_posts = get_posts(
 			</div>
 		</header>
 		<div class="nytt01-card-grid">
-			<?php foreach ( $nytt01_posts as $post ) : ?>
-				<?php setup_postdata( $post ); ?>
+			<?php while ( $nytt01_posts_query->have_posts() ) : ?>
+				<?php $nytt01_posts_query->the_post(); ?>
 				<?php get_template_part( 'template-parts/content/content', 'search' ); ?>
-			<?php endforeach; ?>
+			<?php endwhile; ?>
 			<?php wp_reset_postdata(); ?>
 		</div>
 	</div>
