@@ -29,6 +29,18 @@
 	<rule ref="Universal.Files.SeparateFunctionsFromOO.Mixed">
 		<exclude-pattern>*/inc/navigation.php</exclude-pattern>
 	</rule>
+	<rule ref="Squiz.Commenting.FileComment.Missing">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.ClassComment.SpacingAfter">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Generic.Commenting.DocComment.MissingShort">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>*/tests/bootstrap.php</exclude-pattern>
+	</rule>
 	<config name="minimum_supported_wp_version" value="7.0"/>
 	<config name="testVersion" value="7.4-"/>
 	<rule ref="WordPress.WP.I18n">
