@@ -1,5 +1,11 @@
 <?php
 /**
+ * Services-grid block pattern.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
+
+/**
  * Title: Services grid
  * Slug: nolan-young-theme-template-01/services-grid
  * Categories: services, columns
