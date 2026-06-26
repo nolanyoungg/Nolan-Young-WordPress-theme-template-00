@@ -18,25 +18,16 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
-      - name: Check out hardening branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: hardening-10-of-10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
-      - name: Install locked Node dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Apply Stylelint safe fixes
-        run: npx wp-scripts lint-style --fix "src/scss/**/*.scss"
-
+      - run: npm ci --no-audit --no-fund
+      - run: npx stylelint "src/scss/**/*.scss" --fix
       - name: Commit SCSS fixes
         shell: bash
         run: |
