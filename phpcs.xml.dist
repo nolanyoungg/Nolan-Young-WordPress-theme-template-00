@@ -21,8 +21,12 @@
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
 		<exclude-pattern>*/archive-ny_service.php</exclude-pattern>
 		<exclude-pattern>*/single-ny_service.php</exclude-pattern>
+		<exclude-pattern>*/taxonomy-ny_service_category.php</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>*/inc/navigation.php</exclude-pattern>
+	</rule>
+	<rule ref="Universal.Files.SeparateFunctionsFromOO.Mixed">
 		<exclude-pattern>*/inc/navigation.php</exclude-pattern>
 	</rule>
 	<config name="minimum_supported_wp_version" value="7.0"/>
