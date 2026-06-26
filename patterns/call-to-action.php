@@ -1,5 +1,11 @@
 <?php
 /**
+ * Call-to-action block pattern.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
+
+/**
  * Title: Call to action
  * Slug: nolan-young-theme-template-01/call-to-action
  * Categories: call-to-action, banner
