@@ -1,5 +1,11 @@
 <?php
 /**
+ * Hero block pattern.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
+
+/**
  * Title: Hero with actions
  * Slug: nolan-young-theme-template-01/hero
  * Categories: featured, banner
