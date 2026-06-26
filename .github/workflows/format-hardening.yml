@@ -46,8 +46,8 @@ jobs:
           npm ci --no-audit --no-fund
           composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Format new JavaScript test files
-        run: npx prettier --write playwright.config.js tests/e2e/frontend.spec.js
+      - name: Apply repository JavaScript and SCSS formatter
+        run: npm run format
 
       - name: Apply safe PHP coding-standard fixes
         run: vendor/bin/phpcbf --extensions=php || true
