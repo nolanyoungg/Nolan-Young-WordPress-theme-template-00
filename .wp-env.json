@@ -10,8 +10,5 @@
     "WP_DEBUG_LOG": true,
     "WP_DEBUG_DISPLAY": false,
     "SCRIPT_DEBUG": true
-  },
-  "lifecycleScripts": {
-    "afterStart": "THEME_SLUG=$(basename \"$PWD\"); for SERVICE in cli tests-cli; do wp-env run \"$SERVICE\" wp theme activate \"$THEME_SLUG\"; done"
   }
 }
