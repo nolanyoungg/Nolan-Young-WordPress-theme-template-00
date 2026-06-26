@@ -1,0 +1,49 @@
+name: Debug PHPUnit
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: nolan-young-theme-template-01
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: nolan-young-theme-template-01
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: nolan-young-theme-template-01/package-lock.json
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+      - run: npm ci --no-audit --no-fund
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: npm run wp-env -- start
+      - run: npm run wp-env -- run tests-cli wp theme activate nolan-young-theme-template-01
+      - name: Capture PHPUnit output
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run wp-env -- run tests-cli --env-cwd=wp-content/themes/nolan-young-theme-template-01 php vendor/bin/phpunit -c phpunit.xml.dist 2>&1 | tee phpunit.log
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: phpunit-diagnostics
+          path: nolan-young-theme-template-01/phpunit.log
+          if-no-files-found: ignore
+          retention-days: 7
+      - run: npm run wp-env -- stop
+        if: always()
