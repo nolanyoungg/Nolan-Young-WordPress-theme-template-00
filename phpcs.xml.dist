@@ -5,8 +5,10 @@
 	<exclude-pattern>*/assets/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
 	<arg name="basepath" value="."/>
 	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
 	<arg value="ps"/>
 	<rule ref="WordPress"/>
 	<rule ref="WordPress-Extra"/>
@@ -16,11 +18,20 @@
 			<property name="testVersion" value="7.4-"/>
 		</properties>
 	</rule>
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>*/archive-ny_service.php</exclude-pattern>
+		<exclude-pattern>*/single-ny_service.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>*/inc/navigation.php</exclude-pattern>
+	</rule>
 	<config name="minimum_supported_wp_version" value="7.0"/>
 	<config name="testVersion" value="7.4-"/>
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="nolan-young-theme-template-01"/>
+			<property name="text_domain" type="array">
+				<element value="nolan-young-theme-template-01"/>
+			</property>
 		</properties>
 	</rule>
 </ruleset>
