@@ -41,7 +41,9 @@
 	transition: transform var(--nytt01-transition);
 }
 
-.nytt01-menu-item--mega.is-open > .nytt01-menu__trigger .nytt01-menu__trigger-icon {
+.nytt01-menu-item--mega.is-open
+	> .nytt01-menu__trigger
+	.nytt01-menu__trigger-icon {
 	transform: translateY(0.1rem) rotate(225deg);
 }
 
@@ -66,7 +68,10 @@
 	pointer-events: none;
 	transform: translateY(-0.75rem);
 	transform-origin: top center;
-	transition: opacity 180ms ease, transform 220ms ease, visibility 0s linear 220ms;
+	transition:
+		opacity 180ms ease,
+		transform 220ms ease,
+		visibility 0s linear 220ms;
 }
 
 .nytt01-mega-menu.is-open {
@@ -99,7 +104,9 @@
 	border-radius: var(--nytt01-radius-medium);
 	background: var(--nytt01-color-mist);
 	overflow: hidden;
-	transition: opacity 110ms ease, transform 110ms ease;
+	transition:
+		opacity 110ms ease,
+		transform 110ms ease;
 }
 
 .nytt01-mega-feature.is-changing {
@@ -119,7 +126,9 @@
 	height: 100%;
 	max-height: 11rem;
 	object-fit: cover;
-	transition: opacity 160ms ease, transform 220ms ease;
+	transition:
+		opacity 160ms ease,
+		transform 220ms ease;
 }
 
 .nytt01-mega-feature__content {
@@ -178,7 +187,10 @@
 	border: 1px solid transparent;
 	border-radius: var(--nytt01-radius-medium);
 	padding: 0.85rem 1rem;
-	transition: border-color var(--nytt01-transition), background var(--nytt01-transition), box-shadow var(--nytt01-transition);
+	transition:
+		border-color var(--nytt01-transition),
+		background var(--nytt01-transition),
+		box-shadow var(--nytt01-transition);
 }
 
 .nytt01-mega-option:hover,
@@ -278,7 +290,10 @@
 	border-radius: var(--nytt01-radius-medium);
 	background: var(--nytt01-color-white);
 	overflow: hidden;
-	transition: border-color var(--nytt01-transition), box-shadow var(--nytt01-transition), transform var(--nytt01-transition);
+	transition:
+		border-color var(--nytt01-transition),
+		box-shadow var(--nytt01-transition),
+		transform var(--nytt01-transition);
 }
 
 .nytt01-mega-blog-card:hover,
@@ -367,7 +382,6 @@
 }
 
 @media (max-width: 68rem) {
-
 	.nytt01-mega-menu__inner {
 		grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
 		gap: 1.25rem;
@@ -383,7 +397,6 @@
 }
 
 @media (max-width: 50rem) {
-
 	.nytt01-menu__trigger {
 		width: 100%;
 		justify-content: space-between;
@@ -444,7 +457,6 @@
 }
 
 @media (max-width: 34rem) {
-
 	.nytt01-mega-menu__choices-heading,
 	.nytt01-mega-menu__blog-header {
 		flex-direction: column;
