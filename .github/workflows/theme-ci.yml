@@ -42,7 +42,19 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build, validate, and package production theme
-        run: npm run package
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run package 2>&1 | tee production-build.log
+
+      - name: Upload production build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-diagnostics
+          path: production-build.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Verify committed generated assets are current
         run: git diff --exit-code -- assets/css assets/js
@@ -101,7 +113,19 @@ jobs:
             -not -path './dist/*' -print0)
 
       - name: Run WordPress coding standards and PHP compatibility
-        run: composer lint:php
+        shell: bash
+        run: |
+          set -o pipefail
+          vendor/bin/phpcs --report=full --report-width=200 2>&1 | tee phpcs-report.log
+
+      - name: Upload PHP standards diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpcs-diagnostics
+          path: phpcs-report.log
+          if-no-files-found: error
+          retention-days: 7
 
   wordpress-integration:
     name: WordPress PHPUnit, browser, and accessibility
