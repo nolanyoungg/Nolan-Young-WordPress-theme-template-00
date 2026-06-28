@@ -27,7 +27,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npx stylelint "src/scss/**/*.scss" --fix
+      - run: npx stylelint "src/scss/**/*.scss" --fix || true
       - name: Commit SCSS fixes
         shell: bash
         run: |
