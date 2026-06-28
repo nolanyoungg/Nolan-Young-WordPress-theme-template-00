@@ -18,6 +18,11 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 $nytt01_theme_root = dirname( __DIR__ );
 $nytt01_theme_slug = basename( $nytt01_theme_root );
 
+if ( ! defined( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
+	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', $nytt01_theme_root . '/vendor/yoast/phpunit-polyfills' );
+}
+
+require_once $nytt01_theme_root . '/vendor/autoload.php';
 require_once $_tests_dir . '/includes/functions.php';
 
 tests_add_filter(
