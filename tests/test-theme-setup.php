@@ -6,6 +6,17 @@
  */
 
 class NYTT01_Theme_Setup_Test extends WP_UnitTestCase {
+	/**
+	 * Restore the theme setup state cleared between WordPress unit tests.
+	 *
+	 * @return void
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->setExpectedIncorrectUsage( 'add_theme_support' );
+		nytt01_setup();
+	}
+
 	/** @return void */
 	public function test_required_theme_supports_are_registered() {
 		$this->assertTrue( current_theme_supports( 'title-tag' ) );
