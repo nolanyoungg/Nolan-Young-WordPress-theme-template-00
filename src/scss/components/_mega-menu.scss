@@ -41,9 +41,7 @@
 	transition: transform var(--nytt01-transition);
 }
 
-.nytt01-menu-item--mega.is-open
-	> .nytt01-menu__trigger
-	.nytt01-menu__trigger-icon {
+.nytt01-menu-item--mega.is-open > .nytt01-menu__trigger .nytt01-menu__trigger-icon {
 	transform: translateY(0.1rem) rotate(225deg);
 }
 
@@ -382,6 +380,7 @@
 }
 
 @media (max-width: 68rem) {
+
 	.nytt01-mega-menu__inner {
 		grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
 		gap: 1.25rem;
@@ -397,6 +396,7 @@
 }
 
 @media (max-width: 50rem) {
+
 	.nytt01-menu__trigger {
 		width: 100%;
 		justify-content: space-between;
@@ -457,6 +457,7 @@
 }
 
 @media (max-width: 34rem) {
+
 	.nytt01-mega-menu__choices-heading,
 	.nytt01-mega-menu__blog-header {
 		flex-direction: column;
