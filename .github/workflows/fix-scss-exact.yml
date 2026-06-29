@@ -1,0 +1,67 @@
+name: Fix Exact SCSS Findings
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: hardening-10-of-10
+      - name: Apply exact SCSS corrections
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              'src/scss/base/_accessibility.scss': [
+                  ('@media (prefers-reduced-motion: reduce) {\n\thtml {', '@media (prefers-reduced-motion: reduce) {\n\n\thtml {'),
+              ],
+              'src/scss/components/_form-components.scss': [
+                  ('@media (min-width: 40rem) {\n\t.nytt01-form__row--two {', '@media (min-width: 40rem) {\n\n\t.nytt01-form__row--two {'),
+              ],
+              'src/scss/components/_mega-menu.scss': [
+                  ('.nytt01-menu-item--mega.is-open\n\t> .nytt01-menu__trigger\n\t.nytt01-menu__trigger-icon {', '.nytt01-menu-item--mega.is-open > .nytt01-menu__trigger .nytt01-menu__trigger-icon {'),
+                  ('@media (max-width: 68rem) {\n\t.nytt01-mega-menu__inner {', '@media (max-width: 68rem) {\n\n\t.nytt01-mega-menu__inner {'),
+                  ('@media (max-width: 50rem) {\n\t.nytt01-menu__trigger {', '@media (max-width: 50rem) {\n\n\t.nytt01-menu__trigger {'),
+                  ('@media (max-width: 34rem) {\n\t.nytt01-mega-menu__choices-heading,', '@media (max-width: 34rem) {\n\n\t.nytt01-mega-menu__choices-heading,'),
+              ],
+              'src/scss/layout/_grid.scss': [
+                  ('@media (min-width: 50rem) {\n\t.nytt01-split-section {', '@media (min-width: 50rem) {\n\n\t.nytt01-split-section {'),
+              ],
+              'src/scss/layout/_header.scss': [
+                  ('@media (max-width: 50rem) {\n\t.nytt01-site-header__inner {', '@media (max-width: 50rem) {\n\n\t.nytt01-site-header__inner {'),
+              ],
+              'src/scss/pages/_homepage.scss': [
+                  ('@media (min-width: 56rem) {\n\t.nytt01-hero__grid {', '@media (min-width: 56rem) {\n\n\t.nytt01-hero__grid {'),
+              ],
+          }
+
+          for file_name, pairs in replacements.items():
+              path = Path(file_name)
+              text = path.read_text()
+              for old, new in pairs:
+                  if old not in text:
+                      raise SystemExit(f'Expected source not found in {file_name}: {old!r}')
+                  text = text.replace(old, new, 1)
+              path.write_text(text)
+          PY
+      - name: Commit exact SCSS fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/scss
+          git commit -m "style: resolve remaining SCSS lint findings"
+          git push origin HEAD:hardening-10-of-10
