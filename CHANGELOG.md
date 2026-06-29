@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.2 - 2026-06-28
+
+- Hardened GitHub Actions into three required release gates covering production packaging, PHP syntax and standards, and isolated WordPress integration testing.
+- Added committed Composer dependency locking and enforced WordPress Coding Standards, PHPCompatibilityWP, and PHPUnit through CI.
+- Added an isolated WordPress 7.0 environment using `@wordpress/env` for repeatable theme activation and integration checks.
+- Added Playwright browser coverage for the frontend shell, mobile-menu keyboard behavior, browser console errors, and serious or critical Axe accessibility violations.
+- Added direct and locked browser-test dependencies, PHPUnit polyfills, and Node.js 20/npm 10 development requirements.
+- Expanded structural validation to require synchronized npm and Composer lockfiles, browser-test configuration, and hardened development contracts.
+- Corrected comment-count escaping and removed a WordPress global override from the front-page blog preview.
+- Added real repository metadata URLs and refreshed PHP, JavaScript, SCSS, pattern, and test-file standards compliance.
+- Preserved deterministic ZIP packaging, generated-asset drift detection, one-root-folder validation, and downloadable workflow artifacts.
+
 ## 1.2.1 - 2026-06-23
 
 - Added `npm run dev` as a production-mode watch command that performs an initial clean/lint pass, watches source files, and emits minified assets after each change.
