@@ -1,8 +1,7 @@
 .nytt01-hero {
 	overflow: hidden;
 	padding-block: clamp(4rem, 10vw, 8rem);
-	background:
-		linear-gradient(135deg, var(--nytt01-color-mist), var(--nytt01-color-sky));
+	background: linear-gradient(135deg, var(--nytt01-color-mist), var(--nytt01-color-sky));
 }
 
 .nytt01-hero__grid {
