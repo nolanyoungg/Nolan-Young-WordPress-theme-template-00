@@ -173,7 +173,19 @@ jobs:
           npm run wp-env -- run tests-cli wp theme activate nolan-young-theme-template-01
 
       - name: Run WordPress PHPUnit suite
-        run: npm run wp-env -- run tests-cli --env-cwd=wp-content/themes/nolan-young-theme-template-01 php vendor/bin/phpunit -c phpunit.xml.dist
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run wp-env -- run tests-cli --env-cwd=wp-content/themes/nolan-young-theme-template-01 php vendor/bin/phpunit -c phpunit.xml.dist 2>&1 | tee phpunit-report.log
+
+      - name: Upload PHPUnit diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-diagnostics
+          path: nolan-young-theme-template-01/phpunit-report.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Run frontend, mobile-menu, and accessibility smoke tests
         run: npm run test:e2e -- --project=chromium
