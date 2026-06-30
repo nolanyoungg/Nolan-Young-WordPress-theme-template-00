@@ -7,14 +7,23 @@
 
 class NYTT01_Theme_Setup_Test extends WP_UnitTestCase {
 	/**
-	 * Restore the theme setup state cleared between WordPress unit tests.
+	 * Restore theme setup under the lifecycle state used by WordPress.
 	 *
 	 * @return void
 	 */
 	public function set_up() {
 		parent::set_up();
-		$this->setExpectedIncorrectUsage( 'add_theme_support' );
+
+		global $wp_actions;
+
+		$wp_loaded_count = isset( $wp_actions['wp_loaded'] ) ? $wp_actions['wp_loaded'] : null;
+		unset( $wp_actions['wp_loaded'] );
+
 		nytt01_setup();
+
+		if ( null !== $wp_loaded_count ) {
+			$wp_actions['wp_loaded'] = $wp_loaded_count;
+		}
 	}
 
 	/** @return void */
