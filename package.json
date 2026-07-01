@@ -28,7 +28,7 @@
   "devDependencies": {
     "@wordpress/scripts": "32.4.1",
     "archiver": "8.0.0",
-    "webpack": "5.107.2",
+    "webpack": "5.108.3",
     "webpack-remove-empty-scripts": "1.1.1"
   }
 }
