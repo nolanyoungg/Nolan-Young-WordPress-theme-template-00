@@ -63,7 +63,7 @@ jobs:
           fi
 
       - name: Upload installable theme artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nolan-young-theme-template-01
           path: dist/nolan-young-theme-template-01.zip
