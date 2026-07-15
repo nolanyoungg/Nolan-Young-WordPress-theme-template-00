@@ -97,8 +97,8 @@ for ( const [ scriptName, expectedCommand ] of Object.entries( requiredScripts )
 	}
 }
 
-if ( packageJson.devDependencies?.webpack !== '5.107.2' ) {
-	throw new Error( 'webpack 5.107.2 must be declared directly in devDependencies.' );
+if ( packageJson.devDependencies?.webpack !== '5.108.4' ) {
+	throw new Error( 'webpack 5.108.4 must be declared directly in devDependencies.' );
 }
 
 if ( themeJson.version !== 3 ) {
