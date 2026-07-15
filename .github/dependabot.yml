@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directory: /wp-content/themes/nolan-young-theme-template-01
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
@@ -12,7 +12,7 @@ updates:
       include: scope
 
   - package-ecosystem: composer
-    directory: /
+    directory: /wp-content/themes/nolan-young-theme-template-01
     schedule:
       interval: monthly
     open-pull-requests-limit: 5

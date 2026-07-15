@@ -22,6 +22,9 @@ jobs:
     name: Production build and package
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: wp-content/themes/nolan-young-theme-template-01
 
     steps:
       - name: Check out source
@@ -32,6 +35,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: wp-content/themes/nolan-young-theme-template-01/package-lock.json
 
       - name: Report tool versions
         run: |
@@ -66,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nolan-young-theme-template-01
-          path: dist/nolan-young-theme-template-01.zip
+          path: wp-content/themes/nolan-young-theme-template-01/dist/nolan-young-theme-template-01.zip
           if-no-files-found: error
           retention-days: 14
 
