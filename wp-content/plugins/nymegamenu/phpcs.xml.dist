@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="NY Mega Menu">
+	<file>.</file>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<arg name="basepath" value="."/>
+	<arg value="ps"/>
+	<rule ref="WordPress"/>
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="PHPCompatibilityWP"><properties><property name="testVersion" value="7.4-"/></properties></rule>
+	<rule ref="WordPress.WP.I18n"><properties><property name="text_domain" type="array" value="nymegamenu"/></properties></rule>
+</ruleset>

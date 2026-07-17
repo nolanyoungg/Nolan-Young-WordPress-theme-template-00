@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "nymegamenu/menu",
+  "title": "NY Mega Menu",
+  "category": "widgets",
+  "icon": "menu",
+  "description": "Display an enabled NY Mega Menu location.",
+  "textdomain": "nymegamenu",
+  "attributes": { "location": { "type": "string" } },
+  "render": "file:./render.php",
+  "supports": { "html": false }
+}
