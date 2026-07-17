@@ -20,7 +20,7 @@ class Installer {
 		dbDelta( "CREATE TABLE $files (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, entry_id bigint(20) unsigned NOT NULL, field_key varchar(100) NOT NULL, attachment_id bigint(20) unsigned NOT NULL, original_name text NOT NULL, mime_type varchar(100) NOT NULL, PRIMARY KEY  (id), KEY entry_id (entry_id)) $charset;" );
 		dbDelta( "CREATE TABLE $events (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, form_id bigint(20) unsigned NOT NULL DEFAULT 0, entry_id bigint(20) unsigned NOT NULL DEFAULT 0, event_type varchar(100) NOT NULL, context longtext NOT NULL, created_at datetime NOT NULL, PRIMARY KEY  (id), KEY form_id (form_id), KEY entry_id (entry_id), KEY event_type (event_type)) $charset;" );
 		update_option( 'nyforms_db_version', NYFORMS_DB_VERSION );
-		add_option( 'nyforms_settings', array( 'retention_days' => 0, 'delete_data_on_uninstall' => false, 'rate_limit' => 10 ) );
+		add_option( 'nyforms_settings', array( 'retention_days' => 0, 'delete_data_on_uninstall' => false, 'rate_limit' => 10, 'data_collection' => false, 'recaptcha_enabled' => false, 'recaptcha_site_key' => '', 'recaptcha_secret_key' => '', 'recaptcha_type' => 'checkbox', 'rest_api_enabled' => false ) );
 		self::add_capabilities();
 	}
 

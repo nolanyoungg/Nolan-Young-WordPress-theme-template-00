@@ -1,4 +1,5 @@
 ( function() {
+	window.nyformsRecaptchaComplete = function() { document.querySelectorAll( '.nyforms-form[data-nyforms-recaptcha-waiting="1"]' ).forEach( function( form ) { form.dataset.nyformsRecaptchaWaiting = '0'; form.submit(); } ); };
 	function values( form ) {
 		var output = {};
 		form.querySelectorAll( '[name^="nyforms_values"]' ).forEach( function( input ) {
@@ -43,5 +44,5 @@
 		next.addEventListener( 'click', function() { var invalid = pages[ current ].querySelector( 'input:invalid,select:invalid,textarea:invalid' ); if ( invalid ) { invalid.reportValidity(); return; } show( Math.min( pages.length - 1, current + 1 ) ); } );
 		previous.addEventListener( 'click', function() { show( Math.max( 0, current - 1 ) ); } ); show( 0 );
 	}
-	document.addEventListener( 'DOMContentLoaded', function() { document.querySelectorAll( '.nyforms-form' ).forEach( function( form ) { form.addEventListener( 'change', function() { update( form ); } ); update( form ); paginate( form ); } ); } );
+	document.addEventListener( 'DOMContentLoaded', function() { document.querySelectorAll( '.nyforms-form' ).forEach( function( form ) { form.addEventListener( 'change', function() { update( form ); } ); var invisible = form.querySelector( '.nyforms-recaptcha--invisible' ); if ( invisible ) { form.addEventListener( 'submit', function( event ) { if ( '1' === form.dataset.nyformsRecaptchaWaiting || ! window.grecaptcha || ! window.grecaptcha.execute ) { return; } event.preventDefault(); form.dataset.nyformsRecaptchaWaiting = '1'; window.grecaptcha.execute(); } ); } update( form ); paginate( form ); } ); } );
 }() );

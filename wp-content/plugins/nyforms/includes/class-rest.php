@@ -25,8 +25,9 @@ class Rest {
 		) );
 	}
 
-	public function manage() { return current_user_can( 'nyforms_manage_forms' ); }
-	public function entries_permission() { return current_user_can( 'nyforms_view_entries' ); }
+	public function manage( $request ) { return $this->allowed( $request, 'nyforms_manage_forms' ); }
+	public function entries_permission( $request ) { return $this->allowed( $request, 'nyforms_view_entries' ); }
+	private function allowed( $request, $capability ) { if ( ! current_user_can( $capability ) ) { return false; } $settings = get_option( 'nyforms_settings', array() ); if ( ! empty( $settings['rest_api_enabled'] ) ) { return true; } $nonce = $request instanceof \WP_REST_Request ? $request->get_header( 'X-WP-Nonce' ) : ''; return $nonce && wp_verify_nonce( $nonce, 'wp_rest' ); }
 	public function forms() { return rest_ensure_response( Plugin::instance()->repository->forms() ); }
 	public function form( $request ) { return $this->respond_form( $request['id'] ); }
 	public function create( $request ) { $id = Plugin::instance()->repository->create_form( $request->get_json_params() ); return is_wp_error( $id ) ? $this->client_error( $id ) : $this->respond_form( $id, 201 ); }
