@@ -20,6 +20,12 @@ Confirmations can render a message, use an internal page, or redirect to a valid
 
 Use `nyforms_render_form( $id )`, the `nyforms/v1` REST API (capability-protected), `nyforms_entry_created`, `nyforms_field_types`, `nyforms_spam_providers`, and `nyforms_notification_providers`. Imports and exports use NYforms-owned versioned JSON; unknown or malformed field definitions are rejected.
 
+## REST API
+
+Enable authenticated developer access in **NYforms → Settings → REST API**. Browser requests use a WordPress REST nonce; external integrations use a WordPress Application Password over HTTPS and the caller must hold the relevant NYforms capability. Start with `GET /wp-json/nyforms/v1/openapi` for route discovery. Forms, entries, settings, diagnostics, audit events, JSON import/export, paginated JSON, and CSV entry exports are available under this namespace. The only public route is `POST /privacy/requests`, which creates a WordPress-confirmed export or erasure request and always returns a generic response.
+
+Use `[nyforms_privacy_request]` to place the self-service privacy request form on a public page.
+
 ## Scope and validation
 
 Payment gateways are deliberately excluded. NYforms does not import from, claim compatibility with, or include any code, branding, design assets, APIs, or documentation from other form plugins. For development, run PHP and JavaScript parse checks and a WordPress integration suite against a configured local WordPress instance. Composer/PHPUnit is optional and not required by the plugin runtime.
