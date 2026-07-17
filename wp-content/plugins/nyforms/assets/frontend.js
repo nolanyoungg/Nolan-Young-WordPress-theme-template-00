@@ -38,8 +38,8 @@
 		var pages = Array.prototype.slice.call( form.querySelectorAll( '.nyforms-page-panel' ) );
 		var nav = form.querySelector( '.nyforms-navigation' );
 		if ( pages.length < 2 || ! nav ) { return; }
-		var current = 0; var previous = nav.querySelector( '.nyforms-previous' ); var next = nav.querySelector( '.nyforms-next' ); var submit = nav.querySelector( '.nyforms-submit-wrap' );
-		function show( index ) { current = index; pages.forEach( function( page, position ) { page.hidden = position !== current; } ); previous.hidden = current === 0; next.hidden = current === pages.length - 1; submit.hidden = current !== pages.length - 1; window.scrollTo( { top: form.getBoundingClientRect().top + window.pageYOffset - 24, behavior: 'smooth' } ); }
+		var current = 0; var previous = nav.querySelector( '.nyforms-previous' ); var next = nav.querySelector( '.nyforms-next' ); var submit = nav.querySelector( '.nyforms-submit-wrap' ); var progress = nav.querySelector( '.nyforms-progress' );
+		function show( index ) { current = index; pages.forEach( function( page, position ) { page.hidden = position !== current; } ); previous.hidden = current === 0; next.hidden = current === pages.length - 1; submit.hidden = current !== pages.length - 1; if ( progress ) { progress.textContent = 'Step ' + ( current + 1 ) + ' of ' + pages.length; } window.scrollTo( { top: form.getBoundingClientRect().top + window.pageYOffset - 24, behavior: 'smooth' } ); }
 		next.addEventListener( 'click', function() { var invalid = pages[ current ].querySelector( 'input:invalid,select:invalid,textarea:invalid' ); if ( invalid ) { invalid.reportValidity(); return; } show( Math.min( pages.length - 1, current + 1 ) ); } );
 		previous.addEventListener( 'click', function() { show( Math.max( 0, current - 1 ) ); } ); show( 0 );
 	}
