@@ -49,6 +49,7 @@ class Renderer {
 		return is_array( $data ) && (int) ( $data['form_id'] ?? 0 ) === (int) $form['id'] && is_array( $data['values'] ?? null ) ? $data['values'] : array();
 	}
 	private function field( $field, $error, $saved_value = null ) {
+		$provider = Extensions::field_type( $field['type'] ); if ( $provider ) { echo $provider->render( $field, $saved_value, $error ); return; }
 		if ( in_array( $field['type'], array( 'html','section','page' ), true ) ) { echo '<section class="nyforms-' . esc_attr( $field['type'] ) . '">'; echo 'html' === $field['type'] ? wp_kses_post( $field['description'] ) : '<h3>' . esc_html( $field['label'] ) . '</h3>'; echo '</section>'; return; }
 		if ( in_array( $field['type'], array( 'total', 'calculation' ), true ) ) { echo '<div class="nyforms-field nyforms-' . esc_attr( $field['type'] ) . '" data-nyforms-formula="' . esc_attr( $field['formula'] ) . '"><strong>' . esc_html( $field['label'] ) . '</strong><output data-nyforms-result>0.00</output></div>'; return; }
 		$id = 'nyforms-' . $field['key']; $required = $field['required'] ? ' required aria-required="true"' : ''; $described = $error ? ' aria-describedby="' . esc_attr( $id ) . '-error"' : '';
