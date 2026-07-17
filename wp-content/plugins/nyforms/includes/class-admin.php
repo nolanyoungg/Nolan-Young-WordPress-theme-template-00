@@ -12,7 +12,14 @@ class Admin {
 
 	public function menu() {
 		add_menu_page( __( 'NYforms', 'nyforms' ), __( 'NYforms', 'nyforms' ), 'nyforms_manage_forms', 'nyforms', array( $this, 'forms_page' ), 'dashicons-feedback', 26 );
+		add_submenu_page( 'nyforms', __( 'Forms', 'nyforms' ), __( 'Forms', 'nyforms' ), 'nyforms_manage_forms', 'nyforms', array( $this, 'forms_page' ) );
+		add_submenu_page( 'nyforms', __( 'New Form', 'nyforms' ), __( 'New Form', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-new', array( $this, 'new_form_page' ) );
 		add_submenu_page( 'nyforms', __( 'Entries', 'nyforms' ), __( 'Entries', 'nyforms' ), 'nyforms_view_entries', 'nyforms-entries', array( $this, 'entries_page' ) );
+		add_submenu_page( 'nyforms', __( 'Settings', 'nyforms' ), __( 'Settings', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-settings', array( $this, 'settings_page' ) );
+		add_submenu_page( 'nyforms', __( 'Import/Export', 'nyforms' ), __( 'Import/Export', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-import-export', array( $this, 'import_export_page' ) );
+		add_submenu_page( 'nyforms', __( 'Add-Ons', 'nyforms' ), __( 'Add-Ons', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-addons', array( $this, 'addons_page' ) );
+		add_submenu_page( 'nyforms', __( 'System Status', 'nyforms' ), __( 'System Status', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-system-status', array( $this, 'system_status_page' ) );
+		add_submenu_page( 'nyforms', __( 'Help', 'nyforms' ), __( 'Help', 'nyforms' ), 'nyforms_manage_forms', 'nyforms-help', array( $this, 'help_page' ) );
 	}
 
 	public function assets( $hook ) {
@@ -29,9 +36,9 @@ class Admin {
 		$form_id = absint( $_GET['form'] ?? 0 );
 		if ( $form_id ) { $this->editor_page( $form_id ); return; }
 		$forms = Plugin::instance()->repository->forms( sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ) );
-		echo '<div class="wrap nyforms-admin"><h1 class="wp-heading-inline">' . esc_html__( 'NYforms', 'nyforms' ) . '</h1>';
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'FORM WORKSPACE', 'nyforms' ) . '</p><h1>' . esc_html__( 'Forms', 'nyforms' ) . '</h1><p>' . esc_html__( 'Create, organize, and monitor every NYforms workflow.', 'nyforms' ) . '</p></div></div>';
 		echo '<a class="page-title-action" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=new' ), 'nyforms_admin' ) ) . '">' . esc_html__( 'New form', 'nyforms' ) . '</a>';
-		echo '<hr class="wp-header-end"><form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="nyforms-import"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="import">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<label for="nyforms-import-file">' . esc_html__( 'Import NYforms JSON', 'nyforms' ) . '</label> <input id="nyforms-import-file" type="file" name="nyforms_import" accept="application/json,.json" required> <button type="submit" class="button">' . esc_html__( 'Import', 'nyforms' ) . '</button></form><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Form', 'nyforms' ) . '</th><th>' . esc_html__( 'Status', 'nyforms' ) . '</th><th>' . esc_html__( 'Entries', 'nyforms' ) . '</th><th>' . esc_html__( 'Unread', 'nyforms' ) . '</th></tr></thead><tbody>';
+		echo '<div class="nyforms-toolbar"><span class="nyforms-count">' . sprintf( esc_html__( '%d forms', 'nyforms' ), count( $forms ) ) . '</span><a href="' . esc_url( admin_url( 'admin.php?page=nyforms-import-export' ) ) . '">' . esc_html__( 'Import or export', 'nyforms' ) . '</a></div><table class="widefat striped nyforms-forms-table"><thead><tr><th>' . esc_html__( 'Form', 'nyforms' ) . '</th><th>' . esc_html__( 'Status', 'nyforms' ) . '</th><th>' . esc_html__( 'Entries', 'nyforms' ) . '</th><th>' . esc_html__( 'Unread', 'nyforms' ) . '</th></tr></thead><tbody>';
 		foreach ( $forms as $form ) {
 			$edit = add_query_arg( array( 'page' => 'nyforms', 'form' => $form['id'] ), admin_url( 'admin.php' ) );
 			$actions = array( '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=duplicate&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Duplicate', 'nyforms' ) . '</a>', '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=export_form&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Export JSON', 'nyforms' ) . '</a>' );
@@ -61,8 +68,30 @@ class Admin {
 		echo '</tbody></table></div>';
 	}
 
+	public function new_form_page() {
+		$this->require_manage();
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'FORM WORKSPACE', 'nyforms' ) . '</p><h1>' . esc_html__( 'New Form', 'nyforms' ) . '</h1><p>' . esc_html__( 'Start with a blank form, then shape it in the visual builder.', 'nyforms' ) . '</p></div></div><div class="nyforms-card"><h2>' . esc_html__( 'Blank form', 'nyforms' ) . '</h2><p>' . esc_html__( 'Create an empty form and add only the fields your workflow needs.', 'nyforms' ) . '</p><a class="button button-primary" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=new' ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Create blank form', 'nyforms' ) . '</a></div></div>';
+	}
+
+	public function settings_page() {
+		$this->require_manage(); $settings = wp_parse_args( get_option( 'nyforms_settings', array() ), array( 'rate_limit' => 10, 'retention_days' => 0, 'delete_data_on_uninstall' => false ) );
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'CONFIGURATION', 'nyforms' ) . '</p><h1>' . esc_html__( 'Settings', 'nyforms' ) . '</h1><p>' . esc_html__( 'Set baseline protection and data-retention behavior for NYforms.', 'nyforms' ) . '</p></div></div><form class="nyforms-card nyforms-settings" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="save_settings">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<p><label>' . esc_html__( 'Submissions per IP each hour', 'nyforms' ) . '<input type="number" min="1" max="1000" name="rate_limit" value="' . esc_attr( $settings['rate_limit'] ) . '"></label></p><p><label>' . esc_html__( 'Move entries to trash after (days)', 'nyforms' ) . '<input type="number" min="0" name="retention_days" value="' . esc_attr( $settings['retention_days'] ) . '"></label></p><p><label><input type="checkbox" name="delete_data_on_uninstall" value="1"' . checked( ! empty( $settings['delete_data_on_uninstall'] ), true, false ) . '> ' . esc_html__( 'Delete NYforms data when the plugin is uninstalled', 'nyforms' ) . '</label></p><p><button class="button button-primary" type="submit">' . esc_html__( 'Save settings', 'nyforms' ) . '</button></p></form></div>';
+	}
+
+	public function import_export_page() {
+		$this->require_manage();
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'PORTABILITY', 'nyforms' ) . '</p><h1>' . esc_html__( 'Import/Export', 'nyforms' ) . '</h1><p>' . esc_html__( 'Move versioned NYforms definitions safely between WordPress sites.', 'nyforms' ) . '</p></div></div><div class="nyforms-card"><h2>' . esc_html__( 'Import a form', 'nyforms' ) . '</h2><form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="import">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<input type="file" name="nyforms_import" accept="application/json,.json" required> <button type="submit" class="button">' . esc_html__( 'Import JSON', 'nyforms' ) . '</button></form><p class="description">' . esc_html__( 'Exports are available from each form’s row actions.', 'nyforms' ) . '</p></div></div>';
+	}
+
+	public function addons_page() { $this->info_page( __( 'Add-Ons', 'nyforms' ), __( 'Extend NYforms', 'nyforms' ), __( 'NYforms keeps integrations opt-in. Registered field, notification, and anti-spam providers appear here when installed by a site owner.', 'nyforms' ) ); }
+	public function system_status_page() { $this->info_page( __( 'System Status', 'nyforms' ), __( 'Environment check', 'nyforms' ), sprintf( __( 'WordPress %1$s · PHP %2$s · NYforms %3$s', 'nyforms' ), get_bloginfo( 'version' ), PHP_VERSION, NYFORMS_VERSION ) ); }
+	public function help_page() { $this->info_page( __( 'Help', 'nyforms' ), __( 'NYforms help', 'nyforms' ), __( 'Create a form, add fields in the builder, then embed it with the NYforms block, shortcode, or template helper.', 'nyforms' ) ); }
+
+	private function info_page( $title, $heading, $content ) { $this->require_manage(); echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html( $title ) . '</p><h1>' . esc_html( $heading ) . '</h1><p>' . esc_html( $content ) . '</p></div></div></div>'; }
+
 	public function action() {
-		$this->require_manage(); check_admin_referer( 'nyforms_admin' ); $repo = Plugin::instance()->repository; $operation = sanitize_key( $_GET['operation'] ?? '' );
+		$this->require_manage(); check_admin_referer( 'nyforms_admin' ); $repo = Plugin::instance()->repository; $operation = sanitize_key( wp_unslash( $_REQUEST['operation'] ?? '' ) );
+		if ( 'save_settings' === $operation ) { update_option( 'nyforms_settings', array( 'rate_limit' => min( 1000, max( 1, absint( $_POST['rate_limit'] ?? 10 ) ) ), 'retention_days' => absint( $_POST['retention_days'] ?? 0 ), 'delete_data_on_uninstall' => ! empty( $_POST['delete_data_on_uninstall'] ) ) ); wp_safe_redirect( admin_url( 'admin.php?page=nyforms-settings&updated=1' ) ); exit; }
 		if ( 'export' === $operation ) { $this->export_csv( absint( $_GET['form'] ?? 0 ) ); }
 		if ( 'export_form' === $operation ) { $this->export_form( absint( $_GET['id'] ?? 0 ) ); }
 		if ( 'import' === $operation ) { $this->import_form(); }
