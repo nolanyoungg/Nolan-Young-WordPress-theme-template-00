@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nyforms/privacy-request",
+  "title": "NYforms Privacy Request",
+  "category": "widgets",
+  "icon": "privacy",
+  "description": "Let visitors request an export or erasure of their NYforms personal data.",
+  "textdomain": "nyforms",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

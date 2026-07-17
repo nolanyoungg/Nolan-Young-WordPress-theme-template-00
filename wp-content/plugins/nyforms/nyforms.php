@@ -15,8 +15,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NYFORMS_VERSION', '1.0.0' );
-define( 'NYFORMS_DB_VERSION', '1.0.0' );
+define( 'NYFORMS_VERSION', '1.0.1' );
+define( 'NYFORMS_DB_VERSION', '1.0.1' );
 define( 'NYFORMS_FILE', __FILE__ );
 define( 'NYFORMS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NYFORMS_URL', plugin_dir_url( __FILE__ ) );
@@ -43,6 +43,8 @@ foreach ( $nyforms_files as $nyforms_file ) {
 
 register_activation_hook( NYFORMS_FILE, array( '\\NYforms\\Installer', 'activate' ) );
 register_deactivation_hook( NYFORMS_FILE, array( '\\NYforms\\Installer', 'deactivate' ) );
+add_action( 'plugins_loaded', array( '\\NYforms\\Installer', 'maybe_upgrade' ) );
+add_action( 'admin_init', array( '\\NYforms\\Installer', 'maybe_upgrade' ) );
 
 function nyforms() {
 	return \NYforms\Plugin::instance();
