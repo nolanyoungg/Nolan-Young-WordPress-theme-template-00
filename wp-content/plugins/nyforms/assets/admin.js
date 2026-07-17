@@ -8,5 +8,14 @@
 				} );
 			} );
 		} );
+		var copyButton = document.getElementById( 'nyforms-copy-system-report' );
+		if ( copyButton ) {
+			copyButton.addEventListener( 'click', function() {
+				var report = document.getElementById( 'nyforms-system-report-data' );
+				var status = document.querySelector( '.nyforms-copy-status' );
+				if ( navigator.clipboard && window.isSecureContext ) { navigator.clipboard.writeText( report.value ).then( function() { status.textContent = 'Copied.'; } ); return; }
+				report.focus(); report.select(); document.execCommand( 'copy' ); status.textContent = 'Copied.';
+			} );
+		}
 	} );
 }() );
