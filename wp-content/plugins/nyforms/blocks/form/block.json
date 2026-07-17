@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nyforms/form",
+  "title": "NYforms",
+  "category": "widgets",
+  "icon": "feedback",
+  "description": "Embed an NYforms form.",
+  "textdomain": "nyforms",
+  "attributes": { "formId": { "type": "number", "default": 0 } },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
