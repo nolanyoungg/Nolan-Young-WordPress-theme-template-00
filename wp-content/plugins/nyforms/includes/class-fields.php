@@ -1,0 +1,17 @@
+<?php
+namespace NYforms;
+defined( 'ABSPATH' ) || exit;
+class Fields {
+	public static function types() { return array_merge( array( 'text','textarea','email','phone','number','name','address','url','date','time','select','radio','checkbox','consent','hidden','html','section','page','file','product','option','quantity','total','calculation' ), array_keys( Extensions::field_types() ) ); }
+	public static function sanitize( $field ) {
+		$type = sanitize_key( $field['type'] ?? '' ); if ( ! in_array( $type, self::types(), true ) ) { return new \WP_Error( 'nyforms_invalid_field', __( 'The form contains an unsupported field type.', 'nyforms' ) ); }
+		$key = sanitize_key( $field['key'] ?? '' ); if ( '' === $key || strlen( $key ) > 100 ) { return new \WP_Error( 'nyforms_invalid_key', __( 'Each field needs a key.', 'nyforms' ) ); }
+		$choices = array(); foreach ( (array) ( $field['choices'] ?? array() ) as $choice ) { $choices[] = array( 'label' => sanitize_text_field( is_array( $choice ) ? ( $choice['label'] ?? '' ) : $choice ), 'value' => sanitize_text_field( is_array( $choice ) ? ( $choice['value'] ?? $choice['label'] ?? '' ) : $choice ) ); }
+		return array( 'key' => $key, 'type' => $type, 'label' => sanitize_text_field( $field['label'] ?? '' ), 'description' => wp_kses_post( $field['description'] ?? '' ), 'placeholder' => sanitize_text_field( $field['placeholder'] ?? '' ), 'help' => wp_kses_post( $field['help'] ?? '' ), 'default' => sanitize_text_field( $field['default'] ?? '' ), 'css_class' => sanitize_html_class( $field['css_class'] ?? '' ), 'required' => ! empty( $field['required'] ), 'choices' => $choices, 'visibility' => Conditions::sanitize( $field['visibility'] ?? array() ), 'max_files' => min( 10, max( 1, absint( $field['max_files'] ?? 1 ) ) ), 'max_size' => min( 50 * MB_IN_BYTES, max( 1, absint( $field['max_size'] ?? wp_max_upload_size() ) ) ), 'allowed_types' => sanitize_text_field( $field['allowed_types'] ?? '' ), 'price' => (float) ( $field['price'] ?? 0 ), 'formula' => sanitize_text_field( $field['formula'] ?? '' ) );
+	}
+	public static function validate( $field, $value ) {
+		if ( $field['required'] && ( '' === $value || array() === $value || null === $value ) ) { return new \WP_Error( 'required', sprintf( __( '%s is required.', 'nyforms' ), $field['label'] ) ); }
+		if ( '' === $value || null === $value ) { return ''; }
+		switch ( $field['type'] ) { case 'email': if ( ! is_email( $value ) ) { return new \WP_Error( 'email', __( 'Enter a valid email address.', 'nyforms' ) ); } return sanitize_email( $value ); case 'url': if ( ! wp_http_validate_url( $value ) ) { return new \WP_Error( 'url', __( 'Enter a valid URL.', 'nyforms' ) ); } return esc_url_raw( $value ); case 'number': case 'quantity': if ( ! is_numeric( $value ) ) { return new \WP_Error( 'number', __( 'Enter a number.', 'nyforms' ) ); } return (string) (float) $value; case 'date': if ( ! preg_match( '/^\\d{4}-\\d{2}-\\d{2}$/', $value ) ) { return new \WP_Error( 'date', __( 'Enter a valid date.', 'nyforms' ) ); } return sanitize_text_field( $value ); case 'checkbox': case 'select': case 'radio': case 'option': $allowed = wp_list_pluck( $field['choices'], 'value' ); $values = is_array( $value ) ? $value : array( $value ); foreach ( $values as $item ) { if ( ! in_array( $item, $allowed, true ) ) { return new \WP_Error( 'choice', __( 'Select an available option.', 'nyforms' ) ); } } return array_map( 'sanitize_text_field', $values ); default: return sanitize_textarea_field( is_array( $value ) ? implode( ', ', $value ) : $value ); }
+	}
+}
