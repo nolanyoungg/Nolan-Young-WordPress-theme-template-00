@@ -23,7 +23,12 @@ The source hierarchy is strict:
 - `README.md` is the operating manual.
 - `CHANGELOG.md` records released changes.
 - `dist/` contains local release output and is ignored by Git.
-- The `nolan-young-core` plugin is a separate project and remains the authority for persistent/business functionality.
+- Form and newsletter placement is theme-owned through optional shortcode slots in **Appearance → Customize → Form Shortcodes**.
+- The bundled `nyforms` and `nymegamenu` plugins are optional supported integrations; neither is required to activate or use the theme.
+
+### Bundled plugin integration change
+
+The theme no longer expects the absent `nolan-young-core` companion plugin. Contact and newsletter areas now render shortcode placeholders until a site owner adds a shortcode. This repository's `nyforms` plugin can supply those shortcodes, while `nymegamenu` can enhance primary navigation when activated.
 
 The required change flow is:
 

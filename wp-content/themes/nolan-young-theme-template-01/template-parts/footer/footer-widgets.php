@@ -11,6 +11,9 @@ defined( 'ABSPATH' ) || exit;
 	<div class="nytt01-site-footer__brand">
 		<p class="nytt01-site-footer__title"><?php bloginfo( 'name' ); ?></p>
 		<p><?php esc_html_e( 'A disciplined WordPress foundation built for accessibility, maintainability, and reliable production delivery.', 'nolan-young-theme-template-01' ); ?></p>
+		<div class="nytt01-newsletter">
+			<?php nytt01_render_form_shortcode_slot( 'newsletter' ); ?>
+		</div>
 	</div>
 	<?php if ( is_active_sidebar( 'footer-widgets' ) ) : ?>
 		<div class="nytt01-footer-widgets">

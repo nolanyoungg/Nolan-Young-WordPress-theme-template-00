@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Replaced the Core-specific contact-form integration with theme-owned contact and newsletter shortcode slots.
+- Documented the optional bundled NYforms and NY Mega Menu integrations; neither is required by the theme.
+
 ## 1.2.1 - 2026-06-23
 
 - Added `npm run dev` as a production-mode watch command that performs an initial clean/lint pass, watches source files, and emits minified assets after each change.

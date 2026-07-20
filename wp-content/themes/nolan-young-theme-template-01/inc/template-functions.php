@@ -43,6 +43,49 @@ function nytt01_pingback_header() {
 add_action( 'wp_head', 'nytt01_pingback_header' );
 
 /**
+ * Render an optional, editor-configured form shortcode or its visible placeholder.
+ *
+ * The placeholder keeps the theme self-contained while showing where a site owner
+ * can paste a shortcode from any chosen form provider.
+ *
+ * @param string $slot Form slot identifier.
+ * @return void
+ */
+function nytt01_render_form_shortcode_slot( $slot ) {
+	$slots = array(
+		'contact'    => array(
+			'setting'     => 'nytt01_contact_form_shortcode',
+			'placeholder' => '[your-contact-form-shortcode]',
+			'label'       => esc_html__( 'Contact form shortcode placeholder', 'nolan-young-theme-template-01' ),
+		),
+		'newsletter' => array(
+			'setting'     => 'nytt01_newsletter_shortcode',
+			'placeholder' => '[your-newsletter-shortcode]',
+			'label'       => esc_html__( 'Newsletter shortcode placeholder', 'nolan-young-theme-template-01' ),
+		),
+	);
+
+	if ( ! isset( $slots[ $slot ] ) ) {
+		return;
+	}
+
+	$config    = $slots[ $slot ];
+	$shortcode = trim( (string) get_theme_mod( $config['setting'], '' ) );
+
+	if ( '' !== $shortcode ) {
+		echo do_shortcode( $shortcode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shortcode markup is supplied by the site's selected form integration.
+		return;
+	}
+	?>
+	<div class="nytt01-form-placeholder" role="note">
+		<p class="nytt01-form-placeholder__label"><?php echo esc_html( $config['label'] ); ?></p>
+		<code><?php echo esc_html( $config['placeholder'] ); ?></code>
+		<p><?php esc_html_e( 'Paste a shortcode in Appearance → Customize → Form Shortcodes to display your form here.', 'nolan-young-theme-template-01' ); ?></p>
+	</div>
+	<?php
+}
+
+/**
  * Add current-page context to primary navigation links.
  *
  * @param array    $attributes Link attributes.
