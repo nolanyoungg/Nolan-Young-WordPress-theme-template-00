@@ -97,6 +97,17 @@ Read the theme’s detailed operating manual before changing its architecture: [
 
 ## Current plugin: NYforms
 
+## Theme integration policy
+
+The active theme does not require an external companion plugin. Its contact and newsletter areas are theme-owned shortcode slots: site owners can paste a shortcode from their chosen form solution in **Appearance → Customize → Form Shortcodes**.
+
+This repository also includes two optional, supported plugins that the theme can use when they are activated:
+
+- `nyforms` supplies WordPress-native form building and can be pasted into either shortcode slot.
+- `nymegamenu` supplies an enhanced primary-navigation experience; the theme retains its native WordPress navigation when it is inactive.
+
+The absent `nolan-young-core` package is not a requirement for the theme and should not be installed as part of normal theme setup.
+
 `wp-content/plugins/nyforms` is an original WordPress-native form-builder plugin. It is intentionally independent of third-party form-plugin code, branding, layouts, import formats, or compatibility promises.
 
 NYforms currently provides:

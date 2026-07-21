@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NYforms
  * Description: An original, privacy-minded WordPress form builder and submission manager.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 7.0
  * Requires PHP: 7.4
  * Author: Nolan Young

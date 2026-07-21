@@ -18,7 +18,7 @@ function nytt01_customize_register( $wp_customize ) {
 		'nytt01_front_page',
 		array(
 			'title'       => esc_html__( 'Front Page Presentation', 'nolan-young-theme-template-01' ),
-			'description' => esc_html__( 'Controls presentation text only. Persistent business content belongs in WordPress content or the companion plugin.', 'nolan-young-theme-template-01' ),
+			'description' => esc_html__( 'Controls presentation text only.', 'nolan-young-theme-template-01' ),
 			'priority'    => 35,
 		)
 	);
@@ -54,6 +54,41 @@ function nytt01_customize_register( $wp_customize ) {
 				'label'   => $setting['label'],
 				'section' => 'nytt01_front_page',
 				'type'    => 'text',
+			)
+		);
+	}
+
+	$wp_customize->add_section(
+		'nytt01_form_shortcodes',
+		array(
+			'title'       => esc_html__( 'Form Shortcodes', 'nolan-young-theme-template-01' ),
+			'description' => esc_html__( 'Optional: paste the shortcode supplied by your chosen form or newsletter service. The theme does not require a form plugin.', 'nolan-young-theme-template-01' ),
+			'priority'    => 36,
+		)
+	);
+
+	$form_shortcodes = array(
+		'contact_form_shortcode' => esc_html__( 'Contact form shortcode', 'nolan-young-theme-template-01' ),
+		'newsletter_shortcode'   => esc_html__( 'Newsletter signup shortcode', 'nolan-young-theme-template-01' ),
+	);
+
+	foreach ( $form_shortcodes as $setting_id => $label ) {
+		$wp_customize->add_setting(
+			'nytt01_' . $setting_id,
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'wp_kses_post',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			'nytt01_' . $setting_id,
+			array(
+				'label'       => $label,
+				'description' => esc_html__( 'Paste a complete shortcode, for example: [your-form-shortcode].', 'nolan-young-theme-template-01' ),
+				'section'     => 'nytt01_form_shortcodes',
+				'type'        => 'textarea',
 			)
 		);
 	}

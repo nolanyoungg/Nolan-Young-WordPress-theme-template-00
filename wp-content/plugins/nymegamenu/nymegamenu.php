@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NY Mega Menu
  * Description: A branded, accessible navigation and mega-menu system by Nolan Young.
- * Version: 1.0.0
+ * Version: 1.1.10
  * Requires at least: 7.0
  * Requires PHP: 7.4
  * Author: Nolan Young
@@ -15,12 +15,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NYMEGAMENU_VERSION', '1.0.0' );
+define( 'NYMEGAMENU_VERSION', '1.1.10' );
 define( 'NYMEGAMENU_FILE', __FILE__ );
 define( 'NYMEGAMENU_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NYMEGAMENU_URL', plugin_dir_url( __FILE__ ) );
 
-foreach ( array( 'class-settings.php', 'class-renderer.php', 'class-admin.php', 'class-plugin.php' ) as $file ) {
+foreach ( array( 'class-settings.php', 'class-styles.php', 'class-renderer.php', 'class-admin.php', 'class-plugin.php' ) as $file ) {
 	require_once NYMEGAMENU_DIR . 'includes/' . $file;
 }
 

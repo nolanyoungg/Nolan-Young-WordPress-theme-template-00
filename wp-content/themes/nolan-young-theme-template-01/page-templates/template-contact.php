@@ -17,14 +17,7 @@ get_header();
 		the_post();
 		get_template_part( 'template-parts/content/content', 'page' );
 	}
-	if ( shortcode_exists( 'nolan_young_contact_form' ) ) {
-		echo do_shortcode( '[nolan_young_contact_form]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Trusted shortcode output.
-	} elseif ( current_user_can( 'activate_plugins' ) ) {
-		printf(
-			'<p class="nytt01-notice">%s</p>',
-			esc_html__( 'Activate the Nolan Young Core plugin to display the contact form.', 'nolan-young-theme-template-01' )
-		);
-	}
+	nytt01_render_form_shortcode_slot( 'contact' );
 	?>
 </main>
 <?php
