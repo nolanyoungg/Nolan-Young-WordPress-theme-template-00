@@ -16,7 +16,6 @@ $nytt01_theme_includes = array(
 	'/inc/template-functions.php',
 	'/inc/customizer.php',
 	'/inc/block-styles.php',
-	'/inc/integrations/nolan-young-core.php',
 );
 
 foreach ( $nytt01_theme_includes as $nytt01_theme_include ) {

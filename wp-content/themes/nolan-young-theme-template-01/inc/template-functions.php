@@ -72,7 +72,12 @@ function nytt01_render_form_shortcode_slot( $slot ) {
 	$config    = $slots[ $slot ];
 	$shortcode = trim( (string) get_theme_mod( $config['setting'], '' ) );
 
-	if ( '' !== $shortcode ) {
+	$shortcode_tag = '';
+	if ( preg_match( '/^\s*\[([A-Za-z][A-Za-z0-9_-]*)\b/', $shortcode, $matches ) ) {
+		$shortcode_tag = $matches[1];
+	}
+
+	if ( '' !== $shortcode && '' !== $shortcode_tag && shortcode_exists( $shortcode_tag ) ) {
 		echo do_shortcode( $shortcode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shortcode markup is supplied by the site's selected form integration.
 		return;
 	}

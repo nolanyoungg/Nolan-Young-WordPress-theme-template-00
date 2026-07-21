@@ -44,7 +44,7 @@ Regenerate them with `npm run build`.
 
 ## Theme/plugin boundary
 
-The theme owns presentation and WordPress template rendering. Persistent functionality, business logic, custom post type registration, form processing, access control, stored submissions, and privacy integrations belong in the companion plugin or another dedicated plugin.
+The theme owns presentation and WordPress template rendering. Persistent functionality, business logic, custom post type registration, form processing, access control, stored submissions, and privacy integrations belong in an optional dedicated plugin, never an unbundled required companion.
 
 Do not add `register_post_type()` or `register_taxonomy()` to this repository. The build validator rejects those calls.
 

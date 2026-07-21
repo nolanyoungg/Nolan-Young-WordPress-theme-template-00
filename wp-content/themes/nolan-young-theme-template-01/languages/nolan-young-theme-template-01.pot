@@ -159,10 +159,6 @@ msgstr ""
 msgid "Controlled releases"
 msgstr ""
 
-#: inc/customizer.php:21
-msgid "Controls presentation text only. Persistent business content belongs in WordPress content or the companion plugin."
-msgstr ""
-
 #: template-parts/front-page/content-process.php:12
 msgid "Create a clear information system and accessible interaction model."
 msgstr ""
@@ -239,10 +235,6 @@ msgstr ""
 msgid "Explore services"
 msgstr ""
 
-#: archive-ny_service.php:15
-msgid "Explore the services available through this site."
-msgstr ""
-
 #: patterns/featured-work.php:10
 msgid "Featured work"
 msgstr ""
@@ -293,10 +285,6 @@ msgstr ""
 
 #: template-parts/front-page/content-blog-preview.php:23
 msgid "Insights"
-msgstr ""
-
-#: template-parts/front-page/content-all-services.php:54
-msgid "Install the companion plugin and publish Service entries to replace this starter content."
 msgstr ""
 
 #: inc/navigation.php:118

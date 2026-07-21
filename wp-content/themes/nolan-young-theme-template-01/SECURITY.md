@@ -24,4 +24,4 @@ Do not publish exploitable details in a public issue. Contact the repository own
 - Keep persistent and privileged application logic in a plugin rather than in presentation templates.
 - Preserve least-privilege GitHub Actions permissions.
 
-The companion plugin must be reviewed separately because it owns form processing, stored records, access rules, and other persistent behavior.
+Any active optional plugin must be reviewed separately because it may own form processing, stored records, access rules, or other persistent behavior.

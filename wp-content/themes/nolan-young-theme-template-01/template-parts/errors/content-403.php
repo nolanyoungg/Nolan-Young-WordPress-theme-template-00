@@ -1,6 +1,6 @@
 <?php
 /**
- * Access-denied presentation loaded by the companion plugin.
+ * Access-denied presentation template.
  *
  * @package NolanYoungThemeTemplate01
  */

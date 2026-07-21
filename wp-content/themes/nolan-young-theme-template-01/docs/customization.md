@@ -2,7 +2,7 @@
 
 Global colors, spacing, typography, and widths belong in `theme.json`. Complex selectors and responsive behavior belong in `src/scss/`. Interactive behavior belongs in `src/js/`. Rebuild after source changes.
 
-Do not add application logic to the theme. Extend durable functionality through the companion plugin or another purpose-built plugin.
+Do not add application logic to the theme. Use the bundled optional plugins or another purpose-built plugin only when a site needs that independent functionality.
 
 ## Primary mega menus
 
