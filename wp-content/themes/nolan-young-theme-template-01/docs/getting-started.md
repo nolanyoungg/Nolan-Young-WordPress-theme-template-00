@@ -1,10 +1,10 @@
 # Getting started
 
-1. Install and activate `nolan-young-core.zip`.
-2. Install and activate `nolan-young-theme-template-01.zip`.
-3. Assign Primary and Footer menus under Appearance.
-4. Create a static front page and an optional posts page under Settings → Reading.
-5. Assign page templates only where their specialized composition is needed.
+1. Install and activate `nolan-young-theme-template-01.zip`.
+2. Assign Primary and Footer menus under Appearance.
+3. Create a static front page and an optional posts page under Settings → Reading.
+4. Assign page templates only where their specialized composition is needed.
+5. Optionally activate the bundled NYforms or NY Mega Menu plugins when the site needs those features.
 
 ## Development
 

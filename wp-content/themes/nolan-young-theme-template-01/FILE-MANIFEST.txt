@@ -12,7 +12,6 @@ LICENSE.txt
 README.md
 SECURITY.md
 accessibility/README.md
-archive-ny_service.php
 archive.php
 assets/css/bundle-rtl.css
 assets/css/bundle.asset.php
@@ -57,7 +56,6 @@ inc/block-styles.php
 inc/customizer.php
 inc/editor.php
 inc/enqueue.php
-inc/integrations/nolan-young-core.php
 inc/navigation.php
 inc/setup.php
 inc/template-functions.php
@@ -87,7 +85,6 @@ privacy-policy.php
 screenshot.png
 search.php
 searchform.php
-single-ny_service.php
 single.php
 singular.php
 src/js/components/accordion.js
@@ -130,7 +127,6 @@ src/scss/pages/_service-detail.scss
 src/scss/pages/_services.scss
 src/scss/pages/_work.scss
 style.css
-taxonomy-ny_service_category.php
 template-parts/content/content-none.php
 template-parts/content/content-page.php
 template-parts/content/content-policy.php

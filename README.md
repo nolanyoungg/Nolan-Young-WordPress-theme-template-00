@@ -91,7 +91,7 @@ The theme includes:
 - Block patterns for hero, calls to action, services, featured work, and testimonials.
 - A compiled SCSS and JavaScript pipeline, with generated files committed under `assets/css/` and `assets/js/`.
 - Editor styles, registered block styles, menu locations, widget areas, and Customizer support.
-- Presentation support for the separately maintained `nolan-young-core` companion plugin when a site uses it. That companion plugin is not included in this repository.
+- Optional presentation integrations for the bundled NYforms and NY Mega Menu plugins.
 
 Read the theme’s detailed operating manual before changing its architecture: [theme README](wp-content/themes/nolan-young-theme-template-01/README.md). Its focused [documentation directory](wp-content/themes/nolan-young-theme-template-01/docs/) covers getting started, architecture, customization, accessibility, and releases.
 
@@ -106,7 +106,6 @@ This repository also includes two optional, supported plugins that the theme can
 - `nyforms` supplies WordPress-native form building and can be pasted into either shortcode slot.
 - `nymegamenu` supplies an enhanced primary-navigation experience; the theme retains its native WordPress navigation when it is inactive.
 
-The absent `nolan-young-core` package is not a requirement for the theme and should not be installed as part of normal theme setup.
 
 `wp-content/plugins/nyforms` is an original WordPress-native form-builder plugin. It is intentionally independent of third-party form-plugin code, branding, layouts, import formats, or compatibility promises.
 
@@ -309,7 +308,7 @@ Use `theme.json` for global settings, presets, and block-editor styling. Use the
 
 Navigation configuration is in `inc/navigation.php` and header template parts. Preserve WordPress-managed menus and accessible keyboard behavior; do not hardcode a primary menu in `header.php`.
 
-The theme can present data from the separately maintained `nolan-young-core` plugin, but it must not recreate its post types, form handlers, privacy logic, or other persistent application features.
+The theme remains usable with no active plugins. NYforms and NY Mega Menu are bundled optional integrations; do not make a theme feature depend on an unbundled companion plugin.
 
 ## Adding another theme later
 
