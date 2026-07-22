@@ -1,39 +1,352 @@
 <?php
+/**
+ * Menu rendering and the NY Mega Menu navigation walker.
+ *
+ * @package NYMegaMenu
+ */
+
 namespace NYMegaMenu;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Renders NY Mega Menu navigation markup.
+ */
 class Renderer {
-	public static function render( $args = array() ) { $args = wp_parse_args( $args, array( 'theme_location' => '', 'menu' => '', 'echo' => false ) ); $location = sanitize_key( $args['theme_location'] ); if ( $location && ! Settings::is_enabled( $location ) ) { return ''; } $args['container'] = false; $args['menu_class'] = trim( (string) $args['menu_class'] . ' nymegamenu__list' ); $args['walker'] = new Menu_Walker( $location ); $args['fallback_cb'] = false; $output = wp_nav_menu( $args ); return $args['echo'] ? '' : $output; }
+	/**
+	 * Render a menu without the outer NY Mega Menu wrapper.
+	 *
+	 * The public helper, shortcode, widget, and block all use Plugin::render_menu()
+	 * for the complete wrapper and assets.
+	 *
+	 * @param array $args wp_nav_menu() arguments.
+	 * @return string Menu markup.
+	 */
+	public static function render( $args = array() ) {
+		$args = wp_parse_args(
+			$args,
+			array(
+				'theme_location' => '',
+				'menu'           => '',
+				'echo'           => false,
+			)
+		);
 
-	public static function item_settings( $item_id ) {
-		$defaults = array( 'mode' => 'flyout', 'panel_id' => 0, 'icon' => '', 'badge' => '', 'badge_style' => 1, 'hide_text' => 0, 'hide_arrow' => 0, 'disable_link' => 0, 'desktop' => 1, 'mobile' => 1, 'roles' => array(), 'tabbed' => 0, 'grid_columns' => 3, 'content_source' => 'children', 'custom_content' => '', 'widget_class' => '', 'legacy_panel_migrated' => 0 );
-		return wp_parse_args( get_post_meta( $item_id, '_nymegamenu_item', true ), $defaults );
+		$location = sanitize_key( $args['theme_location'] );
+		if ( $location && ! Settings::is_enabled( $location ) ) {
+			return '';
+		}
+
+		$args['container']   = false;
+		$args['menu_class']  = trim( (string) ( $args['menu_class'] ?? '' ) . ' nymegamenu__list' );
+		$args['walker']      = new Menu_Walker();
+		$args['fallback_cb'] = false;
+		$args['echo']        = false;
+
+		return (string) wp_nav_menu( $args );
 	}
 
-	public static function visible( $settings ) { if ( ! is_user_logged_in() && in_array( 'logged_in', (array) $settings['roles'], true ) ) { return false; } $roles = array_filter( (array) $settings['roles'], static function( $role ) { return 'logged_in' !== $role; } ); return ! $roles || array_intersect( $roles, (array) wp_get_current_user()->roles ); }
+	/**
+	 * Get one menu item's stored NY Mega Menu settings.
+	 *
+	 * @param int $item_id Menu-item post ID.
+	 * @return array<string, mixed>
+	 */
+	public static function item_settings( $item_id ) {
+		$defaults = array(
+			'mode'           => 'flyout',
+			'icon'           => '',
+			'badge'          => '',
+			'badge_style'    => 1,
+			'hide_text'      => 0,
+			'hide_arrow'     => 0,
+			'disable_link'   => 0,
+			'desktop'        => 1,
+			'mobile'         => 1,
+			'grid_columns'   => 3,
+			'content_source' => 'children',
+			'custom_content' => '',
+			'widget_class'   => '',
+		);
+		$stored   = get_post_meta( $item_id, '_nymegamenu_item', true );
 
+		return wp_parse_args( is_array( $stored ) ? $stored : array(), $defaults );
+	}
+
+	/**
+	 * Whether the item has a self-contained mega panel.
+	 *
+	 * @param array<string, mixed> $settings Item settings.
+	 * @return bool
+	 */
+	public static function has_panel( $settings ) {
+		if ( 'mega' !== $settings['mode'] || 'children' === $settings['content_source'] ) {
+			return false;
+		}
+
+		if ( 'custom' === $settings['content_source'] ) {
+			return ! empty( $settings['custom_content'] );
+		}
+
+		return 'widget' === $settings['content_source'] && ! empty( $settings['widget_class'] ) && class_exists( $settings['widget_class'] );
+	}
+
+	/**
+	 * Render a custom or widget mega panel.
+	 *
+	 * @param array<string, mixed> $settings   Item settings.
+	 * @param string               $trigger_id Trigger element ID.
+	 * @return string
+	 */
 	public static function panel( $settings, $trigger_id ) {
-		if ( 'mega' !== $settings['mode'] || 'children' === $settings['content_source'] ) { return ''; }
+		if ( ! self::has_panel( $settings ) ) {
+			return '';
+		}
+
 		$content = '';
-		if ( 'custom' === $settings['content_source'] ) { $content = do_blocks( $settings['custom_content'] ); }
-		if ( 'widget' === $settings['content_source'] && $settings['widget_class'] && class_exists( $settings['widget_class'] ) ) { ob_start(); the_widget( $settings['widget_class'], array(), array( 'before_widget' => '<div class="nymegamenu__widget">', 'after_widget' => '</div>' ) ); $content = ob_get_clean(); }
-		if ( ! $content ) { return ''; }
-		$role = $settings['tabbed'] ? ' role="tabpanel"' : ''; return '<section id="' . esc_attr( $trigger_id . '-panel' ) . '" class="nymegamenu__panel" aria-labelledby="' . esc_attr( $trigger_id ) . '"' . $role . ' hidden><div class="nymegamenu__panel-inner"><div class="nymegamenu__grid" style="--nymega-grid-columns:' . absint( $settings['grid_columns'] ) . '">' . $content . '</div></div></section>';
+		if ( 'custom' === $settings['content_source'] ) {
+			$content = do_blocks( $settings['custom_content'] );
+		} elseif ( 'widget' === $settings['content_source'] ) {
+			ob_start();
+			the_widget(
+				$settings['widget_class'],
+				array(),
+				array(
+					'before_widget' => '<div class="nymegamenu__widget">',
+					'after_widget'  => '</div>',
+				)
+			);
+			$content = ob_get_clean();
+		}
+
+		if ( ! $content ) {
+			return '';
+		}
+
+		return sprintf(
+			'<section id="%1$s" class="nymegamenu__panel" aria-labelledby="%2$s" hidden><div class="nymegamenu__panel-inner"><div class="nymegamenu__grid" style="--nymega-grid-columns:%3$d">%4$s</div></div></section>',
+			esc_attr( $trigger_id . '-panel' ),
+			esc_attr( $trigger_id ),
+			absint( $settings['grid_columns'] ),
+			$content
+		);
 	}
 }
 
+/**
+ * WordPress-compatible walker that adds NY Mega Menu controls.
+ */
 class Menu_Walker extends \Walker_Nav_Menu {
-	private $location;
-	public function __construct( $location = '' ) { $this->location = $location; }
-	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
-		$settings = Renderer::item_settings( $item->ID ); if ( ! Renderer::visible( $settings ) ) { return; }
-		$classes = array_filter( (array) $item->classes ); $classes[] = 'nymegamenu__item'; $classes[] = 'nymegamenu__item--' . sanitize_html_class( $settings['mode'] ); if ( 'mega' === $settings['mode'] ) { $classes[] = 'nymegamenu__item--grid-' . absint( $settings['grid_columns'] ); } if ( $settings['tabbed'] ) { $classes[] = 'nymegamenu__item--tabbed'; }
-		$output .= '<li class="' . esc_attr( implode( ' ', $classes ) ) . '" data-nymega-item data-nymega-desktop="' . esc_attr( (string) $settings['desktop'] ) . '" data-nymega-mobile="' . esc_attr( (string) $settings['mobile'] ) . '"' . ( $settings['tabbed'] ? ' data-nymega-tabbed' : '' ) . '>';
-		$title = '<span class="nymegamenu__label' . ( $settings['hide_text'] ? ' screen-reader-text' : '' ) . '">' . esc_html( wp_strip_all_tags( apply_filters( 'the_title', $item->title, $item->ID ) ) ) . '</span>'; $icon = $settings['icon'] ? '<span class="nymegamenu__icon dashicons ' . esc_attr( sanitize_html_class( $settings['icon'] ) ) . '" aria-hidden="true"></span>' : ''; $badge = $settings['badge'] ? '<span class="nymegamenu__badge nymegamenu__badge--style-' . esc_attr( min( 4, max( 1, absint( $settings['badge_style'] ) ) ) ) . '">' . esc_html( $settings['badge'] ) . '</span>' : ''; $has_panel = 'mega' === $settings['mode'] && 'children' !== $settings['content_source'] && ( $settings['custom_content'] || $settings['widget_class'] ); $has_children = in_array( 'menu-item-has-children', $classes, true ); $trigger_id = 'nymega-trigger-' . (int) $item->ID;
-		if ( $has_panel || $has_children ) { $output .= '<button id="' . esc_attr( $trigger_id ) . '" class="nymegamenu__trigger" type="button" aria-expanded="false"' . ( $has_panel ? ' aria-controls="' . esc_attr( $trigger_id . '-panel' ) . '"' : '' ) . ( $settings['tabbed'] ? ' role="tab" aria-selected="false"' : '' ) . ' data-nymega-trigger>' . $icon . $title . $badge . ( $settings['hide_arrow'] ? '' : '<span class="nymegamenu__arrow" aria-hidden="true"></span>' ) . '</button>'; } elseif ( $settings['disable_link'] ) { $output .= '<span class="nymegamenu__link nymegamenu__link--disabled">' . $icon . $title . $badge . '</span>'; } else { $output .= '<a class="nymegamenu__link" href="' . esc_url( $item->url ) . '">' . $icon . $title . $badge . '</a>'; }
-		$output .= Renderer::panel( $settings, $trigger_id );
+	/**
+	 * Submenu IDs keyed by the parent depth.
+	 *
+	 * @var array<int, string>
+	 */
+	private $submenu_ids = array();
+
+	/**
+	 * Do not render child items when their parent provides a custom panel.
+	 *
+	 * @param object $element           Current menu item.
+	 * @param array  $children_elements Child elements indexed by parent ID.
+	 * @param int    $max_depth         Maximum depth.
+	 * @param int    $depth             Current depth.
+	 * @param array  $args              Walker arguments.
+	 * @param string $output            Markup output.
+	 * @return void
+	 */
+	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
+		if ( $element && isset( $element->ID ) && Renderer::has_panel( Renderer::item_settings( $element->ID ) ) ) {
+			$children_elements[ $element->ID ] = array();
+		}
+
+		parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
 	}
-	public function start_lvl( &$output, $depth = 0, $args = null ) { $output .= '<ul class="nymegamenu__submenu">'; }
-	public function end_lvl( &$output, $depth = 0, $args = null ) { $output .= '</ul>'; }
+
+	/**
+	 * Start a menu item.
+	 *
+	 * @param string      $output Output markup.
+	 * @param object      $item   Menu item data object.
+	 * @param int         $depth  Depth of menu item.
+	 * @param object|null $args   Menu arguments.
+	 * @param int         $id     Current item ID.
+	 * @return void
+	 */
+	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
+		$args = is_object( $args ) ? $args : new \stdClass();
+		$args = apply_filters( 'nav_menu_item_args', $args, $item, $depth );
+
+		$settings  = Renderer::item_settings( $item->ID );
+		$classes   = array_filter( (array) $item->classes );
+		$classes[] = 'nymegamenu__item';
+		$classes[] = 'nymegamenu__item--' . sanitize_html_class( $settings['mode'] );
+		if ( 'mega' === $settings['mode'] ) {
+			$classes[] = 'nymegamenu__item--grid-' . absint( $settings['grid_columns'] );
+		}
+
+		$classes = apply_filters( 'nav_menu_css_class', $classes, $item, $args, $depth );
+		$item_id = apply_filters( 'nav_menu_item_id', 'menu-item-' . $item->ID, $item, $args, $depth );
+		$li_atts = apply_filters(
+			'nav_menu_item_attributes',
+			array(
+				'id'    => $item_id,
+				'class' => implode( ' ', $classes ),
+			),
+			$item,
+			$args,
+			$depth
+		);
+
+		$has_panel    = Renderer::has_panel( $settings );
+		$has_children = ! empty( $args->has_children ) || in_array( 'menu-item-has-children', $classes, true );
+		$trigger_id   = 'nymega-trigger-' . (int) $item->ID;
+		if ( $has_children && ! $has_panel ) {
+			$this->submenu_ids[ $depth ] = $trigger_id . '-submenu';
+		}
+
+		$output .= sprintf(
+			'<li%1$s data-nymega-item data-nymega-desktop="%2$s" data-nymega-mobile="%3$s">',
+			$this->build_attributes( $li_atts ),
+			esc_attr( (string) ! empty( $settings['desktop'] ) ),
+			esc_attr( (string) ! empty( $settings['mobile'] ) )
+		);
+
+		$title = apply_filters( 'the_title', $item->title, $item->ID );
+		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
+		$link  = $this->link_markup( $item, $args, $depth, $title, $settings );
+
+		$item_output = (string) ( $args->before ?? '' ) . $link;
+		if ( $has_panel || $has_children ) {
+			$controls     = $has_panel ? $trigger_id . '-panel' : $this->submenu_ids[ $depth ];
+			$item_output .= sprintf(
+				'<button id="%1$s" class="nymegamenu__trigger" type="button" aria-expanded="false" aria-controls="%2$s" data-nymega-trigger><span class="screen-reader-text">%3$s</span>%4$s</button>',
+				esc_attr( $trigger_id ),
+				esc_attr( $controls ),
+				esc_html__( 'Toggle submenu', 'nymegamenu' ),
+				! empty( $settings['hide_arrow'] ) ? '' : '<span class="nymegamenu__arrow" aria-hidden="true"></span>'
+			);
+		}
+		$item_output .= Renderer::panel( $settings, $trigger_id ) . (string) ( $args->after ?? '' );
+
+		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
+	}
+
+	/**
+	 * Start a submenu list.
+	 *
+	 * @param string      $output Output markup.
+	 * @param int         $depth  Depth of menu item.
+	 * @param object|null $args   Menu arguments.
+	 * @return void
+	 */
+	public function start_lvl( &$output, $depth = 0, $args = null ) {
+		$submenu_id = $this->submenu_ids[ $depth ] ?? '';
+		$output    .= sprintf(
+			'<ul%1$s class="nymegamenu__submenu" hidden>',
+			$submenu_id ? ' id="' . esc_attr( $submenu_id ) . '"' : ''
+		);
+	}
+
+	/**
+	 * End a submenu list.
+	 *
+	 * @param string      $output Output markup.
+	 * @param int         $depth  Depth of menu item.
+	 * @param object|null $args   Menu arguments.
+	 * @return void
+	 */
+	public function end_lvl( &$output, $depth = 0, $args = null ) {
+		unset( $this->submenu_ids[ $depth ] );
+		$output .= '</ul>';
+	}
+
+	/**
+	 * Build the primary link or a disabled non-link label.
+	 *
+	 * @param object               $item     Menu item.
+	 * @param object               $args     Menu arguments.
+	 * @param int                  $depth    Menu depth.
+	 * @param string               $title    Filtered title.
+	 * @param array<string, mixed> $settings Item settings.
+	 * @return string
+	 */
+	private function link_markup( $item, $args, $depth, $title, $settings ) {
+		$content = $this->item_content( $title, $settings );
+		if ( ! empty( $settings['disable_link'] ) ) {
+			return sprintf( '<span class="nymegamenu__link nymegamenu__link--disabled">%s</span>', $content );
+		}
+
+		$link_atts = array(
+			'target'       => $item->target,
+			'rel'          => $item->xfn,
+			'href'         => $item->url,
+			'aria-current' => $item->current ? 'page' : '',
+		);
+		if ( ! empty( $item->attr_title ) ) {
+			$link_atts['title'] = $item->attr_title;
+		}
+
+		$privacy_policy_url = get_privacy_policy_url();
+		if ( $privacy_policy_url && $privacy_policy_url === $item->url ) {
+			$link_atts['rel'] = trim( (string) $link_atts['rel'] . ' privacy-policy' );
+		}
+
+		$link_atts = apply_filters( 'nav_menu_link_attributes', $link_atts, $item, $args, $depth );
+
+		return sprintf(
+			'<a class="nymegamenu__link"%1$s>%2$s%3$s%4$s</a>',
+			$this->build_attributes( $link_atts ),
+			(string) ( $args->link_before ?? '' ),
+			$content,
+			(string) ( $args->link_after ?? '' )
+		);
+	}
+
+	/**
+	 * Build the visible menu label, icon, and badge.
+	 *
+	 * @param string               $title    Filtered title.
+	 * @param array<string, mixed> $settings Item settings.
+	 * @return string
+	 */
+	private function item_content( $title, $settings ) {
+		$icon        = ! empty( $settings['icon'] )
+			? '<span class="nymegamenu__icon dashicons ' . esc_attr( sanitize_html_class( $settings['icon'] ) ) . '" aria-hidden="true"></span>'
+			: '';
+		$label       = sprintf(
+			'<span class="nymegamenu__label%1$s">%2$s</span>',
+			! empty( $settings['hide_text'] ) ? ' screen-reader-text' : '',
+			wp_kses_post( $title )
+		);
+		$badge_style = min( 4, max( 1, absint( $settings['badge_style'] ) ) );
+		$badge       = ! empty( $settings['badge'] )
+			? '<span class="nymegamenu__badge nymegamenu__badge--style-' . esc_attr( (string) $badge_style ) . '">' . esc_html( $settings['badge'] ) . '</span>'
+			: '';
+
+		return $icon . $label . $badge;
+	}
+
+	/**
+	 * Convert a filtered attribute array to safe HTML attributes.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	private function build_attributes( $attributes ) {
+		$output = '';
+		foreach ( $attributes as $name => $value ) {
+			if ( false === $value || '' === $value || ! is_scalar( $value ) ) {
+				continue;
+			}
+
+			$output .= sprintf(
+				' %1$s="%2$s"',
+				esc_attr( $name ),
+				'href' === $name ? esc_url( $value ) : esc_attr( $value )
+			);
+		}
+
+		return $output;
+	}
 }

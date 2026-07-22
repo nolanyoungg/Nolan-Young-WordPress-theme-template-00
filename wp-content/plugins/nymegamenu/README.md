@@ -5,12 +5,17 @@ NY Mega Menu is an original Nolan Young navigation plugin for WordPress 7.0+ and
 ## Setup
 
 1. Activate the plugin and select **NY Mega Menu → Menu Locations**.
-2. Enable a registered location and choose its theme, interaction, sticky, off-canvas, search, cart, and responsive-breakpoint settings.
-3. In **Appearance → Menus**, select a menu item and choose a flyout or a Mega Panel. Configure role visibility or tabbed-panel behavior when needed.
-4. Create Mega Panels from **NY Mega Menu → Mega Panels**. Panels use the block editor, so they can contain columns, navigation, patterns, and Legacy Widget blocks.
+2. Enable a registered location and choose its theme, trigger, parent-link behavior, sticky, overlay, mobile mode, and responsive breakpoint. The breakpoint is configured per location.
+3. In **Appearance → Menus**, select a menu item and choose a flyout or a Mega Menu grid. Mega Menu content can use child menu items, custom block markup, or a registered WordPress widget. Badges support four selectable theme styles.
 
 Embed an enabled location with `[nymegamenu location="primary"]`, the NY Mega Menu block, the NY Mega Menu widget, or `nymegamenu_render_menu( array( 'theme_location' => 'primary' ) )`.
 
-Role visibility only controls whether a navigation item is displayed. It does not restrict the linked content.
+Parent menu links remain available alongside their submenu toggle. The selected click behavior controls whether a desktop parent link first opens its submenu or follows its destination.
+
+## Accessibility and lifecycle
+
+The compact off-canvas drawer supports a visible close control, Escape to close, focus restoration, focus containment, and optional click-to-close page overlays. The mobile submenu toggle is separate from the parent link.
+
+Deactivation preserves settings and menu-item data. Deleting the plugin removes that data. **NY Mega Menu → Tools** also provides an explicit, confirmed delete-data action and removal for legacy generated CSS files; current versions output scoped styles inline and do not write CSS files to uploads.
 
 The Cart link defaults to `/cart/`; sites can override it with the `nymegamenu_cart_url` filter.
