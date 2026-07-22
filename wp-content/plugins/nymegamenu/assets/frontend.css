@@ -369,3 +369,123 @@ body.nymega-drawer-open {
 		opacity: 1;
 	}
 }
+
+/*
+ * Nolan Young Theme Template 01 integration.
+ *
+ * This compatibility layer lives in the plugin so enabling NY Mega Menu never
+ * requires edits to the active theme. It is intentionally scoped to the
+ * theme's plugin-aware navigation class and therefore cannot affect other
+ * themes or menu locations.
+ */
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu,
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__drawer {
+	position: static;
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem 1.25rem;
+	margin: 0;
+	padding: 0;
+	position: static;
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__list > .nymegamenu__item {
+	position: static;
+	margin: 0;
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__link,
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__trigger {
+	display: inline-flex;
+	min-height: 2.75rem;
+	align-items: center;
+	border: 0;
+	border-radius: 0;
+	padding: 0;
+	background: transparent;
+	color: var(--nytt01-color-navy, #0b2847);
+	font: inherit;
+	font-weight: 700;
+	line-height: inherit;
+	text-decoration: none;
+	transition: color var(--nytt01-transition, 180ms ease);
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__trigger {
+	margin-inline-start: 0.45rem;
+	cursor: pointer;
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__link:hover,
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__link:focus-visible,
+#site-navigation.nytt01-primary-navigation--nymega .current-menu-item > .nymegamenu__link,
+#site-navigation.nytt01-primary-navigation--nymega .current-menu-item > .nymegamenu__trigger,
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__item.is-open > .nymegamenu__link,
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__item.is-open > .nymegamenu__trigger {
+	background: transparent;
+	color: var(--nytt01-color-blue, #1769e0);
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__arrow {
+	width: 0.48rem;
+	height: 0.48rem;
+	border-right: 2px solid currentcolor;
+	border-bottom: 2px solid currentcolor;
+	border-left: 0;
+	transform: translateY(-0.12rem) rotate(45deg);
+	transition: transform var(--nytt01-transition, 180ms ease);
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__arrow::before {
+	content: none;
+}
+
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__item.is-open > .nymegamenu__trigger .nymegamenu__arrow {
+	transform: translateY(0.1rem) rotate(225deg);
+}
+
+@media (max-width: 50rem) {
+
+	.nytt01-js #site-navigation.nytt01-primary-navigation--nymega {
+		position: static;
+		display: block;
+		max-height: none;
+		overflow: visible;
+		padding: 0;
+		border: 0;
+		background: transparent;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__list {
+		display: grid;
+		justify-content: stretch;
+		gap: 0.25rem;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__list > .nymegamenu__item,
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__link {
+		width: 100%;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__link,
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__trigger {
+		justify-content: space-between;
+		padding: 0.65rem 0.25rem;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__drawer {
+		top: 100%;
+		left: 0;
+		right: 0;
+		max-height: calc(100vh - 5rem);
+		overflow-y: auto;
+		padding: 1rem;
+		border-bottom: 1px solid var(--nytt01-color-border, #d4dce7);
+		background: var(--nytt01-color-white, #fff);
+	}
+}

@@ -9,7 +9,6 @@
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: nymegamenu
- * Domain Path: /languages
  *
  * @package NYMegaMenu
  */
@@ -21,7 +20,7 @@ define( 'NYMEGAMENU_FILE', __FILE__ );
 define( 'NYMEGAMENU_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NYMEGAMENU_URL', plugin_dir_url( __FILE__ ) );
 
-foreach ( array( 'class-settings.php', 'class-styles.php', 'class-renderer.php', 'class-admin.php', 'class-plugin.php' ) as $file ) {
+foreach ( array( 'class-settings.php', 'class-styles.php', 'class-renderer.php', 'class-theme-compatibility.php', 'class-admin.php', 'class-plugin.php' ) as $file ) {
 	require_once NYMEGAMENU_DIR . 'includes/' . $file;
 }
 

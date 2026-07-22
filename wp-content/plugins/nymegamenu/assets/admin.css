@@ -339,24 +339,6 @@
 	color: #b32d2e !important;
 }
 
-.nymega-license-status {
-	align-items: flex-start;
-	background: #f4f6ff;
-	border: 1px solid #d7ddff;
-	display: flex;
-	gap: 13px;
-	margin-top: 24px;
-	padding: 18px;
-}
-
-.nymega-license-status .dashicons {
-	color: var(--nymega-blue);
-}
-
-.nymega-license-status p {
-	margin: 5px 0 0;
-}
-
 .nymega-admin code {
 	display: block;
 	margin-top: 0.25rem;

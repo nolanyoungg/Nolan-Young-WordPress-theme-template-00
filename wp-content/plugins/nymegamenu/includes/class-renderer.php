@@ -77,18 +77,47 @@ class Renderer {
 	 * Whether the item has a self-contained mega panel.
 	 *
 	 * @param array<string, mixed> $settings Item settings.
+	 * @param object|null          $item     Menu item object.
 	 * @return bool
 	 */
-	public static function has_panel( $settings ) {
-		if ( 'mega' !== $settings['mode'] || 'children' === $settings['content_source'] ) {
+	public static function has_panel( $settings, $item = null ) {
+		$has_panel = false;
+		if ( 'mega' === $settings['mode'] && 'children' !== $settings['content_source'] ) {
+			if ( 'custom' === $settings['content_source'] ) {
+				$has_panel = ! empty( $settings['custom_content'] );
+			} elseif ( 'widget' === $settings['content_source'] ) {
+				$has_panel = self::is_registered_widget( $settings['widget_class'] ?? '' );
+			}
+		}
+
+		/**
+		 * Allow themes and extensions to provide a complete panel for a menu item.
+		 *
+		 * The matching nymegamenu_menu_item_panel_markup filter must return the
+		 * panel element, including its ID, hidden state, and data-nymega-panel
+		 * attribute.
+		 *
+		 * @param bool        $has_panel Whether the item has a built-in panel.
+		 * @param array       $settings  Saved NY Mega Menu item settings.
+		 * @param object|null $item      Menu item object.
+		 */
+		return (bool) apply_filters( 'nymegamenu_menu_item_has_panel', $has_panel, $settings, $item );
+	}
+
+	/**
+	 * Check that a saved widget class is a registered WordPress widget.
+	 *
+	 * @param string $widget_class Widget class name.
+	 * @return bool
+	 */
+	public static function is_registered_widget( $widget_class ) {
+		if ( ! is_string( $widget_class ) || ! class_exists( $widget_class ) || ! is_a( $widget_class, '\\WP_Widget', true ) ) {
 			return false;
 		}
 
-		if ( 'custom' === $settings['content_source'] ) {
-			return ! empty( $settings['custom_content'] );
-		}
+		$widgets = isset( $GLOBALS['wp_widget_factory']->widgets ) ? $GLOBALS['wp_widget_factory']->widgets : array();
 
-		return 'widget' === $settings['content_source'] && ! empty( $settings['widget_class'] ) && class_exists( $settings['widget_class'] );
+		return isset( $widgets[ $widget_class ] );
 	}
 
 	/**
@@ -96,10 +125,27 @@ class Renderer {
 	 *
 	 * @param array<string, mixed> $settings   Item settings.
 	 * @param string               $trigger_id Trigger element ID.
+	 * @param object|null          $item       Menu item object.
 	 * @return string
 	 */
-	public static function panel( $settings, $trigger_id ) {
-		if ( ! self::has_panel( $settings ) ) {
+	public static function panel( $settings, $trigger_id, $item = null ) {
+		/**
+		 * Filter the complete panel markup for a menu item.
+		 *
+		 * Returning non-empty markup replaces the built-in custom-block or widget
+		 * panel. Callers are responsible for escaping their generated markup.
+		 *
+		 * @param string      $panel      Complete panel markup.
+		 * @param array       $settings   Saved NY Mega Menu item settings.
+		 * @param string      $trigger_id Trigger element ID.
+		 * @param object|null $item       Menu item object.
+		 */
+		$filtered_panel = apply_filters( 'nymegamenu_menu_item_panel_markup', '', $settings, $trigger_id, $item );
+		if ( is_string( $filtered_panel ) && '' !== $filtered_panel ) {
+			return $filtered_panel;
+		}
+
+		if ( ! self::has_panel( $settings, $item ) ) {
 			return '';
 		}
 
@@ -156,7 +202,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 	 * @return void
 	 */
 	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
-		if ( $element && isset( $element->ID ) && Renderer::has_panel( Renderer::item_settings( $element->ID ) ) ) {
+		if ( $element && isset( $element->ID ) && Renderer::has_panel( Renderer::item_settings( $element->ID ), $element ) ) {
 			$children_elements[ $element->ID ] = array();
 		}
 
@@ -198,7 +244,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 			$depth
 		);
 
-		$has_panel    = Renderer::has_panel( $settings );
+		$has_panel    = Renderer::has_panel( $settings, $item );
 		$has_children = ! empty( $args->has_children ) || in_array( 'menu-item-has-children', $classes, true );
 		$trigger_id   = 'nymega-trigger-' . (int) $item->ID;
 		if ( $has_children && ! $has_panel ) {
@@ -227,7 +273,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 				! empty( $settings['hide_arrow'] ) ? '' : '<span class="nymegamenu__arrow" aria-hidden="true"></span>'
 			);
 		}
-		$item_output .= Renderer::panel( $settings, $trigger_id ) . (string) ( $args->after ?? '' );
+		$item_output .= Renderer::panel( $settings, $trigger_id, $item ) . (string) ( $args->after ?? '' );
 
 		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
 	}
@@ -241,10 +287,19 @@ class Menu_Walker extends \Walker_Nav_Menu {
 	 * @return void
 	 */
 	public function start_lvl( &$output, $depth = 0, $args = null ) {
+		$args       = is_object( $args ) ? $args : new \stdClass();
 		$submenu_id = $this->submenu_ids[ $depth ] ?? '';
+		$classes    = apply_filters( 'nav_menu_submenu_css_class', array( 'sub-menu', 'nymegamenu__submenu' ), $args, $depth );
+		$attributes = array(
+			'class' => implode( ' ', array_filter( (array) $classes ) ),
+		);
+		if ( $submenu_id ) {
+			$attributes['id'] = $submenu_id;
+		}
+		$attributes = apply_filters( 'nav_menu_submenu_attributes', $attributes, $args, $depth );
 		$output    .= sprintf(
-			'<ul%1$s class="nymegamenu__submenu" hidden>',
-			$submenu_id ? ' id="' . esc_attr( $submenu_id ) . '"' : ''
+			'<ul%1$s hidden>',
+			$this->build_attributes( $attributes )
 		);
 	}
 

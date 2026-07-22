@@ -42,10 +42,11 @@ class Plugin {
 	 * @return void
 	 */
 	public function boot() {
-		load_plugin_textdomain( 'nymegamenu', false, dirname( plugin_basename( NYMEGAMENU_FILE ) ) . '/languages' );
-
 		$admin = new Admin();
 		$admin->hooks();
+
+		$theme_compatibility = new Theme_Compatibility();
+		$theme_compatibility->hooks();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
 		add_filter( 'wp_nav_menu_args', array( $this, 'integrate' ) );

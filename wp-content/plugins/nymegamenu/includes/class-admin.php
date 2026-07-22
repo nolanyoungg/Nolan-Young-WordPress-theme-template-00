@@ -31,7 +31,6 @@ class Admin {
 			'nymegamenu-themes'  => array( __( 'Menu Themes', 'nymegamenu' ), 'themes_page' ),
 			'nymegamenu-general' => array( __( 'General Settings', 'nymegamenu' ), 'general_page' ),
 			'nymegamenu-tools'   => array( __( 'Tools', 'nymegamenu' ), 'tools_page' ),
-			'nymegamenu-license' => array( __( 'License', 'nymegamenu' ), 'license_page' ),
 		) as $slug => $page ) {
 			add_submenu_page( 'nymegamenu', $page[0], $page[0], 'edit_theme_options', $slug, array( $this, $page[1] ) ); } }
 	public function settings() {
@@ -74,7 +73,6 @@ class Admin {
 			'nymegamenu-themes'  => array( 'Menu Themes', 'dashicons-art' ),
 			'nymegamenu-general' => array( 'General Settings', 'dashicons-admin-generic' ),
 			'nymegamenu-tools'   => array( 'Tools', 'dashicons-admin-tools' ),
-			'nymegamenu-license' => array( 'License', 'dashicons-admin-network' ),
 		); ?><div class="nymega-admin"><header class="nymega-admin__header"><div class="nymega-admin__brand"><span class="dashicons dashicons-menu"></span><strong><?php esc_html_e( 'NY Mega Menu', 'nymegamenu' ); ?></strong></div></header><div class="nymega-admin__layout"><aside class="nymega-admin__sidebar">
 		<?php
 		foreach ( $pages as $slug => $page ) :
@@ -217,29 +215,37 @@ class Admin {
 								'slow'   => 'Slow',
 							)
 						);
-																			$this->location_select(
-																				$base . '[mobile_behavior]',
-																				__( 'Accordion Behaviour', 'nymegamenu' ),
-																				__( 'Choose whether one or multiple mobile submenus can stay open.', 'nymegamenu' ),
-																				$profile['mobile_behavior'],
-																				array(
-																					'accordion' => 'Standard — open one submenu at a time',
-																					'multiple'  => 'Multiple — allow several submenus',
-																				)
-																			);
-																			$this->location_select(
-																				$base . '[mobile_default_state]',
-																				__( 'Sub Menu Default State', 'nymegamenu' ),
-																				__( 'Define the default submenu state when the mobile menu is first visible.', 'nymegamenu' ),
-																				$profile['mobile_default_state'],
-																				array(
-																					'collapsed' => 'Collapse all',
-																					'expanded'  => 'Expand all',
-																				)
-																			);
+						$this->location_number(
+							$base . '[breakpoint]',
+							__( 'Responsive Breakpoint', 'nymegamenu' ),
+							__( 'Switch to the mobile menu at this viewport width in pixels. Match your theme breakpoint to keep the header consistent.', 'nymegamenu' ),
+							$profile['breakpoint'],
+							480,
+							1600
+						);
+						$this->location_select(
+							$base . '[mobile_behavior]',
+							__( 'Accordion Behaviour', 'nymegamenu' ),
+							__( 'Choose whether one or multiple mobile submenus can stay open.', 'nymegamenu' ),
+							$profile['mobile_behavior'],
+							array(
+								'accordion' => 'Standard — open one submenu at a time',
+								'multiple'  => 'Multiple — allow several submenus',
+							)
+						);
+						$this->location_select(
+							$base . '[mobile_default_state]',
+							__( 'Sub Menu Default State', 'nymegamenu' ),
+							__( 'Define the default submenu state when the mobile menu is first visible.', 'nymegamenu' ),
+							$profile['mobile_default_state'],
+							array(
+								'collapsed' => 'Collapse all',
+								'expanded'  => 'Expand all',
+							)
+						);
 						?>
 																			</section>
-						<section id="nymega-location-panel-<?php echo esc_attr( $key ); ?>-theme" data-nymega-location-panel="theme" role="tabpanel" aria-labelledby="nymega-location-tab-<?php echo esc_attr( $key ); ?>-theme" hidden><?php $this->location_select( $base . '[theme]', __( 'Menu Theme', 'nymegamenu' ), __( 'Choose a menu theme to be applied to this menu location.', 'nymegamenu' ), $profile['theme'], wp_list_pluck( $themes, 'name' ) ); ?><p class="nymega-location-help"><a href="<?php echo esc_url( $this->page_url( 'nymegamenu-themes', array( 'theme' => $profile['theme'] ) ) ); ?>"><?php esc_html_e( 'Open this theme in the theme editor', 'nymegamenu' ); ?> ↗</a></p></section>
+		<section id="nymega-location-panel-<?php echo esc_attr( $key ); ?>-theme" data-nymega-location-panel="theme" role="tabpanel" aria-labelledby="nymega-location-tab-<?php echo esc_attr( $key ); ?>-theme" hidden><?php $this->location_select( $base . '[theme]', __( 'Menu Theme', 'nymegamenu' ), __( 'Choose a menu theme to be applied to this menu location.', 'nymegamenu' ), $profile['theme'], $this->theme_options( $themes ) ); ?><p class="nymega-location-help"><a href="<?php echo esc_url( $this->page_url( 'nymegamenu-themes', array( 'theme' => $profile['theme'] ) ) ); ?>"><?php esc_html_e( 'Open this theme in the theme editor', 'nymegamenu' ); ?> ↗</a></p></section>
 						<section id="nymega-location-panel-<?php echo esc_attr( $key ); ?>-sticky" data-nymega-location-panel="sticky" role="tabpanel" aria-labelledby="nymega-location-tab-<?php echo esc_attr( $key ); ?>-sticky" hidden><?php $this->location_switch( $base . '[sticky]', __( 'Enabled', 'nymegamenu' ), __( 'Stick the menu for this location as the page scrolls.', 'nymegamenu' ), $profile['sticky'] ); ?></section>
 						<section id="nymega-location-panel-<?php echo esc_attr( $key ); ?>-overlay" data-nymega-location-panel="overlay" role="tabpanel" aria-labelledby="nymega-location-tab-<?php echo esc_attr( $key ); ?>-overlay" hidden>
 						<?php
@@ -287,6 +293,38 @@ class Admin {
 			foreach ( $secondary_options as $option => $option_label ) :
 				?>
 	<option value="<?php echo esc_attr( $option ); ?>" <?php selected( $secondary_value, $option ); ?>><?php echo esc_html( $option_label ); ?></option><?php endforeach; ?></select></label><?php endif; ?></div></div>
+		<?php
+	}
+
+	/**
+	 * Map saved theme keys to their display names for location controls.
+	 *
+	 * @param array<string, array<string, mixed>> $themes Saved menu themes.
+	 * @return array<string, string>
+	 */
+	private function theme_options( $themes ) {
+		$options = array();
+		foreach ( $themes as $key => $theme ) {
+			$options[ $key ] = isset( $theme['name'] ) ? (string) $theme['name'] : (string) $key;
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Render a bounded numeric location setting.
+	 *
+	 * @param string $name        Input name.
+	 * @param string $title       Field title.
+	 * @param string $description Field description.
+	 * @param int    $value       Saved value.
+	 * @param int    $min         Minimum permitted value.
+	 * @param int    $max         Maximum permitted value.
+	 * @return void
+	 */
+	private function location_number( $name, $title, $description, $value, $min, $max ) {
+		?>
+		<div class="nymega-location-field"><div><h3><?php echo esc_html( $title ); ?></h3><p><?php echo esc_html( $description ); ?></p></div><div class="nymega-location-field__controls"><input type="number" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( absint( $value ) ); ?>" min="<?php echo esc_attr( absint( $min ) ); ?>" max="<?php echo esc_attr( absint( $max ) ); ?>" step="1" inputmode="numeric"></div></div>
 		<?php
 	}
 	private function location_switch( $name, $title, $description, $checked ) {
@@ -609,7 +647,8 @@ class Admin {
 		$this->menu_bar_row( __( 'Menu Padding', 'nymegamenu' ), __( 'Padding for the mobile sub menu.', 'nymegamenu' ), $box( 'drawer_padding_' ) );
 		$this->menu_bar_row( __( 'Menu Background', 'nymegamenu' ), __( 'The background color for the mobile menu.', 'nymegamenu' ), $q( __( 'From', 'nymegamenu' ), $c( 'drawer_background_from' ) ) . $q( __( 'To', 'nymegamenu' ), $c( 'drawer_background_to' ) ) );
 		$this->menu_bar_row( __( 'Menu Item Background (Active)', 'nymegamenu' ), __( 'The background color when the submenu is open.', 'nymegamenu' ), $q( __( 'From', 'nymegamenu' ), $c( 'active_background_from' ) ) . $q( __( 'To', 'nymegamenu' ), $c( 'active_background_to' ) ) );
-		$this->menu_bar_row( __( 'Font', 'nymegamenu' ), __( 'The font for each top-level mobile menu item.', 'nymegamenu' ), $q( __( 'Color', 'nymegamenu' ), $c( 'item_color' ) ) . $q( __( 'Size', 'nymegamenu' ), $t( 'item_size' ) ) . $q( __( 'Align', 'nymegamenu' ), $t( 'item_align' ) ) );
+		$align = '<select name="' . esc_attr( $n( 'item_align' ) ) . '"><option value="left" ' . selected( $mobile['item_align'], 'left', false ) . '>' . esc_html__( 'Left', 'nymegamenu' ) . '</option><option value="center" ' . selected( $mobile['item_align'], 'center', false ) . '>' . esc_html__( 'Center', 'nymegamenu' ) . '</option><option value="right" ' . selected( $mobile['item_align'], 'right', false ) . '>' . esc_html__( 'Right', 'nymegamenu' ) . '</option></select>';
+		$this->menu_bar_row( __( 'Font', 'nymegamenu' ), __( 'The font for each top-level mobile menu item.', 'nymegamenu' ), $q( __( 'Color', 'nymegamenu' ), $c( 'item_color' ) ) . $q( __( 'Size', 'nymegamenu' ), $t( 'item_size' ) ) . $q( __( 'Align', 'nymegamenu' ), $align ) );
 		$this->menu_bar_row( __( 'Font (Active)', 'nymegamenu' ), __( 'The font color when the submenu is open.', 'nymegamenu' ), $q( __( 'Color', 'nymegamenu' ), $c( 'item_active_color' ) ) );
 		echo '<h2 class="nymega-reference-section">' . esc_html__( 'Mobile Sub Menu Position', 'nymegamenu' ) . '</h2>';
 		$this->menu_bar_row( __( 'Drawer Positioning', 'nymegamenu' ), __( 'Position the compact drawer over page content instead of in the normal document flow. Enable the mobile location overlay separately when a page backdrop is required.', 'nymegamenu' ), $q( __( 'Overlay content', 'nymegamenu' ), $x( 'overlay_content' ) ) );
@@ -1053,21 +1092,6 @@ class Admin {
 		<?php
 		$this->close_shell();
 	}
-	public function license_page() {
-		if ( ! $this->allowed() ) {
-			return;
-		} $license = Settings::all()['license'];
-		$this->shell( 'nymegamenu-license', __( 'License', 'nymegamenu' ) );
-		?>
-	<form method="post" action="options.php">
-		<?php
-		settings_fields( 'nymegamenu' );
-		$this->field( __( 'License key', 'nymegamenu' ), __( 'Store a supplied license key. Activation is kept local until a licensing service is configured.', 'nymegamenu' ), '<input class="regular-text" name="nymegamenu_settings[license][key]" value="' . esc_attr( $license['key'] ) . '">' );
-		submit_button();
-		?>
-		</form>
-		<?php
-		$this->close_shell(); }
 	public function clear_cache() {
 		if ( ! $this->allowed() ) {
 			wp_die( esc_html__( 'You are not allowed to do that.', 'nymegamenu' ) );
@@ -1124,7 +1148,8 @@ class Admin {
 		$data['grid_columns']   = min( 4, max( 1, absint( $input['grid_columns'] ?? 3 ) ) );
 		$data['content_source'] = in_array( $input['content_source'] ?? '', array( 'children', 'custom', 'widget' ), true ) ? $input['content_source'] : 'children';
 		$data['custom_content'] = wp_kses_post( $input['custom_content'] ?? '' );
-		$data['widget_class']   = sanitize_text_field( $input['widget_class'] ?? '' );
+		$widget_class           = sanitize_text_field( $input['widget_class'] ?? '' );
+		$data['widget_class']   = Renderer::is_registered_widget( $widget_class ) ? $widget_class : '';
 		$data['badge']          = sanitize_text_field( $input['badge'] ?? '' );
 		$data['badge_style']    = min( 4, max( 1, absint( $input['badge_style'] ?? 1 ) ) );
 		$data['icon']           = sanitize_html_class( $input['icon'] ?? '' );

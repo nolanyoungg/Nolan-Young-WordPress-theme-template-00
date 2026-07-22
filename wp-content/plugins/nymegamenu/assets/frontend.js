@@ -4,7 +4,7 @@
 	const menus = () => Array.from( document.querySelectorAll( '[data-nymega-menu][data-nymega-breakpoint]' ) );
 	const drawerFor = ( menu ) => menu.querySelector( '[data-nymega-drawer]' );
 	const overlayFor = ( menu ) => menu.querySelector( '[data-nymega-overlay]' );
-	const panelFor = ( item ) => item.querySelector( ':scope > .nymegamenu__panel, :scope > .nymegamenu__submenu' );
+	const panelFor = ( item ) => item.querySelector( ':scope > [data-nymega-panel], :scope > .nymegamenu__panel, :scope > .nymegamenu__submenu' );
 	const triggerFor = ( item ) => item.querySelector( ':scope > button[data-nymega-trigger]' );
 	const focusable = ( root ) => Array.from( root.querySelectorAll( 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])' ) ).filter( ( element ) => ! element.hidden && element.offsetParent !== null );
 
@@ -51,6 +51,7 @@
 			}
 		}
 		if ( panel ) {
+			panel.classList.remove( 'is-open' );
 			panel.hidden = true;
 		}
 
@@ -77,6 +78,7 @@
 		}
 
 		panel.hidden = false;
+		panel.classList.add( 'is-open' );
 		item.classList.add( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
 		updateMenuState( menu );
@@ -86,8 +88,9 @@
 		const toggle = menu.querySelector( '[data-nymega-toggle]' );
 		const drawer = drawerFor( menu );
 		menu.classList.remove( 'is-drawer-open' );
+		menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( item ) => closeItem( item ) );
 		if ( drawer ) {
-			drawer.setAttribute( 'aria-hidden', 'true' );
+			drawer.setAttribute( 'aria-hidden', String( isCompact( menu ) ) );
 		}
 		if ( toggle ) {
 			toggle.setAttribute( 'aria-expanded', 'false' );
@@ -118,10 +121,31 @@
 		menus().forEach( ( menu ) => {
 			const compact = window.innerWidth <= Number( menu.dataset.nymegaBreakpoint || 900 );
 			const changed = compact !== isCompact( menu );
+			const drawer = drawerFor( menu );
 			menu.classList.toggle( 'is-compact', compact );
 
 			if ( changed && ! compact ) {
 				closeDrawer( menu );
+				menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( item ) => closeItem( item ) );
+			}
+
+			if ( ! compact && drawer ) {
+				drawer.setAttribute( 'aria-hidden', 'false' );
+			}
+
+			if ( changed && compact ) {
+				menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( item ) => closeItem( item ) );
+				if ( 'expanded' === menu.dataset.nymegaMobileDefault ) {
+					menu.querySelectorAll( '.nymegamenu__item' ).forEach( ( item ) => {
+						if ( panelFor( item ) ) {
+							openItem( item, true );
+						}
+					} );
+				}
+			}
+
+			if ( compact && drawer && ! menu.classList.contains( 'is-drawer-open' ) ) {
+				drawer.setAttribute( 'aria-hidden', 'true' );
 			}
 			updateOverlay( menu );
 		} );
@@ -167,13 +191,6 @@
 		setCompact();
 		setSticky();
 		menus().forEach( ( menu ) => {
-			if ( isCompact( menu ) && 'expanded' === menu.dataset.nymegaMobileDefault ) {
-				menu.querySelectorAll( '.nymegamenu__item' ).forEach( ( item ) => {
-					if ( panelFor( item ) ) {
-						openItem( item, true );
-					}
-				} );
-			}
 			installHoverBehavior( menu );
 		} );
 		window.addEventListener( 'resize', setCompact, { passive: true } );

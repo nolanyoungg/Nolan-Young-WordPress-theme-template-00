@@ -288,7 +288,6 @@ class Settings {
 			'locations' => array(),
 			'themes'    => array( 'default' => self::theme_defaults() ),
 			'general'   => array( 'css_output' => 'inline' ),
-			'license'   => array( 'key' => '' ),
 		);
 	}
 
@@ -323,7 +322,6 @@ class Settings {
 		if ( empty( $settings['themes'] ) ) {
 			$settings['themes']['default'] = self::theme_defaults(); }
 		$settings['general']   = wp_parse_args( (array) $settings['general'], self::defaults()['general'] );
-		$settings['license']   = wp_parse_args( (array) $settings['license'], self::defaults()['license'] );
 		$settings['locations'] = is_array( $settings['locations'] ) ? $settings['locations'] : array();
 		foreach ( $settings['locations'] as $key => $location ) {
 			$raw_location = (array) $location;
@@ -407,6 +405,8 @@ class Settings {
 		foreach ( $defaults['mobile'] as $key => $fallback ) {
 			if ( 'mega_columns' === $key ) {
 				$output['mobile'][ $key ] = min( 4, max( 1, absint( $theme['mobile'][ $key ] ) ) );
+			} elseif ( 'item_align' === $key ) {
+				$output['mobile'][ $key ] = in_array( $theme['mobile'][ $key ], array( 'left', 'center', 'right' ), true ) ? $theme['mobile'][ $key ] : $fallback;
 			} elseif ( in_array( $key, array( 'overlay_content', 'force_full_width' ), true ) ) {
 				$output['mobile'][ $key ] = empty( $theme['mobile'][ $key ] ) ? 0 : 1;
 			} elseif ( false !== strpos( $key, 'background' ) || false !== strpos( $key, 'color' ) || 'toggle_text' === $key ) {
@@ -435,7 +435,6 @@ class Settings {
 		$output['locations'] = $current['locations'];
 		$output['themes']    = $current['themes'];
 		$output['general']   = $current['general'];
-		$output['license']   = $current['license'];
 		$input               = is_array( $input ) ? $input : array();
 		foreach ( (array) ( $input['locations'] ?? array() ) as $location => $profile ) {
 			$key = sanitize_key( $location );
@@ -472,9 +471,6 @@ class Settings {
 		if ( isset( $input['general'] ) ) {
 			$general           = (array) $input['general'];
 			$output['general'] = array( 'css_output' => in_array( $general['css_output'] ?? '', array( 'inline', 'none' ), true ) ? $general['css_output'] : 'inline' ); }
-		if ( isset( $input['license'] ) ) {
-			$license           = (array) $input['license'];
-			$output['license'] = array( 'key' => sanitize_text_field( $license['key'] ?? '' ) );
-		} return $output;
+		return $output;
 	}
 }
