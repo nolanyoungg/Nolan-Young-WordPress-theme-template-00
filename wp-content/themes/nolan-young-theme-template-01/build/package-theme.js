@@ -24,6 +24,7 @@ while ( fs.existsSync( outputPath ) ) {
 const runtimeEntries = [
 	'404.php',
 	'CHANGELOG.md',
+	'CREDITS.md',
 	'LICENSE.txt',
 	'README.md',
 	'archive.php',

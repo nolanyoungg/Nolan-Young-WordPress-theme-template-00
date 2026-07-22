@@ -1,6 +1,7 @@
 {
   "name": "nolan-young/nymegamenu",
   "type": "wordpress-plugin",
+  "description": "Development standards configuration for the NY Mega Menu WordPress plugin.",
   "license": "GPL-2.0-or-later",
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",

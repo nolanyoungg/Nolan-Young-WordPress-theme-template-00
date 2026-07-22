@@ -1,6 +1,7 @@
 {
   "name": "nolan-young/nyforms",
   "type": "wordpress-plugin",
+  "description": "Development standards configuration for the NYforms WordPress plugin.",
   "license": "GPL-2.0-or-later",
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
