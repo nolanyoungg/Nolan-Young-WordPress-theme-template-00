@@ -40,7 +40,7 @@ npm run build
 npm run package
 ```
 
-`npm run build` cleans, lints, compiles, and validates the theme. `npm run package` also creates an installable ZIP in `dist/`.
+`npm run build` cleans, lints, compiles, and validates the theme. `npm run package` also creates an installable, timestamped ZIP in `dist/`, such as `nolan-young-theme-template-01-07-22-2026-T03-40PM.zip`, without replacing earlier packages.
 
 ## Validation
 

@@ -424,9 +424,44 @@ class Settings {
 	private static function custom_css( $value ) {
 		$value = sanitize_textarea_field( (string) $value );
 		$value = preg_replace( '#<\s*/?\s*style[^>]*>#i', '', $value );
-		$value = preg_replace( '#@import\s+(?:url\()?[^;]+;#i', '', $value );
 		$value = str_ireplace( array( 'expression(', 'javascript:' ), '', $value );
+		if ( self::contains_external_resource( $value ) ) {
+			add_settings_error(
+				self::OPTION,
+				'nymegamenu-custom-css-external-resource',
+				__( 'Custom CSS was not saved because @import and url() are not allowed.', 'nymegamenu' )
+			);
+			return '';
+		}
 		return substr( $value, 0, 30000 );
+	}
+
+	/**
+	 * Determine whether CSS contains a construct that can load another resource.
+	 *
+	 * CSS permits escaped identifier characters, so inspect a normalized copy to
+	 * prevent spellings such as u\72l() from bypassing the url() restriction.
+	 *
+	 * @param string $css CSS to inspect.
+	 * @return bool Whether the CSS contains an external-resource construct.
+	 */
+	private static function contains_external_resource( $css ) {
+		$normalized = preg_replace_callback(
+			'/\\\\([0-9a-f]{1,6})\s?|\\\\(.)/is',
+			static function( $matches ) {
+				if ( isset( $matches[1] ) && '' !== $matches[1] ) {
+					$code_point = hexdec( $matches[1] );
+					if ( $code_point <= 127 ) {
+						return chr( $code_point );
+					}
+				}
+
+				return $matches[0];
+			},
+			$css
+		);
+
+		return 1 === preg_match( '/@import\b|\burl\s*\(/i', $normalized );
 	}
 
 	public static function sanitize( $input ) {

@@ -67,7 +67,7 @@ function nytt01_get_asset_metadata( $metadata_path, $asset_path ) {
  * @return void
  */
 function nytt01_enqueue_assets() {
-	$style_asset = nytt01_get_asset_metadata(
+	$style_asset  = nytt01_get_asset_metadata(
 		'/assets/css/bundle.asset.php',
 		'/assets/css/bundle.css'
 	);

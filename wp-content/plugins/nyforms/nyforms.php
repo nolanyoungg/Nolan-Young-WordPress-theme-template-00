@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NYforms
  * Description: An original, privacy-minded WordPress form builder and submission manager.
- * Version: 1.0.1
+ * Version: 1.0.3
  * Requires at least: 7.0
  * Requires PHP: 7.4
  * Author: Nolan Young
@@ -15,11 +15,21 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NYFORMS_VERSION', '1.0.1' );
-define( 'NYFORMS_DB_VERSION', '1.0.1' );
+define( 'NYFORMS_VERSION', '1.0.3' );
+define( 'NYFORMS_DB_VERSION', '1.0.2' );
 define( 'NYFORMS_FILE', __FILE__ );
 define( 'NYFORMS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NYFORMS_URL', plugin_dir_url( __FILE__ ) );
+
+/**
+ * Load plugin translations from the bundled languages directory.
+ *
+ * @return void
+ */
+function nyforms_load_textdomain() {
+	load_plugin_textdomain( 'nyforms', false, dirname( plugin_basename( NYFORMS_FILE ) ) . '/languages' );
+}
+add_action( 'init', 'nyforms_load_textdomain' );
 
 $nyforms_files = array(
 	'includes/class-installer.php',

@@ -7,7 +7,19 @@ const { ZipArchive } = require( 'archiver' );
 const root = path.resolve( __dirname, '..' );
 const slug = 'nolan-young-theme-template-01';
 const distDirectory = path.join( root, 'dist' );
-const outputPath = path.join( distDirectory, `${ slug }.zip` );
+const now = new Date();
+const pad = ( value ) => String( value ).padStart( 2, '0' );
+const hour = now.getHours() % 12 || 12;
+const meridiem = now.getHours() >= 12 ? 'PM' : 'AM';
+const timestamp = `${ pad( now.getMonth() + 1 ) }-${ pad( now.getDate() ) }-${ now.getFullYear() }-T${ pad( hour ) }-${ pad( now.getMinutes() ) }${ meridiem }`;
+const baseOutputPath = path.join( distDirectory, `${ slug }-${ timestamp }.zip` );
+let outputPath = baseOutputPath;
+let sequence = 2;
+
+while ( fs.existsSync( outputPath ) ) {
+	outputPath = path.join( distDirectory, `${ slug }-${ timestamp }-${ sequence }.zip` );
+	sequence += 1;
+}
 
 const runtimeEntries = [
 	'404.php',

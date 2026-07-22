@@ -10,7 +10,15 @@ defined( 'ABSPATH' ) || exit;
 if ( function_exists( 'nymegamenu_is_enabled' ) && nymegamenu_is_enabled( 'primary' ) ) :
 	?>
 	<nav id="site-navigation" class="nytt01-primary-navigation nytt01-primary-navigation--nymega" data-nymega-menu aria-label="<?php esc_attr_e( 'Primary navigation', 'nolan-young-theme-template-01' ); ?>">
-		<?php wp_nav_menu( array( 'theme_location' => 'primary', 'container' => false, 'fallback_cb' => 'nytt01_primary_menu_fallback' ) ); ?>
+		<?php
+		wp_nav_menu(
+			array(
+				'theme_location' => 'primary',
+				'container'      => false,
+				'fallback_cb'    => 'nytt01_primary_menu_fallback',
+			)
+		);
+		?>
 	</nav>
 	<?php
 	return;

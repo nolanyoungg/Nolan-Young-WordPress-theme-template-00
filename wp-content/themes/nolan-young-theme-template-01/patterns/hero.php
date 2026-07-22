@@ -5,7 +5,10 @@
  * Categories: featured, banner
  * Keywords: hero, introduction, call to action
  * Inserter: true
+ *
+ * @package NolanYoungThemeTemplate01
  */
+
 ?>
 <!-- wp:group {"align":"full","backgroundColor":"navy","textColor":"white","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","right":"var:preset|spacing|50","bottom":"var:preset|spacing|80","left":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull has-white-color has-navy-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--50)"><!-- wp:heading {"level":1,"fontSize":"display"} -->

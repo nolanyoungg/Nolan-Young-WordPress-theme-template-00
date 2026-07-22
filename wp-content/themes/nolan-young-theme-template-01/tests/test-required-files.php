@@ -5,6 +5,11 @@
  * @package NolanYoungThemeTemplate01
  */
 
+/**
+ * Required theme file test case.
+ *
+ * @package NolanYoungThemeTemplate01
+ */
 class NYTT01_Required_Files_Test extends WP_UnitTestCase {
 	/**
 	 * Confirm production-critical files exist.

@@ -41,7 +41,6 @@ function nytt01_pingback_header() {
 	}
 }
 add_action( 'wp_head', 'nytt01_pingback_header' );
-
 /**
  * Render an optional, editor-configured form shortcode or its visible placeholder.
  *
@@ -52,6 +51,7 @@ add_action( 'wp_head', 'nytt01_pingback_header' );
  * @return void
  */
 function nytt01_render_form_shortcode_slot( $slot ) {
+
 	$slots = array(
 		'contact'    => array(
 			'setting'     => 'nytt01_contact_form_shortcode',
@@ -89,7 +89,6 @@ function nytt01_render_form_shortcode_slot( $slot ) {
 	</div>
 	<?php
 }
-
 /**
  * Add current-page context to primary navigation links.
  *

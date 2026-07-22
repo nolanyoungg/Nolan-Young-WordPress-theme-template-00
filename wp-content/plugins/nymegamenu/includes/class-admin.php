@@ -79,6 +79,7 @@ class Admin {
 			?>
 		<a class="<?php echo $active === $slug ? 'is-active' : ''; ?>" href="<?php echo esc_url( $this->page_url( $slug ) ); ?>"><span class="dashicons <?php echo esc_attr( $page[1] ); ?>"></span><?php echo esc_html( $page[0] ); ?></a><?php endforeach; ?></aside><main class="nymega-admin__content"><h1><?php echo esc_html( $title ); ?></h1>
 		<?php
+		settings_errors( Settings::OPTION );
 		if ( $description ) :
 			?>
 	<p class="nymega-admin__intro"><?php echo esc_html( $description ); ?></p><?php endif; ?>
@@ -464,7 +465,7 @@ class Admin {
 
 		?>
 		<div class="nymega-custom-styling">
-			<div class="nymega-custom-styling__intro"><h2><?php esc_html_e( 'CSS Editor', 'nymegamenu' ); ?></h2><p><?php esc_html_e( 'Define custom CSS for menus using this theme. Standard CSS and the documented NY Mega Menu tokens are supported.', 'nymegamenu' ); ?></p></div>
+			<div class="nymega-custom-styling__intro"><h2><?php esc_html_e( 'CSS Editor', 'nymegamenu' ); ?></h2><p><?php esc_html_e( 'Define custom CSS for menus using this theme. Standard CSS and the documented NY Mega Menu tokens are supported. External resources are not allowed: do not use url() or @import.', 'nymegamenu' ); ?></p></div>
 			<div class="nymega-custom-styling__editor"><textarea id="nymega-custom-css" name="<?php echo esc_attr( $base . '[custom_css]' ); ?>" rows="14" spellcheck="false" aria-describedby="nymega-custom-css-tips"><?php echo esc_textarea( $custom_css ); ?></textarea></div>
 		</div>
 		<section class="nymega-custom-tips" id="nymega-custom-css-tips">
