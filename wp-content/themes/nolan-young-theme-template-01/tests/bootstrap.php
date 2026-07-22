@@ -11,6 +11,7 @@ if ( ! $_tests_dir ) {
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- This bootstrap runs before WordPress filesystem APIs are available.
 	fwrite( STDERR, "WordPress test library not found. Set WP_TESTS_DIR.\n" );
 	exit( 1 );
 }

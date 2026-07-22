@@ -97,8 +97,9 @@ add_action( 'widgets_init', 'nytt01_register_sidebars' );
 /**
  * Create and assign the default primary menu when the theme is activated.
  *
- * The menu is intentionally created through WordPress so administrators can
- * manage it later from the Menus / Navigation UI.
+ * The menu only includes pages that already exist on the site. This gives a
+ * new site a manageable default while avoiding links to content that has not
+ * been created.
  *
  * @return void
  */
@@ -135,7 +136,7 @@ function nytt01_maybe_create_default_primary_menu() {
 add_action( 'after_switch_theme', 'nytt01_maybe_create_default_primary_menu' );
 
 /**
- * Return the default primary menu item definitions.
+ * Return primary menu item definitions for existing site content.
  *
  * @return array<int, array<string, mixed>>
  */
@@ -187,25 +188,17 @@ function nytt01_get_default_primary_menu_items() {
 			}
 		}
 
-		if ( $page_id ) {
-			$prepared_items[] = array(
-				'menu-item-title'     => $menu_item['title'],
-				'menu-item-object-id' => $page_id,
-				'menu-item-object'    => 'page',
-				'menu-item-type'      => 'post_type',
-				'menu-item-status'    => 'publish',
-				'menu-item-classes'   => ! empty( $menu_item['mega_key'] ) ? 'nytt01-mega-' . sanitize_html_class( $menu_item['mega_key'] ) : '',
-			);
-
+		if ( ! $page_id ) {
 			continue;
 		}
 
 		$prepared_items[] = array(
-			'menu-item-title'  => $menu_item['title'],
-			'menu-item-url'    => home_url( '/' . trailingslashit( sanitize_title( $menu_item['slug'] ) ) ),
-			'menu-item-type'   => 'custom',
-			'menu-item-status'  => 'publish',
-			'menu-item-classes' => ! empty( $menu_item['mega_key'] ) ? 'nytt01-mega-' . sanitize_html_class( $menu_item['mega_key'] ) : '',
+			'menu-item-title'     => $menu_item['title'],
+			'menu-item-object-id' => $page_id,
+			'menu-item-object'    => 'page',
+			'menu-item-type'      => 'post_type',
+			'menu-item-status'    => 'publish',
+			'menu-item-classes'   => ! empty( $menu_item['mega_key'] ) ? 'nytt01-mega-' . sanitize_html_class( $menu_item['mega_key'] ) : '',
 		);
 	}
 

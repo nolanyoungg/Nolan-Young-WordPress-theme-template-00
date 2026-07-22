@@ -1,0 +1,1311 @@
+# Copyright (C) 2026 Nolan Young
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: NYforms 1.0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: nyforms\n"
+
+#: includes/class-admin.php:109
+msgid "%1$d forms · %2$d active"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:73
+msgid "%d items"
+msgstr ""
+
+#: includes/class-repository.php:11
+msgid "%s copy"
+msgstr ""
+
+#: includes/class-fields.php:15 includes/class-submissions.php:13
+msgid "%s is required."
+msgstr ""
+
+#: includes/class-admin.php:59
+msgid "← All forms"
+msgstr ""
+
+#: includes/class-privacy.php:6
+msgid "<p>NYforms stores submitted values, submission time, referring page, and requested upload metadata. People may request export or erasure through the site privacy request form or WordPress privacy tools.</p>"
+msgstr ""
+
+#: includes/class-schema.php:32
+msgid "A conditional rule references an unavailable field."
+msgstr ""
+
+#: includes/class-schema.php:21
+msgid "A form title is required."
+msgstr ""
+
+#: includes/class-admin.php:109
+msgid "A practical guide to building, publishing, and managing forms with NYforms."
+msgstr ""
+
+#: includes/class-admin.php:48
+msgid "Activate"
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Active"
+msgstr ""
+
+#: includes/class-admin.php:155
+msgid "Active plugin count"
+msgstr ""
+
+#: includes/class-admin.php:155
+msgid "Active Plugins"
+msgstr ""
+
+#: includes/class-admin.php:154
+msgid "Active Theme"
+msgstr ""
+
+#: includes/class-admin.php:116
+msgid "Add-On providers can extend fields, anti-spam checks, and notifications when registered by a site owner or developer."
+msgstr ""
+
+#: includes/class-admin.php:100 includes/class-admin.php:143 includes/class-admin.php:20
+msgid "Add-Ons"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:71
+msgid "All"
+msgstr ""
+
+#: includes/class-admin.php:72
+msgid "Any form field"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "API requests require HTTPS plus a WordPress user with the appropriate NYforms capability. Use an X-WP-Nonce for in-admin requests or an Application Password for remote integrations."
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52 includes/class-admin.php:73
+msgid "Apply"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Authenticated WordPress admin integration API. External access requires HTTPS and the NYforms REST API setting. Cookie requests use X-WP-Nonce; remote integrations use WordPress Application Passwords."
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Available (not required)"
+msgstr ""
+
+#: includes/class-admin.php:111
+msgid "Available fields"
+msgstr ""
+
+#: includes/class-renderer.php:27
+msgid "Back"
+msgstr ""
+
+#: includes/class-admin.php:138
+msgid "Background Notifications"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "Background tasks"
+msgstr ""
+
+#: includes/class-admin.php:139
+msgid "Background updates"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "Base URL:"
+msgstr ""
+
+#: includes/class-admin.php:82
+msgid "Blank form"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52 includes/class-admin.php:73
+msgid "Bulk actions"
+msgstr ""
+
+#: includes/class-admin.php:117
+msgid "Check System Report for upload permissions, database tables, REST availability, scheduled tasks, and server details. Make sure the form is active before testing it on the site."
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Checkbox"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Choose 25%, 50%, 75%, or 100% width per field for responsive layouts."
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Choose a form to export"
+msgstr ""
+
+#: includes/class-admin.php:206
+msgid "Choose a JSON export smaller than 2 MB."
+msgstr ""
+
+#: includes/class-admin.php:87
+msgid "CONFIGURATION"
+msgstr ""
+
+#: includes/class-admin.php:115
+msgid "Configure entry retention and uninstall cleanup in Settings. NYforms also integrates with WordPress personal-data export and erasure tools."
+msgstr ""
+
+#: includes/class-admin.php:87
+msgid "Configure local data preferences, optional spam protection, and developer API access."
+msgstr ""
+
+#: includes/class-admin.php:72
+msgid "contains"
+msgstr ""
+
+#: includes/class-admin.php:103
+msgid "Copy system report"
+msgstr ""
+
+#: includes/class-admin.php:109 includes/class-rest.php:57
+msgid "Create a form"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Create a form before exporting one."
+msgstr ""
+
+#: includes/class-admin.php:66
+msgid "Create a form before managing submissions."
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Create an authenticated entry"
+msgstr ""
+
+#: includes/class-admin.php:82
+msgid "Create an empty form and add only the fields your workflow needs."
+msgstr ""
+
+#: includes/class-admin.php:82
+msgid "Create blank form"
+msgstr ""
+
+#: includes/class-admin.php:41
+msgid "Create, organize, and monitor every NYforms workflow."
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "cURL Enabled"
+msgstr ""
+
+#: includes/class-admin.php:137
+msgid "Currency"
+msgstr ""
+
+#: includes/class-admin.php:116
+msgid "Current scope"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Data Collection"
+msgstr ""
+
+#: includes/class-admin.php:148
+msgid "Database"
+msgstr ""
+
+#: includes/class-admin.php:158
+msgid "Database Character Set"
+msgstr ""
+
+#: includes/class-admin.php:158
+msgid "Database Collation"
+msgstr ""
+
+#: includes/class-admin.php:158
+msgid "Database Management System"
+msgstr ""
+
+#: includes/class-admin.php:158
+msgid "Database Server"
+msgstr ""
+
+#: includes/class-admin.php:148
+msgid "Database Version"
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "Date and Time"
+msgstr ""
+
+#: includes/class-admin.php:48
+msgid "Deactivate"
+msgstr ""
+
+#: includes/class-admin.php:135
+msgid "Default Theme"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Delete NYforms data when the plugin is uninstalled"
+msgstr ""
+
+#: includes/class-admin.php:48 includes/class-admin.php:74
+msgid "Delete permanently"
+msgstr ""
+
+#: includes/class-admin.php:103
+msgid "DIAGNOSTICS"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "Disabled"
+msgstr ""
+
+#: includes/class-admin.php:156
+msgid "Document Root"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Download an authorized entry file"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Download CSV"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Download Excel (.xls)"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Download JSON"
+msgstr ""
+
+#: includes/class-admin.php:49
+msgid "Draft"
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Drafts"
+msgstr ""
+
+#: includes/class-admin.php:47
+msgid "Duplicate"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Duplicate a form"
+msgstr ""
+
+#: includes/class-fields.php:8
+msgid "Each field needs a key."
+msgstr ""
+
+#: includes/class-admin.php:58
+msgid "Edit form"
+msgstr ""
+
+#: includes/class-plugin.php:13
+msgid "Email address"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "Enable authenticated developer access to the NYforms REST API. WordPress administrators can continue using the visual builder through nonce-authenticated requests even when this external access is disabled."
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "Enable authenticated developer API access"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Enable data collection preference"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Enable reCAPTCHA for active forms"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "Enabled"
+msgstr ""
+
+#: includes/class-fields.php:18
+msgid "Enter a number."
+msgstr ""
+
+#: includes/class-fields.php:18
+msgid "Enter a valid date."
+msgstr ""
+
+#: includes/class-fields.php:18
+msgid "Enter a valid email address."
+msgstr ""
+
+#: includes/class-fields.php:18
+msgid "Enter a valid URL."
+msgstr ""
+
+#: includes/class-admin.php:17 includes/class-admin.php:44 includes/class-admin.php:66 includes/class-admin.php:70
+msgid "Entries"
+msgstr ""
+
+#: includes/class-admin.php:113
+msgid "Entries provides form-specific search, unread and starred views, spam and trash states, pagination, and bulk actions."
+msgstr ""
+
+#: includes/class-admin.php:73
+msgid "Entry date"
+msgstr ""
+
+#: includes/class-privacy.php:9
+msgid "Entry ID"
+msgstr ""
+
+#: includes/class-admin.php:214 includes/class-rest.php:46 includes/class-rest.php:47 includes/class-rest.php:48 includes/class-rest.php:49
+msgid "Entry not found."
+msgstr ""
+
+#: includes/class-plugin.php:13
+msgid "Erase my data"
+msgstr ""
+
+#: includes/class-schema.php:26
+msgid "Every field key must be unique."
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Export a form"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Export a versioned JSON form definition"
+msgstr ""
+
+#: includes/class-admin.php:113
+msgid "Export active submissions as CSV or Excel-compatible XLS from Import/Export, or use Entries for a direct CSV export."
+msgstr ""
+
+#: includes/class-admin.php:71
+msgid "Export CSV"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Export entries as paginated JSON or synchronous CSV"
+msgstr ""
+
+#: includes/class-admin.php:47
+msgid "Export JSON"
+msgstr ""
+
+#: includes/class-plugin.php:13
+msgid "Export my data"
+msgstr ""
+
+#: includes/class-admin.php:100
+msgid "Extend NYforms"
+msgstr ""
+
+#: includes/class-rest.php:50
+msgid "File not found."
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Form"
+msgstr ""
+
+#: includes/class-privacy.php:9
+msgid "Form ID"
+msgstr ""
+
+#: includes/class-admin.php:185 includes/class-admin.php:191 includes/class-admin.php:201 includes/class-admin.php:57 includes/class-repository.php:8 includes/class-rest.php:39 includes/class-rest.php:41 includes/class-rest.php:43 includes/class-rest.php:45 includes/class-rest.php:51 includes/class-rest.php:60
+msgid "Form not found."
+msgstr ""
+
+#: includes/class-admin.php:41 includes/class-admin.php:82
+msgid "FORM WORKSPACE"
+msgstr ""
+
+#: includes/class-admin.php:15 includes/class-admin.php:41
+msgid "Forms"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "Forms, entries, settings, diagnostics, audit events, JSON exports, CSV downloads, and the self-service privacy request route are documented there. Submitted field values and reCAPTCHA secrets are never written to audit events."
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Google documentation"
+msgstr ""
+
+#: includes/class-admin.php:109
+msgid "GUIDE"
+msgstr ""
+
+#: includes/class-admin.php:22
+msgid "Help"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Help improve NYforms by sharing anonymous, local-use information. NYforms does not send telemetry unless a future, separately configured service is added."
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "Home URL"
+msgstr ""
+
+#: includes/class-rest.php:58
+msgid "If the request can be processed, you will receive a confirmation email."
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Import a form"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Import a NYforms JSON definition smaller than 2 MB."
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Import a versioned JSON form definition"
+msgstr ""
+
+#: includes/class-admin.php:114
+msgid "Import a versioned NYforms JSON definition to create a new form. Export JSON to move a form definition, fields, and settings between WordPress sites."
+msgstr ""
+
+#: includes/class-admin.php:114
+msgid "Import and export"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Import JSON"
+msgstr ""
+
+#: includes/class-admin.php:19 includes/class-admin.php:97
+msgid "Import/Export"
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Initiate a confirmed WordPress privacy request"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Invisible"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "JSON exports the form definition. CSV and Excel exports include active submission data for the selected form."
+msgstr ""
+
+#: includes/class-admin.php:114
+msgid "JSON form exports do not include submissions. CSV and XLS exports contain active entries for the selected form."
+msgstr ""
+
+#: includes/class-admin.php:149
+msgid "Language directory"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Learn more"
+msgstr ""
+
+#: includes/class-renderer.php:23
+msgid "Leave this field empty"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "License Activations"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "License Status"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "License Type"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "List entries"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "List entry file metadata"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "List forms"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "List mutation audit events without entry values"
+msgstr ""
+
+#: includes/class-admin.php:103
+msgid "Live environment checks for troubleshooting NYforms safely."
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Loaded Extensions"
+msgstr ""
+
+#: includes/class-admin.php:113
+msgid "Manage entries"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52
+msgid "Mark active"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52
+msgid "Mark draft"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52
+msgid "Mark inactive"
+msgstr ""
+
+#: includes/class-admin.php:73 includes/class-admin.php:74
+msgid "Mark read"
+msgstr ""
+
+#: includes/class-admin.php:73 includes/class-admin.php:74
+msgid "Mark spam"
+msgstr ""
+
+#: includes/class-admin.php:73 includes/class-admin.php:74
+msgid "Mark unread"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Maximum Execution Time (max_execution_time)"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Maximum File Upload Size (upload_max_filesize)"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Maximum File Uploads (max_file_uploads)"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Maximum Input Variables (max_input_vars)"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Maximum Post Size (post_max_size)"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Mbstring Enabled"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Mcrypt Enabled"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Memory Limit (memory_limit)"
+msgstr ""
+
+#: includes/class-admin.php:148
+msgid "Missing tables: %s"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Move a form to trash"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Move entries to trash after (days)"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:52 includes/class-admin.php:73
+msgid "Move to trash"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "Move versioned NYforms definitions safely between WordPress sites."
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "MySQL - Local time"
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "MySQL - Universal time (UTC)"
+msgstr ""
+
+#: includes/class-admin.php:154
+msgid "Name"
+msgstr ""
+
+#: includes/class-admin.php:134
+msgid "Native frontend stylesheet"
+msgstr ""
+
+#: includes/class-admin.php:16 includes/class-admin.php:42 includes/class-admin.php:82
+msgid "New Form"
+msgstr ""
+
+#: includes/class-renderer.php:27
+msgid "Next"
+msgstr ""
+
+#: includes/class-admin.php:152 includes/class-admin.php:157
+msgid "No"
+msgstr ""
+
+#: includes/class-admin.php:138
+msgid "No background notification provider configured"
+msgstr ""
+
+#: includes/class-admin.php:75
+msgid "No entries match this view."
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "No license service connected"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "No NYforms task scheduled"
+msgstr ""
+
+#: includes/class-admin.php:136
+msgid "No-Conflict Mode"
+msgstr ""
+
+#: includes/class-admin.php:155
+msgid "None"
+msgstr ""
+
+#: includes/class-admin.php:132
+msgid "Not available"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Not configured"
+msgstr ""
+
+#: includes/class-admin.php:137
+msgid "Not configured (payments are disabled)"
+msgstr ""
+
+#: includes/class-admin.php:139
+msgid "Not currently scheduled"
+msgstr ""
+
+#: includes/class-admin.php:128 includes/class-admin.php:157 includes/class-admin.php:158 includes/class-admin.php:159
+msgid "Not reported"
+msgstr ""
+
+#: includes/class-admin.php:150
+msgid "Not scheduled"
+msgstr ""
+
+#: includes/class-admin.php:136
+msgid "Not used"
+msgstr ""
+
+#: includes/class-admin.php:141
+msgid "Not used by NYforms"
+msgstr ""
+
+#: includes/class-admin.php:133
+msgid "Not writable"
+msgstr ""
+
+#: includes/class-admin.php:130
+msgid "NY Forms"
+msgstr ""
+
+#: includes/class-admin.php:14 includes/class-privacy.php:6
+msgid "NYforms"
+msgstr ""
+
+#: includes/class-admin.php:116
+msgid "NYforms does not currently provide payment gateways, bundled CAPTCHA service keys, automatic third-party data transmission, Gravity Forms imports, or copied third-party interfaces."
+msgstr ""
+
+#: includes/class-renderer.php:7
+msgid "NYforms form unavailable."
+msgstr ""
+
+#: includes/class-admin.php:109
+msgid "NYforms Help"
+msgstr ""
+
+#: includes/class-admin.php:100
+msgid "NYforms keeps integrations opt-in. Registered field, notification, and anti-spam providers appear here when installed by a site owner."
+msgstr ""
+
+#: includes/class-admin.php:135
+msgid "NYforms native interface"
+msgstr ""
+
+#: includes/class-admin.php:150
+msgid "NYforms retention purge"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "NYforms retention task scheduled"
+msgstr ""
+
+#: includes/class-privacy.php:7 includes/class-privacy.php:8 includes/class-privacy.php:9
+msgid "NYforms submissions"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Open New Form and create a blank draft."
+msgstr ""
+
+#: includes/class-admin.php:117
+msgid "Open Settings"
+msgstr ""
+
+#: includes/class-admin.php:117
+msgid "Open System Report"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "OpenSSL"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Optionally protect public submissions with Google reCAPTCHA v2. Add this site’s domain when creating your key pair. Enabling this setting loads Google’s reCAPTCHA script on pages with active forms and verifies each token server-side."
+msgstr ""
+
+#: includes/class-admin.php:141
+msgid "Orbital Style Filter"
+msgstr ""
+
+#: includes/class-admin.php:134
+msgid "Output CSS"
+msgstr ""
+
+#: includes/class-admin.php:104
+msgid "Pass"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Permanently delete an entry"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "PHP"
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "PHP - Local time"
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "PHP - Universal time (UTC)"
+msgstr ""
+
+#: includes/class-admin.php:155
+msgid "Plugins"
+msgstr ""
+
+#: includes/class-admin.php:97
+msgid "PORTABILITY"
+msgstr ""
+
+#: includes/class-admin.php:115
+msgid "Privacy and protection"
+msgstr ""
+
+#: includes/class-admin.php:111
+msgid "Product, option, quantity, total, and calculation fields are also available for form layouts. Payment gateways are not included."
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Public, generic 202 response. Rate limited and optionally protected by reCAPTCHA."
+msgstr ""
+
+#: includes/class-admin.php:112
+msgid "Publish a form"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Read a form"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Read an entry"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Read live diagnostics"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Read safe settings; secrets are redacted"
+msgstr ""
+
+#: includes/class-admin.php:87
+msgid "reCAPTCHA"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "reCAPTCHA Settings"
+msgstr ""
+
+#: includes/class-admin.php:145
+msgid "Registered anti-spam providers"
+msgstr ""
+
+#: includes/class-admin.php:144
+msgid "Registered field types"
+msgstr ""
+
+#: includes/class-admin.php:146
+msgid "Registered notification providers"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Renews On"
+msgstr ""
+
+#: includes/class-admin.php:112
+msgid "Replace 123 with the form ID shown in the Forms screen. Only active forms render for site visitors."
+msgstr ""
+
+#: includes/class-plugin.php:13
+msgid "Request type"
+msgstr ""
+
+#: includes/class-admin.php:87
+msgid "REST API"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "REST API Base URL"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "REST API Settings"
+msgstr ""
+
+#: includes/class-admin.php:140
+msgid "REST API v2"
+msgstr ""
+
+#: includes/class-admin.php:48 includes/class-admin.php:74
+msgid "Restore"
+msgstr ""
+
+#: includes/class-admin.php:104
+msgid "Review"
+msgstr ""
+
+#: includes/class-renderer.php:27
+msgid "Save and continue later"
+msgstr ""
+
+#: includes/class-admin.php:91
+msgid "Save Settings"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Save, then activate the form from the Forms list when it is ready to receive submissions."
+msgstr ""
+
+#: includes/class-submissions.php:25
+msgid "Saving is not enabled for this form."
+msgstr ""
+
+#: includes/class-admin.php:150
+msgid "Scheduled (Cron) Events Log"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:72
+msgid "Search"
+msgstr ""
+
+#: includes/class-admin.php:72
+msgid "Search entries"
+msgstr ""
+
+#: includes/class-admin.php:72
+msgid "Search field"
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Search forms"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Secret Key"
+msgstr ""
+
+#: includes/class-admin.php:50
+msgid "Select %s"
+msgstr ""
+
+#: includes/class-admin.php:73
+msgid "Select all entries"
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Select all forms"
+msgstr ""
+
+#: includes/class-fields.php:18
+msgid "Select an available option."
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:73
+msgid "Select bulk action"
+msgstr ""
+
+#: includes/class-admin.php:74
+msgid "Select entry %d"
+msgstr ""
+
+#: includes/class-renderer.php:27
+msgid "Send"
+msgstr ""
+
+#: includes/class-admin.php:156
+msgid "Server Environment"
+msgstr ""
+
+#: includes/class-admin.php:104
+msgid "Setting"
+msgstr ""
+
+#: includes/class-admin.php:18 includes/class-admin.php:87
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:87
+msgid "Settings sections"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Site Key"
+msgstr ""
+
+#: includes/class-admin.php:149
+msgid "Site language"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "Site URL"
+msgstr ""
+
+#: includes/class-admin.php:71
+msgid "Spam"
+msgstr ""
+
+#: includes/class-admin.php:73
+msgid "Star"
+msgstr ""
+
+#: includes/class-admin.php:71 includes/class-admin.php:73
+msgid "Starred"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Start here"
+msgstr ""
+
+#: includes/class-admin.php:82
+msgid "Start with a blank form, then shape it in the visual builder."
+msgstr ""
+
+#: includes/class-admin.php:44
+msgid "Status"
+msgstr ""
+
+#: includes/class-admin.php:70
+msgid "SUBMISSION INBOX"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Submission safeguards"
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Submissions per IP each hour"
+msgstr ""
+
+#: includes/class-admin.php:115
+msgid "Submissions receive server-side validation and nonce checks. Forms can use a honeypot, and site-wide rate limiting is configured in Settings."
+msgstr ""
+
+#: includes/class-plugin.php:13
+msgid "Submit privacy request"
+msgstr ""
+
+#: includes/class-privacy.php:9
+msgid "Submitted"
+msgstr ""
+
+#: includes/class-admin.php:103 includes/class-admin.php:21
+msgid "System Report"
+msgstr ""
+
+#: includes/class-renderer.php:37 includes/class-schema.php:41
+msgid "Thank you. Your submission has been received."
+msgstr ""
+
+#: includes/class-admin.php:111
+msgid "The builder currently includes text, paragraph, email, phone, number, select, radio, checkbox, consent, date, time, name, address, website, hidden, HTML, section, page break, and file upload fields."
+msgstr ""
+
+#: includes/class-fields.php:7
+msgid "The form contains an unsupported field type."
+msgstr ""
+
+#: includes/class-submissions.php:13
+msgid "The uploaded file is too large or failed to upload."
+msgstr ""
+
+#: includes/class-admin.php:154
+msgid "Theme directory"
+msgstr ""
+
+#: includes/class-submissions.php:13
+msgid "This file type is not allowed."
+msgstr ""
+
+#: includes/class-rest.php:42
+msgid "This is not a supported NYforms export."
+msgstr ""
+
+#: includes/class-admin.php:207
+msgid "This is not a valid NYforms export."
+msgstr ""
+
+#: includes/class-admin.php:103
+msgid "This report reflects the current server and WordPress environment. Copy it when you need to share technical details with your site administrator."
+msgstr ""
+
+#: includes/class-admin.php:74
+msgid "Toggle star"
+msgstr ""
+
+#: includes/class-admin.php:149
+msgid "Translations"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:48 includes/class-admin.php:71 includes/class-admin.php:74
+msgid "Trash"
+msgstr ""
+
+#: includes/class-admin.php:117
+msgid "Troubleshooting"
+msgstr ""
+
+#: includes/class-admin.php:89
+msgid "Type"
+msgstr ""
+
+#: includes/class-admin.php:140
+msgid "Unavailable"
+msgstr ""
+
+#: includes/class-admin.php:157
+msgid "Unavailable (not required)"
+msgstr ""
+
+#: includes/class-admin.php:148
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-admin.php:44 includes/class-admin.php:71
+msgid "Unread"
+msgstr ""
+
+#: includes/class-admin.php:73
+msgid "Unstar"
+msgstr ""
+
+#: includes/class-rest.php:47
+msgid "Unsupported entry status."
+msgstr ""
+
+#: includes/class-rest.php:38
+msgid "Unsupported form status."
+msgstr ""
+
+#: includes/class-admin.php:178
+msgid "Untitled form"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Update a form"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Update entry state"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "Update settings"
+msgstr ""
+
+#: includes/class-admin.php:132
+msgid "Upload folder"
+msgstr ""
+
+#: includes/class-admin.php:133
+msgid "Upload folder permissions"
+msgstr ""
+
+#: includes/class-admin.php:222
+msgid "Upload not found."
+msgstr ""
+
+#: includes/class-privacy.php:9
+msgid "Upload: %s"
+msgstr ""
+
+#: includes/class-admin.php:112
+msgid "Use the NYforms block in the WordPress editor, or choose one of these embedding options:"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Use the visual builder to add fields, select one to configure it, and drag fields to reorder them."
+msgstr ""
+
+#: includes/class-admin.php:104
+msgid "Value"
+msgstr ""
+
+#: includes/class-admin.php:131 includes/class-admin.php:154 includes/class-admin.php:157 includes/class-admin.php:158
+msgid "Version"
+msgstr ""
+
+#: includes/class-admin.php:70
+msgid "View"
+msgstr ""
+
+#: includes/class-admin.php:90
+msgid "View API reference"
+msgstr ""
+
+#: includes/class-admin.php:70
+msgid "Viewing form"
+msgstr ""
+
+#: includes/class-submissions.php:10 includes/class-submissions.php:14
+msgid "We could not process this submission."
+msgstr ""
+
+#: includes/class-admin.php:156
+msgid "Web Server Port"
+msgstr ""
+
+#: includes/class-admin.php:156
+msgid "Web Server Software"
+msgstr ""
+
+#: includes/class-admin.php:159
+msgid "WordPress (Local) Timezone"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Alternate Cron"
+msgstr ""
+
+#: includes/class-rest.php:57
+msgid "WordPress Application Password over HTTPS, or a logged-in cookie with X-WP-Nonce."
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Cron"
+msgstr ""
+
+#: includes/class-admin.php:150
+msgid "WordPress cron event"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Debug Log"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Debug Mode"
+msgstr ""
+
+#: includes/class-admin.php:151
+msgid "WordPress Environment"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Memory Limit"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Multisite"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Script Debug Mode"
+msgstr ""
+
+#: includes/class-admin.php:139
+msgid "WordPress update checks scheduled"
+msgstr ""
+
+#: includes/class-admin.php:152
+msgid "WordPress Version"
+msgstr ""
+
+#: includes/class-admin.php:133
+msgid "Writable"
+msgstr ""
+
+#: includes/class-admin.php:152 includes/class-admin.php:157
+msgid "Yes"
+msgstr ""
+
+#: includes/class-rest.php:45
+msgid "You are not allowed to create entries."
+msgstr ""
+
+#: includes/class-rest.php:48
+msgid "You are not allowed to delete entries."
+msgstr ""
+
+#: includes/class-admin.php:220
+msgid "You are not allowed to download uploads."
+msgstr ""
+
+#: includes/class-admin.php:183 includes/class-admin.php:190
+msgid "You are not allowed to export entries."
+msgstr ""
+
+#: includes/class-admin.php:167 includes/class-admin.php:213 includes/class-rest.php:47
+msgid "You are not allowed to manage entries."
+msgstr ""
+
+#: includes/class-admin.php:244
+msgid "You are not allowed to manage forms."
+msgstr ""
+
+#: includes/class-admin.php:64
+msgid "You are not allowed to view entries."
+msgstr ""
+
+#: includes/class-submissions.php:8
+msgid "Your form session has expired. Please try again."
+msgstr ""
+
+#: includes/class-admin.php:88
+msgid "Your License Details"
+msgstr ""

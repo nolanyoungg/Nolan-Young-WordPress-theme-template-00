@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 $nytt01_theme_includes = array(
 	'/inc/setup.php',
+	'/inc/class-nytt01-primary-nav-walker.php',
 	'/inc/navigation.php',
 	'/inc/enqueue.php',
 	'/inc/editor.php',
@@ -17,7 +18,6 @@ $nytt01_theme_includes = array(
 	'/inc/customizer.php',
 	'/inc/block-styles.php',
 );
-
 foreach ( $nytt01_theme_includes as $nytt01_theme_include ) {
 	$nytt01_theme_include_path = get_theme_file_path( $nytt01_theme_include );
 

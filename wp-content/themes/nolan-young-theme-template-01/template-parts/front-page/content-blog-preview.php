@@ -25,8 +25,8 @@ $nytt01_posts = get_posts(
 			</div>
 		</header>
 		<div class="nytt01-card-grid">
-			<?php foreach ( $nytt01_posts as $post ) : ?>
-				<?php setup_postdata( $post ); ?>
+			<?php foreach ( $nytt01_posts as $nytt01_post ) : ?>
+				<?php setup_postdata( $nytt01_post ); ?>
 				<?php get_template_part( 'template-parts/content/content', 'search' ); ?>
 			<?php endforeach; ?>
 			<?php wp_reset_postdata(); ?>

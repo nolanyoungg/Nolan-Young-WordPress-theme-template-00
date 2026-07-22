@@ -35,7 +35,9 @@ $nytt01_services = array(
 			</div>
 		</header>
 		<div class="nytt01-service-grid">
-			<?php foreach ( $nytt01_services as $nytt01_service ) : ?>
+			<?php
+			foreach ( $nytt01_services as $nytt01_service ) :
+				?>
 				<article class="nytt01-service-card">
 					<h3><?php echo esc_html( $nytt01_service['title'] ); ?></h3>
 					<p><?php echo esc_html( $nytt01_service['description'] ); ?></p>

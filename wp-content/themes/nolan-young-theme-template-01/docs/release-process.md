@@ -7,5 +7,5 @@
 5. Run PHP syntax checks, WordPress Coding Standards, and the WordPress PHPUnit suite.
 6. Test with `WP_DEBUG` enabled on WordPress 7.0 and the declared PHP range.
 7. Test Theme Unit Test content, keyboard behavior, comments, search, archives, pagination, 404, privacy page, and companion-plugin integrations.
-8. Run `npm run package` to rebuild and create a ZIP with one top-level theme directory and no development-only dependencies.
+8. Run `npm run package` to rebuild and create a timestamped ZIP in `dist/` with one top-level theme directory and no development-only dependencies. The timestamp prevents an existing package from being overwritten.
 9. Install the generated ZIP on a clean staging site and complete final browser, responsive, accessibility, and cache checks.

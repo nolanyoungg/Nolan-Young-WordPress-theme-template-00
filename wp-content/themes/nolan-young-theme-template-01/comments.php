@@ -20,7 +20,7 @@ if ( post_password_required() ) {
 			printf(
 				/* translators: 1: Comment count. 2: Post title. */
 				esc_html( _n( '%1$s comment on “%2$s”', '%1$s comments on “%2$s”', $nytt01_comment_count, 'nolan-young-theme-template-01' ) ),
-				number_format_i18n( $nytt01_comment_count ),
+				esc_html( number_format_i18n( $nytt01_comment_count ) ),
 				esc_html( get_the_title() )
 			);
 			?>
