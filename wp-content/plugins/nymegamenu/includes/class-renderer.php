@@ -221,6 +221,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 	 */
 	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
 		$args = is_object( $args ) ? $args : new \stdClass();
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$args = apply_filters( 'nav_menu_item_args', $args, $item, $depth );
 
 		$settings  = Renderer::item_settings( $item->ID );
@@ -231,9 +232,13 @@ class Menu_Walker extends \Walker_Nav_Menu {
 			$classes[] = 'nymegamenu__item--grid-' . absint( $settings['grid_columns'] );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$classes = apply_filters( 'nav_menu_css_class', $classes, $item, $args, $depth );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$item_id = apply_filters( 'nav_menu_item_id', 'menu-item-' . $item->ID, $item, $args, $depth );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$li_atts = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 			'nav_menu_item_attributes',
 			array(
 				'id'    => $item_id,
@@ -258,7 +263,9 @@ class Menu_Walker extends \Walker_Nav_Menu {
 			esc_attr( (string) ! empty( $settings['mobile'] ) )
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native title filter.
 		$title = apply_filters( 'the_title', $item->title, $item->ID );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
 		$link  = $this->link_markup( $item, $args, $depth, $title, $settings );
 
@@ -275,6 +282,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 		}
 		$item_output .= Renderer::panel( $settings, $trigger_id, $item ) . (string) ( $args->after ?? '' );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
 	}
 
@@ -289,6 +297,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 	public function start_lvl( &$output, $depth = 0, $args = null ) {
 		$args       = is_object( $args ) ? $args : new \stdClass();
 		$submenu_id = $this->submenu_ids[ $depth ] ?? '';
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native submenu extension point.
 		$classes    = apply_filters( 'nav_menu_submenu_css_class', array( 'sub-menu', 'nymegamenu__submenu' ), $args, $depth );
 		$attributes = array(
 			'class' => implode( ' ', array_filter( (array) $classes ) ),
@@ -296,6 +305,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 		if ( $submenu_id ) {
 			$attributes['id'] = $submenu_id;
 		}
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native submenu extension point.
 		$attributes = apply_filters( 'nav_menu_submenu_attributes', $attributes, $args, $depth );
 		$output    .= sprintf(
 			'<ul%1$s hidden>',
@@ -347,6 +357,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 			$link_atts['rel'] = trim( (string) $link_atts['rel'] . ' privacy-policy' );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native menu extension point.
 		$link_atts = apply_filters( 'nav_menu_link_attributes', $link_atts, $item, $args, $depth );
 
 		return sprintf(

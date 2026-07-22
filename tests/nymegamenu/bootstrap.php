@@ -9,7 +9,7 @@ require_once $_tests_dir . '/includes/functions.php';
 tests_add_filter(
 	'muplugins_loaded',
 	static function () {
-		require dirname( __DIR__ ) . '/nymegamenu.php';
+		require dirname( __DIR__, 2 ) . '/wp-content/plugins/nymegamenu/nymegamenu.php';
 	}
 );
 require $_tests_dir . '/includes/bootstrap.php';

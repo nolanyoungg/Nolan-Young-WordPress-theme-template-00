@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository tracks WordPress content only, not WordPress core, the database, uploads, or environment configuration. The primary theme is `wp-content/themes/nolan-young-theme-template-01`: PHP templates and helpers live in `inc/`, `template-parts/`, and `patterns/`; editable frontend sources live in `src/scss/` and `src/js/`; committed build output lives in `assets/css/` and `assets/js/`. Plugins live in `wp-content/plugins/`, including `nyforms` and `nymegamenu`, with implementation in `includes/`, frontend assets in `assets/`, and PHPUnit tests in `tests/`. Keep must-use plugin work under `wp-content/mu-plugins/`.
+This repository tracks WordPress content only, not WordPress core, the database, uploads, or environment configuration. The primary theme is `wp-content/themes/nolan-young-theme-template-01`: PHP templates and helpers live in `inc/`, `template-parts/`, and `patterns/`; editable frontend sources live in `src/scss/` and `src/js/`; committed build output lives in `assets/css/` and `assets/js/`. Plugins live in `wp-content/plugins/`, including `nyforms` and `nymegamenu`, with implementation in `includes/` and frontend assets in `assets/`. NY Mega Menu's development-only PHPUnit suite and tool configuration live in `tests/nymegamenu/`, outside its release package. Keep must-use plugin work under `wp-content/mu-plugins/`.
 
 ## Build, Test, and Development Commands
 

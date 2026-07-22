@@ -8,6 +8,6 @@
     "phpunit/phpunit": "^9.6",
     "wp-coding-standards/wpcs": "^3.2"
   },
-  "scripts": { "lint": "phpcs", "test": "phpunit" },
+  "scripts": { "lint": "phpcs --standard=../../../tests/nymegamenu/phpcs.xml.dist .", "test": "phpunit --configuration=../../../tests/nymegamenu/phpunit.xml.dist" },
   "config": { "allow-plugins": { "dealerdirect/phpcodesniffer-composer-installer": true } }
 }
