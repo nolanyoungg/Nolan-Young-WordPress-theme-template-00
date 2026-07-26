@@ -271,16 +271,40 @@ jobs:
       matrix:
         include:
           - plugin: NYForms
-            directory: wp-content/plugins/nyforms
+            slug: nyforms
           - plugin: NY Mega Menu
-            directory: wp-content/plugins/nymegamenu
+            slug: nymegamenu
 
     steps:
       - name: Check out source
         uses: actions/checkout@v7
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Build installable plugin packages
+        run: |
+          npm ci --no-audit --no-fund
+          npm run package:plugins
+
+      - name: Extract the release package
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          archives=(dist/plugins/${{ matrix.slug }}-*.zip)
+          if (( ${#archives[@]} != 1 )); then
+            echo "Expected one ${{ matrix.slug }} release package; found ${#archives[@]}."
+            exit 1
+          fi
+          mkdir -p /tmp/plugin-check
+          unzip -q "${archives[0]}" -d /tmp/plugin-check
+
       - name: Run official WordPress Plugin Check
         uses: wordpress/plugin-check-action@18573eb38f13543484a1f095672dae3849a4fbb0 # v1.1.6
         with:
-          build-dir: ${{ matrix.directory }}
-          exclude-directories: vendor
+          build-dir: /tmp/plugin-check/${{ matrix.slug }}
