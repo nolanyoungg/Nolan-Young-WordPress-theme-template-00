@@ -12,14 +12,16 @@ class NYforms_Renderer_Test extends WP_UnitTestCase {
 			$fields[] = array( 'key' => 'field_' . $type, 'type' => $type, 'label' => ucfirst( $type ), 'choices' => array( array( 'label' => 'Choice', 'value' => 'choice' ) ) );
 		}
 		$id = \NYforms\Plugin::instance()->repository->create_form( array( 'title' => 'Renderer fields', 'fields' => $fields ) );
+		\NYforms\Plugin::instance()->repository->set_form_status( $id, 'active' );
 		$markup = \NYforms\Plugin::instance()->renderer->render( $id );
 		$this->assertStringContainsString( 'nyforms-field--email', $markup );
 		$this->assertStringContainsString( 'type="file"', $markup );
-		$this->assertStringContainsString( 'for="nyforms-field_email"', $markup );
+		$this->assertMatchesRegularExpression( '/for="nyforms-\d+-\d+-field_email"/', $markup );
 	}
 
 	public function test_renders_multi_page_navigation_and_saved_values() {
 		$id = \NYforms\Plugin::instance()->repository->create_form( array( 'title' => 'Paged form', 'settings' => array( 'save_resume' => true ), 'fields' => array( array( 'key' => 'name', 'type' => 'text', 'label' => 'Name' ), array( 'key' => 'next', 'type' => 'page', 'label' => 'Next step' ), array( 'key' => 'email', 'type' => 'email', 'label' => 'Email' ) ) ) );
+		\NYforms\Plugin::instance()->repository->set_form_status( $id, 'active' );
 		$_GET['nyforms_resume'] = 'renderer-test';
 		set_transient( 'nyforms_resume_renderer-test', array( 'form_id' => $id, 'values' => array( 'name' => 'Saved value' ) ), HOUR_IN_SECONDS );
 		$markup = \NYforms\Plugin::instance()->renderer->render( $id );

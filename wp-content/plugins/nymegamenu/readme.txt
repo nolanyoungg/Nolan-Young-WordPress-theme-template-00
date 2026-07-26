@@ -58,6 +58,8 @@ No. The optional Cart link defaults to `/cart/`; developers can override it with
 * Preserved native WordPress menu attributes and filters while adding separate submenu controls.
 * Completed responsive mode, overlay, accessibility, lifecycle, import-validation, and scoped-style behavior.
 * Removed unsupported legacy panel, role, and tab configuration paths.
+* Added an editor-aware dynamic block with registered-location selection and a server-rendered preview.
+* Preserved expanded, usable navigation when JavaScript is unavailable.
 
 == Upgrade Notice ==
 

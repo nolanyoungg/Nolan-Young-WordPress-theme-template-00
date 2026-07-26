@@ -4,6 +4,7 @@ namespace NYforms;
 defined( 'ABSPATH' ) || exit;
 
 class Admin {
+
 	public function hooks() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
 		add_action( 'admin_post_nyforms_admin', array( $this, 'action' ) );
@@ -23,59 +24,223 @@ class Admin {
 	}
 
 	public function assets( $hook ) {
-		if ( false === strpos( $hook, 'nyforms' ) ) { return; }
+		if ( false === strpos( $hook, 'nyforms' ) ) {
+			return;
+		}
 		wp_enqueue_style( 'nyforms-admin', NYFORMS_URL . 'assets/admin.css', array(), NYFORMS_VERSION );
 		wp_enqueue_script( 'nyforms-admin', NYFORMS_URL . 'assets/admin.js', array(), NYFORMS_VERSION, true );
 		if ( isset( $_GET['form'] ) ) {
 			wp_enqueue_script( 'nyforms-builder', NYFORMS_URL . 'assets/builder.js', array( 'wp-api-fetch', 'wp-i18n' ), NYFORMS_VERSION, true );
-			wp_add_inline_script( 'nyforms-builder', 'window.nyformsBuilder=' . wp_json_encode( array( 'nonce' => wp_create_nonce( 'wp_rest' ), 'restUrl' => esc_url_raw( rest_url( 'nyforms/v1/' ) ) ) ) . ';', 'before' );
+			wp_add_inline_script(
+				'nyforms-builder',
+				'window.nyformsBuilder=' . wp_json_encode(
+					array(
+						'nonce'   => wp_create_nonce( 'wp_rest' ),
+						'restUrl' => esc_url_raw( rest_url( 'nyforms/v1/' ) ),
+					)
+				) . ';',
+				'before'
+			);
 		}
 	}
 
 	public function forms_page() {
 		$this->require_manage();
 		$form_id = absint( $_GET['form'] ?? 0 );
-		if ( $form_id ) { $this->editor_page( $form_id ); return; }
-		$search = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ); $status = sanitize_key( $_GET['status'] ?? '' ); if ( ! in_array( $status, array( 'active', 'draft', 'inactive', 'trash' ), true ) ) { $status = ''; }
-		$all_forms = Plugin::instance()->repository->forms(); $forms = Plugin::instance()->repository->forms( $search, $status );
+		if ( $form_id ) {
+			$this->editor_page( $form_id );
+			return;
+		}
+		$search = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) );
+		$status = sanitize_key( $_GET['status'] ?? '' );
+		if ( ! in_array( $status, array( 'active', 'draft', 'inactive', 'trash' ), true ) ) {
+			$status = '';
+		}
+		$all_forms = Plugin::instance()->repository->forms();
+		$forms     = Plugin::instance()->repository->forms( $search, $status );
 		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'FORM WORKSPACE', 'nyforms' ) . '</p><h1>' . esc_html__( 'Forms', 'nyforms' ) . '</h1><p>' . esc_html__( 'Create, organize, and monitor every NYforms workflow.', 'nyforms' ) . '</p></div></div>';
 		echo '<a class="page-title-action" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=new' ), 'nyforms_admin' ) ) . '">' . esc_html__( 'New form', 'nyforms' ) . '</a>';
 		$counts = array_count_values( wp_list_pluck( $all_forms, 'status' ) );
-		echo '<div class="nyforms-list-controls"><ul class="nyforms-status-filter"><li><a' . ( '' === $status ? ' class="current"' : '' ) . ' href="' . esc_url( admin_url( 'admin.php?page=nyforms' ) ) . '">' . esc_html__( 'All', 'nyforms' ) . ' <span>' . count( $all_forms ) . '</span></a></li>'; foreach ( array( 'active' => __( 'Active', 'nyforms' ), 'draft' => __( 'Drafts', 'nyforms' ), 'inactive' => __( 'Inactive', 'nyforms' ), 'trash' => __( 'Trash', 'nyforms' ) ) as $slug => $label ) { echo '<li><a' . ( $slug === $status ? ' class="current"' : '' ) . ' href="' . esc_url( add_query_arg( array( 'page' => 'nyforms', 'status' => $slug ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . ' <span>' . absint( $counts[ $slug ] ?? 0 ) . '</span></a></li>'; } echo '</ul><form class="nyforms-search" method="get"><input type="hidden" name="page" value="nyforms"><label class="screen-reader-text" for="nyforms-form-search">' . esc_html__( 'Search forms', 'nyforms' ) . '</label><input id="nyforms-form-search" type="search" name="s" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search forms', 'nyforms' ) . '"><button class="button" type="submit">' . esc_html__( 'Search', 'nyforms' ) . '</button></form></div><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="bulk_forms">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<div class="tablenav top"><div class="alignleft actions"><label class="screen-reader-text" for="nyforms-bulk-action">' . esc_html__( 'Select bulk action', 'nyforms' ) . '</label><select id="nyforms-bulk-action" name="bulk_action"><option value="">' . esc_html__( 'Bulk actions', 'nyforms' ) . '</option><option value="activate">' . esc_html__( 'Mark active', 'nyforms' ) . '</option><option value="draft">' . esc_html__( 'Mark draft', 'nyforms' ) . '</option><option value="inactive">' . esc_html__( 'Mark inactive', 'nyforms' ) . '</option><option value="trash">' . esc_html__( 'Move to trash', 'nyforms' ) . '</option></select><button type="submit" class="button action">' . esc_html__( 'Apply', 'nyforms' ) . '</button></div><div class="tablenav-pages">' . sprintf( esc_html__( '%d items', 'nyforms' ), count( $forms ) ) . '</div></div><table class="widefat striped nyforms-forms-table"><thead><tr><td class="check-column"><input type="checkbox" class="nyforms-select-all" aria-label="' . esc_attr__( 'Select all forms', 'nyforms' ) . '"></td><th>' . esc_html__( 'Form', 'nyforms' ) . '</th><th>' . esc_html__( 'Status', 'nyforms' ) . '</th><th>' . esc_html__( 'Entries', 'nyforms' ) . '</th><th>' . esc_html__( 'Unread', 'nyforms' ) . '</th></tr></thead><tbody>';
+		echo '<div class="nyforms-list-controls"><ul class="nyforms-status-filter"><li><a' . ( '' === $status ? ' class="current"' : '' ) . ' href="' . esc_url( admin_url( 'admin.php?page=nyforms' ) ) . '">' . esc_html__( 'All', 'nyforms' ) . ' <span>' . count( $all_forms ) . '</span></a></li>';
+		foreach ( array(
+			'active'   => __( 'Active', 'nyforms' ),
+			'draft'    => __( 'Drafts', 'nyforms' ),
+			'inactive' => __( 'Inactive', 'nyforms' ),
+			'trash'    => __( 'Trash', 'nyforms' ),
+		) as $slug => $label ) {
+			echo '<li><a' . ( $slug === $status ? ' class="current"' : '' ) . ' href="' . esc_url(
+				add_query_arg(
+					array(
+						'page'   => 'nyforms',
+						'status' => $slug,
+					),
+					admin_url( 'admin.php' )
+				)
+			) . '">' . esc_html( $label ) . ' <span>' . absint( $counts[ $slug ] ?? 0 ) . '</span></a></li>';
+		}
+		/* translators: %d: Number of items in the current list. */
+		$form_count_label = sprintf( esc_html__( '%d items', 'nyforms' ), count( $forms ) );
+		echo '</ul><form class="nyforms-search" method="get"><input type="hidden" name="page" value="nyforms"><label class="screen-reader-text" for="nyforms-form-search">' . esc_html__( 'Search forms', 'nyforms' ) . '</label><input id="nyforms-form-search" type="search" name="s" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search forms', 'nyforms' ) . '"><button class="button" type="submit">' . esc_html__( 'Search', 'nyforms' ) . '</button></form></div><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="bulk_forms">' . wp_kses_post( wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) ) . '<div class="tablenav top"><div class="alignleft actions"><label class="screen-reader-text" for="nyforms-bulk-action">' . esc_html__( 'Select bulk action', 'nyforms' ) . '</label><select id="nyforms-bulk-action" name="bulk_action"><option value="">' . esc_html__( 'Bulk actions', 'nyforms' ) . '</option><option value="activate">' . esc_html__( 'Mark active', 'nyforms' ) . '</option><option value="draft">' . esc_html__( 'Mark draft', 'nyforms' ) . '</option><option value="inactive">' . esc_html__( 'Mark inactive', 'nyforms' ) . '</option><option value="trash">' . esc_html__( 'Move to trash', 'nyforms' ) . '</option></select><button type="submit" class="button action">' . esc_html__( 'Apply', 'nyforms' ) . '</button></div><div class="tablenav-pages">' . esc_html( $form_count_label ) . '</div></div><table class="widefat striped nyforms-forms-table"><thead><tr><td class="check-column"><input type="checkbox" class="nyforms-select-all" aria-label="' . esc_attr__( 'Select all forms', 'nyforms' ) . '"></td><th>' . esc_html__( 'Form', 'nyforms' ) . '</th><th>' . esc_html__( 'Status', 'nyforms' ) . '</th><th>' . esc_html__( 'Entries', 'nyforms' ) . '</th><th>' . esc_html__( 'Unread', 'nyforms' ) . '</th></tr></thead><tbody>';
 		foreach ( $forms as $form ) {
-			$edit = add_query_arg( array( 'page' => 'nyforms', 'form' => $form['id'] ), admin_url( 'admin.php' ) );
+			$edit    = add_query_arg(
+				array(
+					'page' => 'nyforms',
+					'form' => $form['id'],
+				),
+				admin_url( 'admin.php' )
+			);
 			$actions = array( '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=duplicate&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Duplicate', 'nyforms' ) . '</a>', '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=export_form&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Export JSON', 'nyforms' ) . '</a>' );
-			if ( 'trash' === $form['status'] ) { $actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=restore&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Restore', 'nyforms' ) . '</a>'; $actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=delete&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Delete permanently', 'nyforms' ) . '</a>'; } else { $operation = 'active' === $form['status'] ? 'deactivate' : 'activate'; $label = 'active' === $form['status'] ? __( 'Deactivate', 'nyforms' ) : __( 'Activate', 'nyforms' ); $actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=' . $operation . '&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html( $label ) . '</a>'; $actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=trash&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Trash', 'nyforms' ) . '</a>'; }
+			if ( 'trash' === $form['status'] ) {
+				$actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=restore&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Restore', 'nyforms' ) . '</a>';
+				$actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=delete&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Delete permanently', 'nyforms' ) . '</a>';
+			} else {
+				$operation = 'active' === $form['status'] ? 'deactivate' : 'activate';
+				$label     = 'active' === $form['status'] ? __( 'Deactivate', 'nyforms' ) : __( 'Activate', 'nyforms' );
+				$actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=' . $operation . '&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html( $label ) . '</a>';
+				$actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=trash&id=' . $form['id'] ), 'nyforms_admin' ) ) . '">' . esc_html__( 'Trash', 'nyforms' ) . '</a>';
+			}
 			$status_label = 'draft' === $form['status'] ? __( 'Draft', 'nyforms' ) : ucfirst( $form['status'] );
-			echo '<tr><th class="check-column"><input type="checkbox" name="form_ids[]" value="' . absint( $form['id'] ) . '" aria-label="' . esc_attr( sprintf( __( 'Select %s', 'nyforms' ), $form['title'] ) ) . '"></th><td><a href="' . esc_url( $edit ) . '">' . esc_html( $form['title'] ) . '</a><div class="row-actions">' . implode( ' | ', $actions ) . '</div></td><td><span class="nyforms-status nyforms-status--' . esc_attr( $form['status'] ) . '">' . esc_html( $status_label ) . '</span></td><td>' . absint( $form['entries'] ) . '</td><td>' . absint( $form['unread'] ) . '</td></tr>';
+			/* translators: %s: Form title. */
+			$select_form_label = sprintf( __( 'Select %s', 'nyforms' ), $form['title'] );
+			echo '<tr><th class="check-column"><input type="checkbox" name="form_ids[]" value="' . absint( $form['id'] ) . '" aria-label="' . esc_attr( $select_form_label ) . '"></th><td><a href="' . esc_url( $edit ) . '">' . esc_html( $form['title'] ) . '</a><div class="row-actions">' . wp_kses_post( implode( ' | ', $actions ) ) . '</div></td><td><span class="nyforms-status nyforms-status--' . esc_attr( $form['status'] ) . '">' . esc_html( $status_label ) . '</span></td><td>' . absint( $form['entries'] ) . '</td><td>' . absint( $form['unread'] ) . '</td></tr>';
 		}
 		echo '</tbody></table><div class="tablenav bottom"><div class="alignleft actions"><select name="bulk_action"><option value="">' . esc_html__( 'Bulk actions', 'nyforms' ) . '</option><option value="activate">' . esc_html__( 'Mark active', 'nyforms' ) . '</option><option value="draft">' . esc_html__( 'Mark draft', 'nyforms' ) . '</option><option value="inactive">' . esc_html__( 'Mark inactive', 'nyforms' ) . '</option><option value="trash">' . esc_html__( 'Move to trash', 'nyforms' ) . '</option></select><button type="submit" class="button action">' . esc_html__( 'Apply', 'nyforms' ) . '</button></div></div></form></div>';
 	}
 
 	private function editor_page( $form_id ) {
 		$form = Plugin::instance()->repository->form( $form_id );
-		if ( ! $form ) { wp_die( esc_html__( 'Form not found.', 'nyforms' ) ); }
+		if ( ! $form ) {
+			wp_die( esc_html__( 'Form not found.', 'nyforms' ) );
+		}
 		echo '<div class="wrap nyforms-builder-wrap"><h1>' . esc_html__( 'Edit form', 'nyforms' ) . ': ' . esc_html( $form['title'] ) . '</h1>';
 		echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=nyforms' ) ) . '">' . esc_html__( '← All forms', 'nyforms' ) . '</a></p>';
 		echo '<div id="nyforms-builder" data-form="' . esc_attr( wp_json_encode( $form ) ) . '"></div></div>';
 	}
 
 	public function entries_page() {
-		if ( ! current_user_can( 'nyforms_view_entries' ) ) { wp_die( esc_html__( 'You are not allowed to view entries.', 'nyforms' ) ); }
-		$repo = Plugin::instance()->repository; $forms = $repo->forms(); $form_id = absint( $_GET['form'] ?? 0 ); if ( ! $form_id && $forms ) { $form_id = (int) $forms[0]['id']; } $form = $repo->form( $form_id );
-		if ( ! $form ) { echo '<div class="wrap nyforms-admin"><h1>' . esc_html__( 'Entries', 'nyforms' ) . '</h1><p>' . esc_html__( 'Create a form before managing submissions.', 'nyforms' ) . '</p></div>'; return; }
-		$status = sanitize_key( $_GET['status'] ?? 'all' ); if ( ! in_array( $status, array( 'all', 'unread', 'starred', 'spam', 'trashed' ), true ) ) { $status = 'all'; }
-		$search = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ); $field_key = sanitize_key( $_GET['field'] ?? '' ); $fields = array_values( array_filter( $form['definition']['fields'], function( $field ) { return ! in_array( $field['type'], array( 'html', 'section', 'page' ), true ); } ) ); if ( ! in_array( $field_key, wp_list_pluck( $fields, 'key' ), true ) ) { $field_key = ''; }
-		$per_page = 20; $paged = max( 1, absint( $_GET['paged'] ?? 1 ) ); $total = $repo->entry_count( $form_id, $status, $search, $field_key ); $entries = $repo->entries( $form_id, $status, $search, $per_page, ( $paged - 1 ) * $per_page, $field_key ); $counts = $repo->entry_counts( $form_id ); $columns = array_slice( $fields, 0, 5 ); $export = wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=export&form=' . $form_id ), 'nyforms_admin' );
-		echo '<div class="wrap nyforms-admin nyforms-entries-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'SUBMISSION INBOX', 'nyforms' ) . '</p><h1>' . esc_html__( 'Entries', 'nyforms' ) . '</h1><p>' . esc_html( $form['title'] ) . '</p></div></div><form class="nyforms-entry-form-picker" method="get"><input type="hidden" name="page" value="nyforms-entries"><label for="nyforms-entry-form">' . esc_html__( 'Viewing form', 'nyforms' ) . '</label><select id="nyforms-entry-form" name="form" onchange="this.form.submit()">'; foreach ( $forms as $candidate ) { echo '<option value="' . absint( $candidate['id'] ) . '"' . selected( $form_id, $candidate['id'], false ) . '>' . esc_html( $candidate['title'] ) . '</option>'; } echo '</select><noscript><button class="button" type="submit">' . esc_html__( 'View', 'nyforms' ) . '</button></noscript></form>';
-		echo '<div class="nyforms-entry-toolbar"><ul class="nyforms-status-filter">'; foreach ( array( 'all' => __( 'All', 'nyforms' ), 'unread' => __( 'Unread', 'nyforms' ), 'starred' => __( 'Starred', 'nyforms' ), 'spam' => __( 'Spam', 'nyforms' ), 'trashed' => __( 'Trash', 'nyforms' ) ) as $slug => $label ) { $count = 'all' === $slug ? max( 0, absint( $counts['total'] ?? 0 ) - absint( $counts['trashed'] ?? 0 ) ) : absint( $counts[ $slug ] ?? 0 ); echo '<li><a' . ( $slug === $status ? ' class="current"' : '' ) . ' href="' . esc_url( add_query_arg( array( 'page' => 'nyforms-entries', 'form' => $form_id, 'status' => $slug ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . ' <span>' . $count . '</span></a></li>'; } echo '</ul><a class="button" href="' . esc_url( $export ) . '">' . esc_html__( 'Export CSV', 'nyforms' ) . '</a></div>';
-		echo '<form class="nyforms-entry-search" method="get"><input type="hidden" name="page" value="nyforms-entries"><input type="hidden" name="form" value="' . absint( $form_id ) . '"><input type="hidden" name="status" value="' . esc_attr( $status ) . '"><label class="screen-reader-text" for="nyforms-entry-field">' . esc_html__( 'Search field', 'nyforms' ) . '</label><select id="nyforms-entry-field" name="field"><option value="">' . esc_html__( 'Any form field', 'nyforms' ) . '</option>'; foreach ( $fields as $field ) { echo '<option value="' . esc_attr( $field['key'] ) . '"' . selected( $field_key, $field['key'], false ) . '>' . esc_html( $field['label'] ?: $field['key'] ) . '</option>'; } echo '</select><span class="nyforms-search-operator">' . esc_html__( 'contains', 'nyforms' ) . '</span><label class="screen-reader-text" for="nyforms-entry-search">' . esc_html__( 'Search entries', 'nyforms' ) . '</label><input id="nyforms-entry-search" type="search" name="s" value="' . esc_attr( $search ) . '"><button class="button" type="submit">' . esc_html__( 'Search', 'nyforms' ) . '</button></form>';
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="bulk_entries"><input type="hidden" name="form" value="' . absint( $form_id ) . '">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<div class="tablenav top"><div class="alignleft actions"><label class="screen-reader-text" for="nyforms-entry-bulk-action">' . esc_html__( 'Select bulk action', 'nyforms' ) . '</label><select id="nyforms-entry-bulk-action" name="bulk_action"><option value="">' . esc_html__( 'Bulk actions', 'nyforms' ) . '</option><option value="read">' . esc_html__( 'Mark read', 'nyforms' ) . '</option><option value="unread">' . esc_html__( 'Mark unread', 'nyforms' ) . '</option><option value="star">' . esc_html__( 'Star', 'nyforms' ) . '</option><option value="unstar">' . esc_html__( 'Unstar', 'nyforms' ) . '</option><option value="spam">' . esc_html__( 'Mark spam', 'nyforms' ) . '</option><option value="trash">' . esc_html__( 'Move to trash', 'nyforms' ) . '</option></select><button type="submit" class="button action">' . esc_html__( 'Apply', 'nyforms' ) . '</button></div><div class="tablenav-pages">' . sprintf( esc_html__( '%d items', 'nyforms' ), $total ) . '</div></div><table class="widefat striped nyforms-entries-table"><thead><tr><td class="check-column"><input type="checkbox" class="nyforms-select-all" aria-label="' . esc_attr__( 'Select all entries', 'nyforms' ) . '"></td><th class="nyforms-entry-star-column"><span class="screen-reader-text">' . esc_html__( 'Starred', 'nyforms' ) . '</span></th>'; foreach ( $columns as $field ) { echo '<th>' . esc_html( $field['label'] ?: $field['key'] ) . '</th>'; } echo '<th>' . esc_html__( 'Entry date', 'nyforms' ) . '</th></tr></thead><tbody>';
-		foreach ( $entries as $entry ) { $detail = $repo->entry( $entry['id'] ); $row_class = empty( $entry['is_read'] ) ? ' class="nyforms-entry-unread"' : ''; $star_action = wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=star&entry=' . $entry['id'] . '&form=' . $form_id ), 'nyforms_admin' ); $operations = 'trashed' === $entry['status'] ? array( 'restore_entry' => __( 'Restore', 'nyforms' ), 'delete_entry' => __( 'Delete permanently', 'nyforms' ) ) : array( 'read' => $entry['is_read'] ? __( 'Mark unread', 'nyforms' ) : __( 'Mark read', 'nyforms' ), 'spam' => __( 'Mark spam', 'nyforms' ), 'trash_entry' => __( 'Trash', 'nyforms' ) ); $actions = array(); foreach ( $operations as $operation => $label ) { $actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=' . $operation . '&entry=' . $entry['id'] . '&form=' . $form_id ), 'nyforms_admin' ) ) . '">' . esc_html( $label ) . '</a>'; } echo '<tr' . $row_class . '><th class="check-column"><input type="checkbox" name="entry_ids[]" value="' . absint( $entry['id'] ) . '" aria-label="' . esc_attr( sprintf( __( 'Select entry %d', 'nyforms' ), $entry['id'] ) ) . '"></th><td class="nyforms-entry-star-column"><a class="nyforms-entry-star' . ( ! empty( $entry['is_starred'] ) ? ' is-starred' : '' ) . '" href="' . esc_url( $star_action ) . '" aria-label="' . esc_attr__( 'Toggle star', 'nyforms' ) . '">★</a></td>'; foreach ( $columns as $field_index => $field ) { $value = $detail['values'][ $field['key'] ] ?? ''; $value = is_array( $value ) ? implode( ', ', $value ) : $value; echo '<td' . ( 0 === $field_index ? ' class="nyforms-entry-primary"' : '' ) . '>' . esc_html( $value ) . ( 0 === $field_index ? '<div class="row-actions">' . implode( ' | ', $actions ) . '</div>' : '' ) . '</td>'; } echo '<td>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['submitted_at'] ) ) . '</td></tr>'; }
-		if ( ! $entries ) { echo '<tr><td colspan="' . absint( count( $columns ) + 3 ) . '">' . esc_html__( 'No entries match this view.', 'nyforms' ) . '</td></tr>'; } echo '</tbody></table>' . $this->entry_pagination( $form_id, $status, $search, $field_key, $paged, $total, $per_page ) . '</form></div>';
+		if ( ! current_user_can( 'nyforms_view_entries' ) ) {
+			wp_die( esc_html__( 'You are not allowed to view entries.', 'nyforms' ) );
+		}
+		$repo    = Plugin::instance()->repository;
+		$forms   = $repo->forms();
+		$form_id = absint( $_GET['form'] ?? 0 );
+		if ( ! $form_id && $forms ) {
+			$form_id = (int) $forms[0]['id'];
+		} $form = $repo->form( $form_id );
+		if ( ! $form ) {
+			echo '<div class="wrap nyforms-admin"><h1>' . esc_html__( 'Entries', 'nyforms' ) . '</h1><p>' . esc_html__( 'Create a form before managing submissions.', 'nyforms' ) . '</p></div>';
+			return;
+		}
+		$status = sanitize_key( $_GET['status'] ?? 'all' );
+		if ( ! in_array( $status, array( 'all', 'unread', 'starred', 'spam', 'trashed' ), true ) ) {
+			$status = 'all';
+		}
+		$search    = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) );
+		$field_key = sanitize_key( $_GET['field'] ?? '' );
+		$fields    = array_values(
+			array_filter(
+				$form['definition']['fields'],
+				function ( $field ) {
+						return ! in_array( $field['type'], array( 'html', 'section', 'page' ), true );
+				}
+			)
+		);
+		if ( ! in_array( $field_key, wp_list_pluck( $fields, 'key' ), true ) ) {
+			$field_key = '';
+		}
+		$per_page = 20;
+		$paged    = max( 1, absint( $_GET['paged'] ?? 1 ) );
+		$total    = $repo->entry_count( $form_id, $status, $search, $field_key );
+		$entries  = $repo->entries( $form_id, $status, $search, $per_page, ( $paged - 1 ) * $per_page, $field_key );
+		$counts   = $repo->entry_counts( $form_id );
+		$columns  = array_slice( $fields, 0, 5 );
+		$export   = wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=export&form=' . $form_id ), 'nyforms_admin' );
+		echo '<div class="wrap nyforms-admin nyforms-entries-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'SUBMISSION INBOX', 'nyforms' ) . '</p><h1>' . esc_html__( 'Entries', 'nyforms' ) . '</h1><p>' . esc_html( $form['title'] ) . '</p></div></div><form class="nyforms-entry-form-picker" method="get"><input type="hidden" name="page" value="nyforms-entries"><label for="nyforms-entry-form">' . esc_html__( 'Viewing form', 'nyforms' ) . '</label><select id="nyforms-entry-form" name="form" onchange="this.form.submit()">';
+		foreach ( $forms as $candidate ) {
+			echo '<option value="' . absint( $candidate['id'] ) . '"' . selected( $form_id, $candidate['id'], false ) . '>' . esc_html( $candidate['title'] ) . '</option>';
+		} echo '</select><noscript><button class="button" type="submit">' . esc_html__( 'View', 'nyforms' ) . '</button></noscript></form>';
+		echo '<div class="nyforms-entry-toolbar"><ul class="nyforms-status-filter">';
+		foreach ( array(
+			'all'     => __( 'All', 'nyforms' ),
+			'unread'  => __( 'Unread', 'nyforms' ),
+			'starred' => __( 'Starred', 'nyforms' ),
+			'spam'    => __( 'Spam', 'nyforms' ),
+			'trashed' => __( 'Trash', 'nyforms' ),
+		) as $slug => $label ) {
+			$count = 'all' === $slug ? max( 0, absint( $counts['total'] ?? 0 ) - absint( $counts['trashed'] ?? 0 ) ) : absint( $counts[ $slug ] ?? 0 );
+			echo '<li><a' . ( $slug === $status ? ' class="current"' : '' ) . ' href="' . esc_url(
+				add_query_arg(
+					array(
+						'page'   => 'nyforms-entries',
+						'form'   => $form_id,
+						'status' => $slug,
+					),
+					admin_url( 'admin.php' )
+				)
+			) . '">' . esc_html( $label ) . ' <span>' . absint( $count ) . '</span></a></li>';
+		} echo '</ul><a class="button" href="' . esc_url( $export ) . '">' . esc_html__( 'Export CSV', 'nyforms' ) . '</a></div>';
+		echo '<form class="nyforms-entry-search" method="get"><input type="hidden" name="page" value="nyforms-entries"><input type="hidden" name="form" value="' . absint( $form_id ) . '"><input type="hidden" name="status" value="' . esc_attr( $status ) . '"><label class="screen-reader-text" for="nyforms-entry-field">' . esc_html__( 'Search field', 'nyforms' ) . '</label><select id="nyforms-entry-field" name="field"><option value="">' . esc_html__( 'Any form field', 'nyforms' ) . '</option>';
+		foreach ( $fields as $field ) {
+			echo '<option value="' . esc_attr( $field['key'] ) . '"' . selected( $field_key, $field['key'], false ) . '>' . esc_html( $field['label'] ?: $field['key'] ) . '</option>';
+		} echo '</select><span class="nyforms-search-operator">' . esc_html__( 'contains', 'nyforms' ) . '</span><label class="screen-reader-text" for="nyforms-entry-search">' . esc_html__( 'Search entries', 'nyforms' ) . '</label><input id="nyforms-entry-search" type="search" name="s" value="' . esc_attr( $search ) . '"><button class="button" type="submit">' . esc_html__( 'Search', 'nyforms' ) . '</button></form>';
+		/* translators: %d: Number of items in the current list. */
+		$entry_count_label = sprintf( esc_html__( '%d items', 'nyforms' ), $total );
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="bulk_entries"><input type="hidden" name="form" value="' . absint( $form_id ) . '">' . wp_kses_post( wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) ) . '<div class="tablenav top"><div class="alignleft actions"><label class="screen-reader-text" for="nyforms-entry-bulk-action">' . esc_html__( 'Select bulk action', 'nyforms' ) . '</label><select id="nyforms-entry-bulk-action" name="bulk_action"><option value="">' . esc_html__( 'Bulk actions', 'nyforms' ) . '</option><option value="read">' . esc_html__( 'Mark read', 'nyforms' ) . '</option><option value="unread">' . esc_html__( 'Mark unread', 'nyforms' ) . '</option><option value="star">' . esc_html__( 'Star', 'nyforms' ) . '</option><option value="unstar">' . esc_html__( 'Unstar', 'nyforms' ) . '</option><option value="spam">' . esc_html__( 'Mark spam', 'nyforms' ) . '</option><option value="trash">' . esc_html__( 'Move to trash', 'nyforms' ) . '</option></select><button type="submit" class="button action">' . esc_html__( 'Apply', 'nyforms' ) . '</button></div><div class="tablenav-pages">' . esc_html( $entry_count_label ) . '</div></div><table class="widefat striped nyforms-entries-table"><thead><tr><td class="check-column"><input type="checkbox" class="nyforms-select-all" aria-label="' . esc_attr__( 'Select all entries', 'nyforms' ) . '"></td><th class="nyforms-entry-star-column"><span class="screen-reader-text">' . esc_html__( 'Starred', 'nyforms' ) . '</span></th>';
+		foreach ( $columns as $field ) {
+			echo '<th>' . esc_html( $field['label'] ?: $field['key'] ) . '</th>';
+		} echo '<th>' . esc_html__( 'Entry date', 'nyforms' ) . '</th></tr></thead><tbody>';
+		foreach ( $entries as $entry ) {
+			$detail      = $repo->entry( $entry['id'] );
+			$row_class   = empty( $entry['is_read'] ) ? 'nyforms-entry-unread' : '';
+			$star_action = wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=star&entry=' . $entry['id'] . '&form=' . $form_id ), 'nyforms_admin' );
+			$operations  = 'trashed' === $entry['status'] ? array(
+				'restore_entry' => __( 'Restore', 'nyforms' ),
+				'delete_entry'  => __( 'Delete permanently', 'nyforms' ),
+			) : array(
+				'read'        => $entry['is_read'] ? __( 'Mark unread', 'nyforms' ) : __( 'Mark read', 'nyforms' ),
+				'spam'        => __( 'Mark spam', 'nyforms' ),
+				'trash_entry' => __( 'Trash', 'nyforms' ),
+			);
+			$actions     = array();
+			foreach ( $operations as $operation => $label ) {
+				$actions[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=nyforms_admin&operation=' . $operation . '&entry=' . $entry['id'] . '&form=' . $form_id ), 'nyforms_admin' ) ) . '">' . esc_html( $label ) . '</a>';
+			}
+			/* translators: %d: Entry ID. */
+			$select_entry_label = sprintf( __( 'Select entry %d', 'nyforms' ), $entry['id'] );
+			echo '<tr class="' . esc_attr( $row_class ) . '"><th class="check-column"><input type="checkbox" name="entry_ids[]" value="' . absint( $entry['id'] ) . '" aria-label="' . esc_attr( $select_entry_label ) . '"></th><td class="nyforms-entry-star-column"><a class="nyforms-entry-star' . ( ! empty( $entry['is_starred'] ) ? ' is-starred' : '' ) . '" href="' . esc_url( $star_action ) . '" aria-label="' . esc_attr__( 'Toggle star', 'nyforms' ) . '">★</a></td>';
+			foreach ( $columns as $field_index => $field ) {
+				$value = $detail['values'][ $field['key'] ] ?? '';
+				$value = is_array( $value ) ? implode( ', ', $value ) : $value;
+				echo '<td' . ( 0 === $field_index ? ' class="nyforms-entry-primary"' : '' ) . '>' . esc_html( $value ) . ( 0 === $field_index ? '<div class="row-actions">' . wp_kses_post( implode( ' | ', $actions ) ) . '</div>' : '' ) . '</td>';
+			} echo '<td>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['submitted_at'] ) ) . '</td></tr>';
+		}
+		if ( ! $entries ) {
+			echo '<tr><td colspan="' . absint( count( $columns ) + 3 ) . '">' . esc_html__( 'No entries match this view.', 'nyforms' ) . '</td></tr>';
+		} echo '</tbody></table>' . wp_kses_post( $this->entry_pagination( $form_id, $status, $search, $field_key, $paged, $total, $per_page ) ) . '</form></div>';
 	}
 
-	private function entry_pagination( $form_id, $status, $search, $field_key, $paged, $total, $per_page ) { $pages = max( 1, (int) ceil( $total / $per_page ) ); if ( $pages < 2 ) { return ''; } $base = array( 'page' => 'nyforms-entries', 'form' => $form_id, 'status' => $status, 's' => $search, 'field' => $field_key ); $links = paginate_links( array( 'base' => add_query_arg( array_merge( $base, array( 'paged' => '%#%' ) ), admin_url( 'admin.php' ) ), 'format' => '', 'current' => $paged, 'total' => $pages, 'type' => 'list' ) ); return '<div class="tablenav bottom"><div class="tablenav-pages">' . wp_kses_post( $links ) . '</div></div>'; }
+	private function entry_pagination( $form_id, $status, $search, $field_key, $paged, $total, $per_page ) {
+		$pages = max( 1, (int) ceil( $total / $per_page ) );
+		if ( $pages < 2 ) {
+			return '';
+		} $base = array(
+			'page'   => 'nyforms-entries',
+			'form'   => $form_id,
+			'status' => $status,
+			's'      => $search,
+			'field'  => $field_key,
+		);
+		$links  = paginate_links(
+			array(
+				'base'    => add_query_arg( array_merge( $base, array( 'paged' => '%#%' ) ), admin_url( 'admin.php' ) ),
+				'format'  => '',
+				'current' => $paged,
+				'total'   => $pages,
+				'type'    => 'list',
+			)
+		);
+		return '<div class="tablenav bottom"><div class="tablenav-pages">' . wp_kses_post( $links ) . '</div></div>';
+	}
 
 	public function new_form_page() {
 		$this->require_manage();
@@ -83,30 +248,94 @@ class Admin {
 	}
 
 	public function settings_page() {
-		$this->require_manage(); $settings = wp_parse_args( get_option( 'nyforms_settings', array() ), array( 'rate_limit' => 10, 'retention_days' => 0, 'delete_data_on_uninstall' => false, 'data_collection' => false, 'recaptcha_enabled' => false, 'recaptcha_site_key' => '', 'recaptcha_secret_key' => '', 'recaptcha_type' => 'checkbox', 'rest_api_enabled' => false ) ); $tab = sanitize_key( $_GET['tab'] ?? 'general' ); if ( ! in_array( $tab, array( 'general', 'recaptcha', 'rest-api' ), true ) ) { $tab = 'general'; }
-		echo '<div class="wrap nyforms-admin nyforms-settings-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'CONFIGURATION', 'nyforms' ) . '</p><h1>' . esc_html__( 'Settings', 'nyforms' ) . '</h1><p>' . esc_html__( 'Configure local data preferences, optional spam protection, and developer API access.', 'nyforms' ) . '</p></div></div><div class="nyforms-settings-layout"><nav class="nyforms-settings-nav" aria-label="' . esc_attr__( 'Settings sections', 'nyforms' ) . '">'; foreach ( array( 'general' => __( 'Settings', 'nyforms' ), 'recaptcha' => __( 'reCAPTCHA', 'nyforms' ), 'rest-api' => __( 'REST API', 'nyforms' ) ) as $slug => $label ) { echo '<a' . ( $slug === $tab ? ' class="is-active"' : '' ) . ' href="' . esc_url( add_query_arg( array( 'page' => 'nyforms-settings', 'tab' => $slug ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . '</a>'; } echo '</nav><div class="nyforms-settings-content"><form class="nyforms-card nyforms-settings" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="save_settings"><input type="hidden" name="settings_tab" value="' . esc_attr( $tab ) . '">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false );
-		if ( 'general' === $tab ) { echo '<h2>' . esc_html__( 'Your License Details', 'nyforms' ) . '</h2><table class="widefat striped nyforms-license-table"><thead><tr><th>' . esc_html__( 'License Type', 'nyforms' ) . '</th><th>' . esc_html__( 'License Status', 'nyforms' ) . '</th><th>' . esc_html__( 'License Activations', 'nyforms' ) . '</th><th>' . esc_html__( 'Renews On', 'nyforms' ) . '</th></tr></thead><tbody><tr><td>' . esc_html__( 'Not configured', 'nyforms' ) . '</td><td>' . esc_html__( 'No license service connected', 'nyforms' ) . '</td><td>—</td><td>—</td></tr></tbody></table><section class="nyforms-data-collection"><h2>' . esc_html__( 'Data Collection', 'nyforms' ) . '</h2><p>' . esc_html__( 'Help improve NYforms by sharing anonymous, local-use information. NYforms does not send telemetry unless a future, separately configured service is added.', 'nyforms' ) . ' <a href="#nyforms-data-collection">' . esc_html__( 'Learn more', 'nyforms' ) . '</a></p><label class="nyforms-switch"><input type="checkbox" name="data_collection" value="1"' . checked( ! empty( $settings['data_collection'] ), true, false ) . '><span></span> ' . esc_html__( 'Enable data collection preference', 'nyforms' ) . '</label></section><h2>' . esc_html__( 'Submission safeguards', 'nyforms' ) . '</h2><p><label>' . esc_html__( 'Submissions per IP each hour', 'nyforms' ) . '<input type="number" min="1" max="1000" name="rate_limit" value="' . esc_attr( $settings['rate_limit'] ) . '"></label></p><p><label>' . esc_html__( 'Move entries to trash after (days)', 'nyforms' ) . '<input type="number" min="0" name="retention_days" value="' . esc_attr( $settings['retention_days'] ) . '"></label></p><p><label><input type="checkbox" name="delete_data_on_uninstall" value="1"' . checked( ! empty( $settings['delete_data_on_uninstall'] ), true, false ) . '> ' . esc_html__( 'Delete NYforms data when the plugin is uninstalled', 'nyforms' ) . '</label></p>'; }
-		elseif ( 'recaptcha' === $tab ) { echo '<h2>' . esc_html__( 'reCAPTCHA Settings', 'nyforms' ) . '</h2><p>' . esc_html__( 'Optionally protect public submissions with Google reCAPTCHA v2. Add this site’s domain when creating your key pair. Enabling this setting loads Google’s reCAPTCHA script on pages with active forms and verifies each token server-side.', 'nyforms' ) . ' <a href="https://developers.google.com/recaptcha/intro" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Google documentation', 'nyforms' ) . '</a></p><p><label><input type="checkbox" name="recaptcha_enabled" value="1"' . checked( ! empty( $settings['recaptcha_enabled'] ), true, false ) . '> ' . esc_html__( 'Enable reCAPTCHA for active forms', 'nyforms' ) . '</label></p><p><label>' . esc_html__( 'Site Key', 'nyforms' ) . '<input type="text" name="recaptcha_site_key" autocomplete="off" value="' . esc_attr( $settings['recaptcha_site_key'] ) . '"></label></p><p><label>' . esc_html__( 'Secret Key', 'nyforms' ) . '<input type="password" name="recaptcha_secret_key" autocomplete="new-password" value="' . esc_attr( $settings['recaptcha_secret_key'] ) . '"></label></p><fieldset><legend>' . esc_html__( 'Type', 'nyforms' ) . '</legend><label><input type="radio" name="recaptcha_type" value="checkbox"' . checked( $settings['recaptcha_type'], 'checkbox', false ) . '> ' . esc_html__( 'Checkbox', 'nyforms' ) . '</label> <label><input type="radio" name="recaptcha_type" value="invisible"' . checked( $settings['recaptcha_type'], 'invisible', false ) . '> ' . esc_html__( 'Invisible', 'nyforms' ) . '</label></fieldset>'; }
-		else { echo '<h2>' . esc_html__( 'REST API Settings', 'nyforms' ) . '</h2><p>' . esc_html__( 'Enable authenticated developer access to the NYforms REST API. WordPress administrators can continue using the visual builder through nonce-authenticated requests even when this external access is disabled.', 'nyforms' ) . '</p><p><label><input type="checkbox" name="rest_api_enabled" value="1"' . checked( ! empty( $settings['rest_api_enabled'] ), true, false ) . '> ' . esc_html__( 'Enable authenticated developer API access', 'nyforms' ) . '</label></p><p class="description">' . esc_html__( 'Base URL:', 'nyforms' ) . ' <code>' . esc_html( rest_url( 'nyforms/v1/' ) ) . '</code></p><p class="description">' . esc_html__( 'API requests require HTTPS plus a WordPress user with the appropriate NYforms capability. Use an X-WP-Nonce for in-admin requests or an Application Password for remote integrations.', 'nyforms' ) . '</p><p><a class="button" target="_blank" rel="noopener noreferrer" href="' . esc_url( rest_url( 'nyforms/v1/openapi' ) ) . '">' . esc_html__( 'View API reference', 'nyforms' ) . '</a></p><p class="description">' . esc_html__( 'Forms, entries, settings, diagnostics, audit events, JSON exports, CSV downloads, and the self-service privacy request route are documented there. Submitted field values and reCAPTCHA secrets are never written to audit events.', 'nyforms' ) . '</p>'; }
+		$this->require_manage();
+		$settings = wp_parse_args(
+			get_option( 'nyforms_settings', array() ),
+			array(
+				'rate_limit'               => 10,
+				'retention_days'           => 0,
+				'delete_data_on_uninstall' => false,
+				'data_collection'          => false,
+				'recaptcha_enabled'        => false,
+				'recaptcha_site_key'       => '',
+				'recaptcha_secret_key'     => '',
+				'recaptcha_type'           => 'checkbox',
+				'rest_api_enabled'         => false,
+			)
+		);
+		$tab      = sanitize_key( $_GET['tab'] ?? 'general' );
+		if ( ! in_array( $tab, array( 'general', 'recaptcha', 'rest-api' ), true ) ) {
+			$tab = 'general';
+		}
+		echo '<div class="wrap nyforms-admin nyforms-settings-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'CONFIGURATION', 'nyforms' ) . '</p><h1>' . esc_html__( 'Settings', 'nyforms' ) . '</h1><p>' . esc_html__( 'Configure local data preferences, optional spam protection, and developer API access.', 'nyforms' ) . '</p></div></div><div class="nyforms-settings-layout"><nav class="nyforms-settings-nav" aria-label="' . esc_attr__( 'Settings sections', 'nyforms' ) . '">';
+		foreach ( array(
+			'general'   => __( 'Settings', 'nyforms' ),
+			'recaptcha' => __( 'reCAPTCHA', 'nyforms' ),
+			'rest-api'  => __( 'REST API', 'nyforms' ),
+		) as $slug => $label ) {
+			echo '<a' . ( $slug === $tab ? ' class="is-active"' : '' ) . ' href="' . esc_url(
+				add_query_arg(
+					array(
+						'page' => 'nyforms-settings',
+						'tab'  => $slug,
+					),
+					admin_url( 'admin.php' )
+				)
+			) . '">' . esc_html( $label ) . '</a>';
+		} echo '</nav><div class="nyforms-settings-content"><form class="nyforms-card nyforms-settings" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="save_settings"><input type="hidden" name="settings_tab" value="' . esc_attr( $tab ) . '">' . wp_kses_post( wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) );
+		if ( 'general' === $tab ) {
+			echo '<h2>' . esc_html__( 'Your License Details', 'nyforms' ) . '</h2><table class="widefat striped nyforms-license-table"><thead><tr><th>' . esc_html__( 'License Type', 'nyforms' ) . '</th><th>' . esc_html__( 'License Status', 'nyforms' ) . '</th><th>' . esc_html__( 'License Activations', 'nyforms' ) . '</th><th>' . esc_html__( 'Renews On', 'nyforms' ) . '</th></tr></thead><tbody><tr><td>' . esc_html__( 'Not configured', 'nyforms' ) . '</td><td>' . esc_html__( 'No license service connected', 'nyforms' ) . '</td><td>—</td><td>—</td></tr></tbody></table><section class="nyforms-data-collection"><h2>' . esc_html__( 'Data Collection', 'nyforms' ) . '</h2><p>' . esc_html__( 'Help improve NYforms by sharing anonymous, local-use information. NYforms does not send telemetry unless a future, separately configured service is added.', 'nyforms' ) . ' <a href="#nyforms-data-collection">' . esc_html__( 'Learn more', 'nyforms' ) . '</a></p><label class="nyforms-switch"><input type="checkbox" name="data_collection" value="1"' . checked( ! empty( $settings['data_collection'] ), true, false ) . '><span></span> ' . esc_html__( 'Enable data collection preference', 'nyforms' ) . '</label></section><h2>' . esc_html__( 'Submission safeguards', 'nyforms' ) . '</h2><p><label>' . esc_html__( 'Submissions per IP each hour', 'nyforms' ) . '<input type="number" min="1" max="1000" name="rate_limit" value="' . esc_attr( $settings['rate_limit'] ) . '"></label></p><p><label>' . esc_html__( 'Move entries to trash after (days)', 'nyforms' ) . '<input type="number" min="0" name="retention_days" value="' . esc_attr( $settings['retention_days'] ) . '"></label></p><p><label><input type="checkbox" name="delete_data_on_uninstall" value="1"' . checked( ! empty( $settings['delete_data_on_uninstall'] ), true, false ) . '> ' . esc_html__( 'Delete NYforms data when the plugin is uninstalled', 'nyforms' ) . '</label></p>';
+		} elseif ( 'recaptcha' === $tab ) {
+			  echo '<h2>' . esc_html__( 'reCAPTCHA Settings', 'nyforms' ) . '</h2><p>' . esc_html__( 'Optionally protect public submissions with Google reCAPTCHA v2. Add this site’s domain when creating your key pair. Enabling this setting loads Google’s reCAPTCHA script on pages with active forms and verifies each token server-side.', 'nyforms' ) . ' <a href="https://developers.google.com/recaptcha/intro" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Google documentation', 'nyforms' ) . '</a></p><p><label><input type="checkbox" name="recaptcha_enabled" value="1"' . checked( ! empty( $settings['recaptcha_enabled'] ), true, false ) . '> ' . esc_html__( 'Enable reCAPTCHA for active forms', 'nyforms' ) . '</label></p><p><label>' . esc_html__( 'Site Key', 'nyforms' ) . '<input type="text" name="recaptcha_site_key" autocomplete="off" value="' . esc_attr( $settings['recaptcha_site_key'] ) . '"></label></p><p><label>' . esc_html__( 'Secret Key', 'nyforms' ) . '<input type="password" name="recaptcha_secret_key" autocomplete="new-password" value="' . esc_attr( $settings['recaptcha_secret_key'] ) . '"></label></p><fieldset><legend>' . esc_html__( 'Type', 'nyforms' ) . '</legend><label><input type="radio" name="recaptcha_type" value="checkbox"' . checked( $settings['recaptcha_type'], 'checkbox', false ) . '> ' . esc_html__( 'Checkbox', 'nyforms' ) . '</label> <label><input type="radio" name="recaptcha_type" value="invisible"' . checked( $settings['recaptcha_type'], 'invisible', false ) . '> ' . esc_html__( 'Invisible', 'nyforms' ) . '</label></fieldset>';
+		} else {
+			   echo '<h2>' . esc_html__( 'REST API Settings', 'nyforms' ) . '</h2><p>' . esc_html__( 'Enable authenticated developer access to the NYforms REST API. WordPress administrators can continue using the visual builder through nonce-authenticated requests even when this external access is disabled.', 'nyforms' ) . '</p><p><label><input type="checkbox" name="rest_api_enabled" value="1"' . checked( ! empty( $settings['rest_api_enabled'] ), true, false ) . '> ' . esc_html__( 'Enable authenticated developer API access', 'nyforms' ) . '</label></p><p class="description">' . esc_html__( 'Base URL:', 'nyforms' ) . ' <code>' . esc_html( rest_url( 'nyforms/v1/' ) ) . '</code></p><p class="description">' . esc_html__( 'API requests require HTTPS plus a WordPress user with the appropriate NYforms capability. Use an X-WP-Nonce for in-admin requests or an Application Password for remote integrations.', 'nyforms' ) . '</p><p><a class="button" target="_blank" rel="noopener noreferrer" href="' . esc_url( rest_url( 'nyforms/v1/openapi' ) ) . '">' . esc_html__( 'View API reference', 'nyforms' ) . '</a></p><p class="description">' . esc_html__( 'Forms, entries, settings, diagnostics, audit events, JSON exports, CSV downloads, and the self-service privacy request route are documented there. Submitted field values and reCAPTCHA secrets are never written to audit events.', 'nyforms' ) . '</p>';
+		}
 		echo '<p><button class="button button-primary" type="submit">' . esc_html__( 'Save Settings', 'nyforms' ) . '</button></p></form></div></div></div>';
 	}
 
 	public function import_export_page() {
 		$this->require_manage();
 		$forms = Plugin::instance()->repository->forms();
-		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'PORTABILITY', 'nyforms' ) . '</p><h1>' . esc_html__( 'Import/Export', 'nyforms' ) . '</h1><p>' . esc_html__( 'Move versioned NYforms definitions safely between WordPress sites.', 'nyforms' ) . '</p></div></div><div class="nyforms-card nyforms-import-export-card"><section><h2>' . esc_html__( 'Import a form', 'nyforms' ) . '</h2><form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="import">' . wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) . '<input type="file" name="nyforms_import" accept="application/json,.json" required> <button type="submit" class="button">' . esc_html__( 'Import JSON', 'nyforms' ) . '</button></form><p class="description">' . esc_html__( 'Import a NYforms JSON definition smaller than 2 MB.', 'nyforms' ) . '</p></section><section class="nyforms-export-form-section"><h2>' . esc_html__( 'Export a form', 'nyforms' ) . '</h2>'; if ( $forms ) { echo '<form method="get" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="_wpnonce" value="' . esc_attr( wp_create_nonce( 'nyforms_admin' ) ) . '"><label class="screen-reader-text" for="nyforms-export-form">' . esc_html__( 'Choose a form to export', 'nyforms' ) . '</label><select id="nyforms-export-form" name="id">'; foreach ( $forms as $form ) { echo '<option value="' . absint( $form['id'] ) . '">' . esc_html( $form['title'] ) . '</option>'; } echo '</select> <button type="submit" name="operation" value="export_form" class="button button-primary">' . esc_html__( 'Download JSON', 'nyforms' ) . '</button> <button type="submit" name="operation" value="export" class="button">' . esc_html__( 'Download CSV', 'nyforms' ) . '</button> <button type="submit" name="operation" value="export_excel" class="button">' . esc_html__( 'Download Excel (.xls)', 'nyforms' ) . '</button></form><p class="description">' . esc_html__( 'JSON exports the form definition. CSV and Excel exports include active submission data for the selected form.', 'nyforms' ) . '</p>'; } else { echo '<p>' . esc_html__( 'Create a form before exporting one.', 'nyforms' ) . '</p>'; } echo '</section></div></div>';
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'PORTABILITY', 'nyforms' ) . '</p><h1>' . esc_html__( 'Import/Export', 'nyforms' ) . '</h1><p>' . esc_html__( 'Move versioned NYforms definitions safely between WordPress sites.', 'nyforms' ) . '</p></div></div><div class="nyforms-card nyforms-import-export-card"><section><h2>' . esc_html__( 'Import a form', 'nyforms' ) . '</h2><form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="operation" value="import">' . wp_kses_post( wp_nonce_field( 'nyforms_admin', '_wpnonce', true, false ) ) . '<input type="file" name="nyforms_import" accept="application/json,.json" required> <button type="submit" class="button">' . esc_html__( 'Import JSON', 'nyforms' ) . '</button></form><p class="description">' . esc_html__( 'Import a NYforms JSON definition smaller than 2 MB.', 'nyforms' ) . '</p></section><section class="nyforms-export-form-section"><h2>' . esc_html__( 'Export a form', 'nyforms' ) . '</h2>';
+		if ( $forms ) {
+			echo '<form method="get" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="nyforms_admin"><input type="hidden" name="_wpnonce" value="' . esc_attr( wp_create_nonce( 'nyforms_admin' ) ) . '"><label class="screen-reader-text" for="nyforms-export-form">' . esc_html__( 'Choose a form to export', 'nyforms' ) . '</label><select id="nyforms-export-form" name="id">';
+			foreach ( $forms as $form ) {
+				echo '<option value="' . absint( $form['id'] ) . '">' . esc_html( $form['title'] ) . '</option>';
+			} echo '</select> <button type="submit" name="operation" value="export_form" class="button button-primary">' . esc_html__( 'Download JSON', 'nyforms' ) . '</button> <button type="submit" name="operation" value="export" class="button">' . esc_html__( 'Download CSV', 'nyforms' ) . '</button> <button type="submit" name="operation" value="export_excel" class="button">' . esc_html__( 'Download Excel (.xls)', 'nyforms' ) . '</button></form><p class="description">' . esc_html__( 'JSON exports the form definition. CSV and Excel exports include active submission data for the selected form.', 'nyforms' ) . '</p>';
+		} else {
+			echo '<p>' . esc_html__( 'Create a form before exporting one.', 'nyforms' ) . '</p>';
+		} echo '</section></div></div>';
 	}
 
-	public function addons_page() { $this->info_page( __( 'Add-Ons', 'nyforms' ), __( 'Extend NYforms', 'nyforms' ), __( 'NYforms keeps integrations opt-in. Registered field, notification, and anti-spam providers appear here when installed by a site owner.', 'nyforms' ) ); }
+	public function addons_page() {
+		$this->info_page( __( 'Add-Ons', 'nyforms' ), __( 'Extend NYforms', 'nyforms' ), __( 'NYforms keeps integrations opt-in. Registered field, notification, and anti-spam providers appear here when installed by a site owner.', 'nyforms' ) );
+	}
 	public function system_status_page() {
-		$this->require_manage(); $report = $this->system_report();
+		$this->require_manage();
+		$report = $this->system_report();
 		echo '<div class="wrap nyforms-admin nyforms-system-report"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'DIAGNOSTICS', 'nyforms' ) . '</p><h1>' . esc_html__( 'System Report', 'nyforms' ) . '</h1><p>' . esc_html__( 'Live environment checks for troubleshooting NYforms safely.', 'nyforms' ) . '</p></div></div><div class="nyforms-report-intro"><span class="nyforms-report-icon" aria-hidden="true">?</span><div><p>' . esc_html__( 'This report reflects the current server and WordPress environment. Copy it when you need to share technical details with your site administrator.', 'nyforms' ) . '</p><button type="button" class="button" id="nyforms-copy-system-report">' . esc_html__( 'Copy system report', 'nyforms' ) . '</button><span class="nyforms-copy-status" role="status" aria-live="polite"></span></div></div><textarea id="nyforms-system-report-data" class="screen-reader-text" readonly>' . esc_textarea( $report['text'] ) . '</textarea>';
-		foreach ( $report['groups'] as $group ) { echo '<section class="nyforms-report-group"><h2>' . esc_html( $group['title'] ) . '</h2><table class="widefat striped nyforms-report-table"><thead><tr><th>' . esc_html__( 'Setting', 'nyforms' ) . '</th><th>' . esc_html__( 'Value', 'nyforms' ) . '</th></tr></thead><tbody>'; foreach ( $group['checks'] as $check ) { echo '<tr><th scope="row">' . esc_html( $check['label'] ) . '</th><td>' . esc_html( $check['value'] ) . ' <span class="nyforms-report-state nyforms-report-state--' . esc_attr( $check['state'] ) . '">' . esc_html( 'pass' === $check['state'] ? __( 'Pass', 'nyforms' ) : __( 'Review', 'nyforms' ) ) . '</span></td></tr>'; } echo '</tbody></table></section>'; }
+		foreach ( $report['groups'] as $group ) {
+			echo '<section class="nyforms-report-group"><h2>' . esc_html( $group['title'] ) . '</h2><table class="widefat striped nyforms-report-table"><thead><tr><th>' . esc_html__( 'Setting', 'nyforms' ) . '</th><th>' . esc_html__( 'Value', 'nyforms' ) . '</th></tr></thead><tbody>';
+			foreach ( $group['checks'] as $check ) {
+				echo '<tr><th scope="row">' . esc_html( $check['label'] ) . '</th><td>' . esc_html( $check['value'] ) . ' <span class="nyforms-report-state nyforms-report-state--' . esc_attr( $check['state'] ) . '">' . esc_html( 'pass' === $check['state'] ? __( 'Pass', 'nyforms' ) : __( 'Review', 'nyforms' ) ) . '</span></td></tr>';
+			} echo '</tbody></table></section>';
+		}
 		echo '</div>';
 	}
 	public function help_page() {
-		$this->require_manage(); $forms = Plugin::instance()->repository->forms(); $active = count( array_filter( $forms, function( $form ) { return 'active' === $form['status']; } ) );
-		echo '<div class="wrap nyforms-admin nyforms-help-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'GUIDE', 'nyforms' ) . '</p><h1>' . esc_html__( 'NYforms Help', 'nyforms' ) . '</h1><p>' . esc_html__( 'A practical guide to building, publishing, and managing forms with NYforms.', 'nyforms' ) . '</p></div></div><div class="nyforms-help-summary"><strong>' . sprintf( esc_html__( '%1$d forms · %2$d active', 'nyforms' ), count( $forms ), $active ) . '</strong><a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=nyforms-new' ) ) . '">' . esc_html__( 'Create a form', 'nyforms' ) . '</a></div><div class="nyforms-help-grid">';
+		$this->require_manage();
+		$forms  = Plugin::instance()->repository->forms();
+		$active = count(
+			array_filter(
+				$forms,
+				function ( $form ) {
+						return 'active' === $form['status'];
+				}
+			)
+		);
+		/* translators: 1: Total number of forms. 2: Number of active forms. */
+		$form_summary = sprintf( __( '%1$d forms · %2$d active', 'nyforms' ), count( $forms ), $active );
+		echo '<div class="wrap nyforms-admin nyforms-help-page"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html__( 'GUIDE', 'nyforms' ) . '</p><h1>' . esc_html__( 'NYforms Help', 'nyforms' ) . '</h1><p>' . esc_html__( 'A practical guide to building, publishing, and managing forms with NYforms.', 'nyforms' ) . '</p></div></div><div class="nyforms-help-summary"><strong>' . esc_html( $form_summary ) . '</strong><a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=nyforms-new' ) ) . '">' . esc_html__( 'Create a form', 'nyforms' ) . '</a></div><div class="nyforms-help-grid">';
 		echo '<section class="nyforms-help-card"><h2>' . esc_html__( 'Start here', 'nyforms' ) . '</h2><ol><li>' . esc_html__( 'Open New Form and create a blank draft.', 'nyforms' ) . '</li><li>' . esc_html__( 'Use the visual builder to add fields, select one to configure it, and drag fields to reorder them.', 'nyforms' ) . '</li><li>' . esc_html__( 'Choose 25%, 50%, 75%, or 100% width per field for responsive layouts.', 'nyforms' ) . '</li><li>' . esc_html__( 'Save, then activate the form from the Forms list when it is ready to receive submissions.', 'nyforms' ) . '</li></ol></section>';
 		echo '<section class="nyforms-help-card"><h2>' . esc_html__( 'Available fields', 'nyforms' ) . '</h2><p>' . esc_html__( 'The builder currently includes text, paragraph, email, phone, number, select, radio, checkbox, consent, date, time, name, address, website, hidden, HTML, section, page break, and file upload fields.', 'nyforms' ) . '</p><p>' . esc_html__( 'Product, option, quantity, total, and calculation fields are also available for form layouts. Payment gateways are not included.', 'nyforms' ) . '</p></section>';
 		echo '<section class="nyforms-help-card"><h2>' . esc_html__( 'Publish a form', 'nyforms' ) . '</h2><p>' . esc_html__( 'Use the NYforms block in the WordPress editor, or choose one of these embedding options:', 'nyforms' ) . '</p><p><code>[nyforms id="123"]</code></p><p><code>&lt;?php echo nyforms_render_form( 123 ); ?&gt;</code></p><p class="description">' . esc_html__( 'Replace 123 with the form ID shown in the Forms screen. Only active forms render for site visitors.', 'nyforms' ) . '</p></section>';
@@ -118,128 +347,485 @@ class Admin {
 		echo '</div></div>';
 	}
 
-	private function info_page( $title, $heading, $content ) { $this->require_manage(); echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html( $title ) . '</p><h1>' . esc_html( $heading ) . '</h1><p>' . esc_html( $content ) . '</p></div></div></div>'; }
+	private function info_page( $title, $heading, $content ) {
+		$this->require_manage();
+		echo '<div class="wrap nyforms-admin"><div class="nyforms-hero"><span class="nyforms-mark" aria-hidden="true">N</span><div><p class="nyforms-eyebrow">' . esc_html( $title ) . '</p><h1>' . esc_html( $heading ) . '</h1><p>' . esc_html( $content ) . '</p></div></div></div>';
+	}
 
 	private function system_report() {
 		global $wpdb;
-		$uploads = wp_upload_dir(); $uploads_writable = empty( $uploads['error'] ) && is_writable( $uploads['basedir'] ); $settings = get_option( 'nyforms_settings', array() ); $rest_available = function_exists( 'rest_get_server' ) && rest_get_server(); $purge = wp_next_scheduled( 'nyforms_purge_expired_entries' );
-		$tables = array( 'nyforms_forms', 'nyforms_entries', 'nyforms_entry_values', 'nyforms_entry_files', 'nyforms_events' ); $missing = array(); foreach ( $tables as $table ) { if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ) !== $wpdb->prefix . $table ) { $missing[] = $table; } }
-		if ( ! function_exists( 'get_plugins' ) ) { require_once ABSPATH . 'wp-admin/includes/plugin.php'; } $all_plugins = get_plugins(); $active_plugin_files = (array) get_option( 'active_plugins', array() ); if ( is_multisite() ) { $active_plugin_files = array_unique( array_merge( $active_plugin_files, array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) ) ); } $active_plugins = array(); foreach ( $active_plugin_files as $file ) { if ( isset( $all_plugins[ $file ] ) ) { $active_plugins[] = $all_plugins[ $file ]['Name'] . ' ' . $all_plugins[ $file ]['Version']; } }
-		$theme = wp_get_theme(); $extensions = get_loaded_extensions(); sort( $extensions ); $server = $_SERVER['SERVER_SOFTWARE'] ?? php_uname(); $port = $_SERVER['SERVER_PORT'] ?? __( 'Not reported', 'nyforms' ); $root = $_SERVER['DOCUMENT_ROOT'] ?? ABSPATH; $db_charset = $wpdb->get_var( 'SELECT @@character_set_database' ); $db_collation = $wpdb->get_var( 'SELECT @@collation_database' ); $db_comment = $wpdb->get_var( 'SELECT @@version_comment' ); $db_engine = false !== stripos( $wpdb->db_server_info() . ' ' . $db_comment, 'mariadb' ) ? 'MariaDB' : 'MySQL'; $mysql_utc = $wpdb->get_var( 'SELECT UTC_TIMESTAMP()' ); $mysql_local = $wpdb->get_var( 'SELECT NOW()' );
-		$groups = array(
-			array( 'title' => __( 'NY Forms', 'nyforms' ), 'checks' => array(
-				$this->report_check( __( 'Version', 'nyforms' ), NYFORMS_VERSION ),
-				$this->report_check( __( 'Upload folder', 'nyforms' ), $uploads['basedir'] ?: __( 'Not available', 'nyforms' ), $uploads_writable ),
-				$this->report_check( __( 'Upload folder permissions', 'nyforms' ), $uploads_writable ? __( 'Writable', 'nyforms' ) : ( $uploads['error'] ?: __( 'Not writable', 'nyforms' ) ), $uploads_writable ),
-				$this->report_check( __( 'Output CSS', 'nyforms' ), __( 'Native frontend stylesheet', 'nyforms' ) ),
-				$this->report_check( __( 'Default Theme', 'nyforms' ), __( 'NYforms native interface', 'nyforms' ) ),
-				$this->report_check( __( 'No-Conflict Mode', 'nyforms' ), __( 'Not used', 'nyforms' ) ),
-				$this->report_check( __( 'Currency', 'nyforms' ), __( 'Not configured (payments are disabled)', 'nyforms' ) ),
-				$this->report_check( __( 'Background Notifications', 'nyforms' ), __( 'No background notification provider configured', 'nyforms' ) ),
-				$this->report_check( __( 'Background updates', 'nyforms' ), wp_next_scheduled( 'wp_version_check' ) ? __( 'WordPress update checks scheduled', 'nyforms' ) : __( 'Not currently scheduled', 'nyforms' ), (bool) wp_next_scheduled( 'wp_version_check' ) ),
-				$this->report_check( __( 'REST API v2', 'nyforms' ), $rest_available ? rest_url( 'nyforms/v1/' ) : __( 'Unavailable', 'nyforms' ), (bool) $rest_available ),
-				$this->report_check( __( 'Orbital Style Filter', 'nyforms' ), __( 'Not used by NYforms', 'nyforms' ) ),
-			) ),
-			array( 'title' => __( 'Add-Ons', 'nyforms' ), 'checks' => array(
-				$this->report_check( __( 'Registered field types', 'nyforms' ), (string) count( Extensions::field_types() ) ),
-				$this->report_check( __( 'Registered anti-spam providers', 'nyforms' ), (string) count( Extensions::spam_providers() ) ),
-				$this->report_check( __( 'Registered notification providers', 'nyforms' ), (string) count( Extensions::notification_providers() ) ),
-			) ),
-			array( 'title' => __( 'Database', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Database Version', 'nyforms' ), empty( $missing ) ? get_option( 'nyforms_db_version', __( 'Unknown', 'nyforms' ) ) : sprintf( __( 'Missing tables: %s', 'nyforms' ), implode( ', ', $missing ) ), empty( $missing ) ) ) ),
-			array( 'title' => __( 'Translations', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Site language', 'nyforms' ), determine_locale() ), $this->report_check( __( 'Language directory', 'nyforms' ), WP_LANG_DIR ) ) ),
-			array( 'title' => __( 'Scheduled (Cron) Events Log', 'nyforms' ), 'checks' => array( $this->report_check( __( 'NYforms retention purge', 'nyforms' ), $purge ? wp_date( 'Y-m-d H:i:s T', $purge ) : __( 'Not scheduled', 'nyforms' ), (bool) $purge ), $this->report_check( __( 'WordPress cron event', 'nyforms' ), wp_next_scheduled( 'wp_version_check' ) ? wp_date( 'Y-m-d H:i:s T', wp_next_scheduled( 'wp_version_check' ) ) : __( 'Not scheduled', 'nyforms' ), (bool) wp_next_scheduled( 'wp_version_check' ) ) ) ),
-			array( 'title' => __( 'WordPress Environment', 'nyforms' ), 'checks' => array(
-				$this->report_check( __( 'Home URL', 'nyforms' ), home_url() ), $this->report_check( __( 'Site URL', 'nyforms' ), site_url() ), $this->report_check( __( 'REST API Base URL', 'nyforms' ), rest_url() ), $this->report_check( __( 'WordPress Version', 'nyforms' ), get_bloginfo( 'version' ), version_compare( get_bloginfo( 'version' ), '7.0', '>=' ) ), $this->report_check( __( 'WordPress Multisite', 'nyforms' ), is_multisite() ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'WordPress Memory Limit', 'nyforms' ), defined( 'WP_MEMORY_LIMIT' ) ? WP_MEMORY_LIMIT : ini_get( 'memory_limit' ) ), $this->report_check( __( 'WordPress Debug Mode', 'nyforms' ), defined( 'WP_DEBUG' ) && WP_DEBUG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ), $this->report_check( __( 'WordPress Debug Log', 'nyforms' ), defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ), $this->report_check( __( 'WordPress Script Debug Mode', 'nyforms' ), defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ), $this->report_check( __( 'WordPress Cron', 'nyforms' ), defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ? __( 'Disabled', 'nyforms' ) : __( 'Enabled', 'nyforms' ), ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON ), $this->report_check( __( 'WordPress Alternate Cron', 'nyforms' ), defined( 'ALTERNATE_WP_CRON' ) && ALTERNATE_WP_CRON ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ), $this->report_check( __( 'Background tasks', 'nyforms' ), $purge ? __( 'NYforms retention task scheduled', 'nyforms' ) : __( 'No NYforms task scheduled', 'nyforms' ), (bool) $purge ),
-			) ),
-			array( 'title' => __( 'Active Theme', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Name', 'nyforms' ), $theme->get( 'Name' ) ), $this->report_check( __( 'Version', 'nyforms' ), $theme->get( 'Version' ) ), $this->report_check( __( 'Theme directory', 'nyforms' ), $theme->get_stylesheet_directory() ) ) ),
-			array( 'title' => __( 'Active Plugins', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Active plugin count', 'nyforms' ), (string) count( $active_plugins ) ), $this->report_check( __( 'Plugins', 'nyforms' ), $active_plugins ? implode( '; ', $active_plugins ) : __( 'None', 'nyforms' ) ) ) ),
-			array( 'title' => __( 'Server Environment', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Web Server Software', 'nyforms' ), $server ), $this->report_check( __( 'Web Server Port', 'nyforms' ), (string) $port ), $this->report_check( __( 'Document Root', 'nyforms' ), $root ) ) ),
-			array( 'title' => __( 'PHP', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Version', 'nyforms' ), PHP_VERSION, version_compare( PHP_VERSION, '7.4', '>=' ) ), $this->report_check( __( 'Memory Limit (memory_limit)', 'nyforms' ), ini_get( 'memory_limit' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Execution Time (max_execution_time)', 'nyforms' ), ini_get( 'max_execution_time' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum File Upload Size (upload_max_filesize)', 'nyforms' ), ini_get( 'upload_max_filesize' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum File Uploads (max_file_uploads)', 'nyforms' ), ini_get( 'max_file_uploads' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Post Size (post_max_size)', 'nyforms' ), ini_get( 'post_max_size' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Input Variables (max_input_vars)', 'nyforms' ), ini_get( 'max_input_vars' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'cURL Enabled', 'nyforms' ), extension_loaded( 'curl' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'OpenSSL', 'nyforms' ), extension_loaded( 'openssl' ) ? __( 'Available (not required)', 'nyforms' ) : __( 'Unavailable (not required)', 'nyforms' ) ), $this->report_check( __( 'Mcrypt Enabled', 'nyforms' ), extension_loaded( 'mcrypt' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'Mbstring Enabled', 'nyforms' ), extension_loaded( 'mbstring' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'Loaded Extensions', 'nyforms' ), implode( ', ', $extensions ) ) ) ),
-			array( 'title' => __( 'Database Server', 'nyforms' ), 'checks' => array( $this->report_check( __( 'Database Management System', 'nyforms' ), $db_engine ), $this->report_check( __( 'Version', 'nyforms' ), $wpdb->db_version() ), $this->report_check( __( 'Database Character Set', 'nyforms' ), $db_charset ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Database Collation', 'nyforms' ), $db_collation ?: __( 'Not reported', 'nyforms' ) ) ) ),
-			array( 'title' => __( 'Date and Time', 'nyforms' ), 'checks' => array( $this->report_check( __( 'WordPress (Local) Timezone', 'nyforms' ), wp_date( 'Y-m-d H:i:s T' ) ), $this->report_check( __( 'MySQL - Universal time (UTC)', 'nyforms' ), $mysql_utc ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'MySQL - Local time', 'nyforms' ), $mysql_local ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'PHP - Universal time (UTC)', 'nyforms' ), gmdate( 'Y-m-d H:i:s T' ) ), $this->report_check( __( 'PHP - Local time', 'nyforms' ), date( 'Y-m-d H:i:s T' ) ) ) ),
+		$uploads          = wp_upload_dir();
+		$uploads_writable = empty( $uploads['error'] ) && wp_is_writable( $uploads['basedir'] );
+		$settings         = get_option( 'nyforms_settings', array() );
+		$rest_available   = function_exists( 'rest_get_server' ) && rest_get_server();
+		$purge            = wp_next_scheduled( 'nyforms_purge_expired_entries' );
+		$tables           = array( 'nyforms_forms', 'nyforms_entries', 'nyforms_entry_values', 'nyforms_entry_files', 'nyforms_events' );
+		$missing          = array();
+		foreach ( $tables as $table ) {
+			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ) !== $wpdb->prefix . $table ) {
+				$missing[] = $table;
+			}
+		}
+		if ( ! function_exists( 'get_plugins' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		} $all_plugins       = get_plugins();
+		$active_plugin_files = (array) get_option( 'active_plugins', array() );
+		if ( is_multisite() ) {
+			$active_plugin_files = array_unique( array_merge( $active_plugin_files, array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) ) );
+		} $active_plugins = array();
+		foreach ( $active_plugin_files as $file ) {
+			if ( isset( $all_plugins[ $file ] ) ) {
+				$active_plugins[] = $all_plugins[ $file ]['Name'] . ' ' . $all_plugins[ $file ]['Version'];
+			}
+		}
+		$theme      = wp_get_theme();
+		$extensions = get_loaded_extensions();
+		sort( $extensions );
+		$server       = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : php_uname();
+		$port         = isset( $_SERVER['SERVER_PORT'] ) ? absint( $_SERVER['SERVER_PORT'] ) : __( 'Not reported', 'nyforms' );
+		$root         = isset( $_SERVER['DOCUMENT_ROOT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) : ABSPATH;
+		$db_charset   = $wpdb->get_var( 'SELECT @@character_set_database' );
+		$db_collation = $wpdb->get_var( 'SELECT @@collation_database' );
+		$db_comment   = $wpdb->get_var( 'SELECT @@version_comment' );
+		$db_engine    = false !== stripos( $wpdb->db_server_info() . ' ' . $db_comment, 'mariadb' ) ? 'MariaDB' : 'MySQL';
+		$mysql_utc    = $wpdb->get_var( 'SELECT UTC_TIMESTAMP()' );
+		$mysql_local  = $wpdb->get_var( 'SELECT NOW()' );
+		/* translators: %s: Comma-separated list of missing database tables. */
+		$database_status = sprintf( __( 'Missing tables: %s', 'nyforms' ), implode( ', ', $missing ) );
+		$groups       = array(
+			array(
+				'title'  => __( 'NY Forms', 'nyforms' ),
+				'checks' => array(
+					$this->report_check( __( 'Version', 'nyforms' ), NYFORMS_VERSION ),
+					$this->report_check( __( 'Upload folder', 'nyforms' ), $uploads['basedir'] ?: __( 'Not available', 'nyforms' ), $uploads_writable ),
+					$this->report_check( __( 'Upload folder permissions', 'nyforms' ), $uploads_writable ? __( 'Writable', 'nyforms' ) : ( $uploads['error'] ?: __( 'Not writable', 'nyforms' ) ), $uploads_writable ),
+					$this->report_check( __( 'Output CSS', 'nyforms' ), __( 'Native frontend stylesheet', 'nyforms' ) ),
+					$this->report_check( __( 'Default Theme', 'nyforms' ), __( 'NYforms native interface', 'nyforms' ) ),
+					$this->report_check( __( 'No-Conflict Mode', 'nyforms' ), __( 'Not used', 'nyforms' ) ),
+					$this->report_check( __( 'Currency', 'nyforms' ), __( 'Not configured (payments are disabled)', 'nyforms' ) ),
+					$this->report_check( __( 'Background Notifications', 'nyforms' ), __( 'No background notification provider configured', 'nyforms' ) ),
+					$this->report_check( __( 'Background updates', 'nyforms' ), wp_next_scheduled( 'wp_version_check' ) ? __( 'WordPress update checks scheduled', 'nyforms' ) : __( 'Not currently scheduled', 'nyforms' ), (bool) wp_next_scheduled( 'wp_version_check' ) ),
+					$this->report_check( __( 'REST API v2', 'nyforms' ), $rest_available ? rest_url( 'nyforms/v1/' ) : __( 'Unavailable', 'nyforms' ), (bool) $rest_available ),
+					$this->report_check( __( 'Orbital Style Filter', 'nyforms' ), __( 'Not used by NYforms', 'nyforms' ) ),
+				),
+			),
+			array(
+				'title'  => __( 'Add-Ons', 'nyforms' ),
+				'checks' => array(
+					$this->report_check( __( 'Registered field types', 'nyforms' ), (string) count( Extensions::field_types() ) ),
+					$this->report_check( __( 'Registered anti-spam providers', 'nyforms' ), (string) count( Extensions::spam_providers() ) ),
+					$this->report_check( __( 'Registered notification providers', 'nyforms' ), (string) count( Extensions::notification_providers() ) ),
+				),
+			),
+			array(
+				'title'  => __( 'Database', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Database Version', 'nyforms' ), empty( $missing ) ? get_option( 'nyforms_db_version', __( 'Unknown', 'nyforms' ) ) : $database_status, empty( $missing ) ) ),
+			),
+			array(
+				'title'  => __( 'Translations', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Site language', 'nyforms' ), determine_locale() ), $this->report_check( __( 'Language directory', 'nyforms' ), WP_LANG_DIR ) ),
+			),
+			array(
+				'title'  => __( 'Scheduled (Cron) Events Log', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'NYforms retention purge', 'nyforms' ), $purge ? wp_date( 'Y-m-d H:i:s T', $purge ) : __( 'Not scheduled', 'nyforms' ), (bool) $purge ), $this->report_check( __( 'WordPress cron event', 'nyforms' ), wp_next_scheduled( 'wp_version_check' ) ? wp_date( 'Y-m-d H:i:s T', wp_next_scheduled( 'wp_version_check' ) ) : __( 'Not scheduled', 'nyforms' ), (bool) wp_next_scheduled( 'wp_version_check' ) ) ),
+			),
+			array(
+				'title'  => __( 'WordPress Environment', 'nyforms' ),
+				'checks' => array(
+					$this->report_check( __( 'Home URL', 'nyforms' ), home_url() ),
+					$this->report_check( __( 'Site URL', 'nyforms' ), site_url() ),
+					$this->report_check( __( 'REST API Base URL', 'nyforms' ), rest_url() ),
+					$this->report_check( __( 'WordPress Version', 'nyforms' ), get_bloginfo( 'version' ), version_compare( get_bloginfo( 'version' ), '7.0', '>=' ) ),
+					$this->report_check( __( 'WordPress Multisite', 'nyforms' ), is_multisite() ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ),
+					$this->report_check( __( 'WordPress Memory Limit', 'nyforms' ), defined( 'WP_MEMORY_LIMIT' ) ? WP_MEMORY_LIMIT : ini_get( 'memory_limit' ) ),
+					$this->report_check( __( 'WordPress Debug Mode', 'nyforms' ), defined( 'WP_DEBUG' ) && WP_DEBUG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ),
+					$this->report_check( __( 'WordPress Debug Log', 'nyforms' ), defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ),
+					$this->report_check( __( 'WordPress Script Debug Mode', 'nyforms' ), defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ),
+					$this->report_check( __( 'WordPress Cron', 'nyforms' ), defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ? __( 'Disabled', 'nyforms' ) : __( 'Enabled', 'nyforms' ), ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON ),
+					$this->report_check( __( 'WordPress Alternate Cron', 'nyforms' ), defined( 'ALTERNATE_WP_CRON' ) && ALTERNATE_WP_CRON ? __( 'Enabled', 'nyforms' ) : __( 'Disabled', 'nyforms' ) ),
+					$this->report_check( __( 'Background tasks', 'nyforms' ), $purge ? __( 'NYforms retention task scheduled', 'nyforms' ) : __( 'No NYforms task scheduled', 'nyforms' ), (bool) $purge ),
+				),
+			),
+			array(
+				'title'  => __( 'Active Theme', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Name', 'nyforms' ), $theme->get( 'Name' ) ), $this->report_check( __( 'Version', 'nyforms' ), $theme->get( 'Version' ) ), $this->report_check( __( 'Theme directory', 'nyforms' ), $theme->get_stylesheet_directory() ) ),
+			),
+			array(
+				'title'  => __( 'Active Plugins', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Active plugin count', 'nyforms' ), (string) count( $active_plugins ) ), $this->report_check( __( 'Plugins', 'nyforms' ), $active_plugins ? implode( '; ', $active_plugins ) : __( 'None', 'nyforms' ) ) ),
+			),
+			array(
+				'title'  => __( 'Server Environment', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Web Server Software', 'nyforms' ), $server ), $this->report_check( __( 'Web Server Port', 'nyforms' ), (string) $port ), $this->report_check( __( 'Document Root', 'nyforms' ), $root ) ),
+			),
+			array(
+				'title'  => __( 'PHP', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Version', 'nyforms' ), PHP_VERSION, version_compare( PHP_VERSION, '7.4', '>=' ) ), $this->report_check( __( 'Memory Limit (memory_limit)', 'nyforms' ), ini_get( 'memory_limit' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Execution Time (max_execution_time)', 'nyforms' ), ini_get( 'max_execution_time' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum File Upload Size (upload_max_filesize)', 'nyforms' ), ini_get( 'upload_max_filesize' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum File Uploads (max_file_uploads)', 'nyforms' ), ini_get( 'max_file_uploads' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Post Size (post_max_size)', 'nyforms' ), ini_get( 'post_max_size' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Maximum Input Variables (max_input_vars)', 'nyforms' ), ini_get( 'max_input_vars' ) ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'cURL Enabled', 'nyforms' ), extension_loaded( 'curl' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'OpenSSL', 'nyforms' ), extension_loaded( 'openssl' ) ? __( 'Available (not required)', 'nyforms' ) : __( 'Unavailable (not required)', 'nyforms' ) ), $this->report_check( __( 'Mcrypt Enabled', 'nyforms' ), extension_loaded( 'mcrypt' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'Mbstring Enabled', 'nyforms' ), extension_loaded( 'mbstring' ) ? __( 'Yes', 'nyforms' ) : __( 'No', 'nyforms' ) ), $this->report_check( __( 'Loaded Extensions', 'nyforms' ), implode( ', ', $extensions ) ) ),
+			),
+			array(
+				'title'  => __( 'Database Server', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'Database Management System', 'nyforms' ), $db_engine ), $this->report_check( __( 'Version', 'nyforms' ), $wpdb->db_version() ), $this->report_check( __( 'Database Character Set', 'nyforms' ), $db_charset ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'Database Collation', 'nyforms' ), $db_collation ?: __( 'Not reported', 'nyforms' ) ) ),
+			),
+			array(
+				'title'  => __( 'Date and Time', 'nyforms' ),
+				'checks' => array( $this->report_check( __( 'WordPress (Local) Timezone', 'nyforms' ), wp_date( 'Y-m-d H:i:s T' ) ), $this->report_check( __( 'MySQL - Universal time (UTC)', 'nyforms' ), $mysql_utc ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'MySQL - Local time', 'nyforms' ), $mysql_local ?: __( 'Not reported', 'nyforms' ) ), $this->report_check( __( 'PHP - Universal time (UTC)', 'nyforms' ), gmdate( 'Y-m-d H:i:s T' ) ), $this->report_check( __( 'PHP - Local time', 'nyforms' ), wp_date( 'Y-m-d H:i:s T' ) ) ),
+			),
 		);
-		$text = 'NYforms System Report' . "\n" . str_repeat( '=', 24 ) . "\n"; foreach ( $groups as $group ) { $text .= "\n" . $group['title'] . "\n"; foreach ( $group['checks'] as $check ) { $text .= $check['label'] . ': ' . $check['value'] . ' (' . $check['state'] . ")\n"; } } return array( 'groups' => $groups, 'text' => $text );
+		$text         = 'NYforms System Report' . "\n" . str_repeat( '=', 24 ) . "\n";
+		foreach ( $groups as $group ) {
+			$text .= "\n" . $group['title'] . "\n";
+			foreach ( $group['checks'] as $check ) {
+				$text .= $check['label'] . ': ' . $check['value'] . ' (' . $check['state'] . ")\n";
+			}
+		} return array(
+			'groups' => $groups,
+			'text'   => $text,
+		);
 	}
 
-	private function report_check( $label, $value, $pass = true ) { return array( 'label' => $label, 'value' => (string) $value, 'state' => $pass ? 'pass' : 'review' ); }
+	private function report_check( $label, $value, $pass = true ) {
+		return array(
+			'label' => $label,
+			'value' => (string) $value,
+			'state' => $pass ? 'pass' : 'review',
+		);
+	}
 
 	public function action() {
-		check_admin_referer( 'nyforms_admin' ); $repo = Plugin::instance()->repository; $operation = sanitize_key( wp_unslash( $_REQUEST['operation'] ?? '' ) ); if ( in_array( $operation, array( 'bulk_entries', 'read', 'spam', 'trash_entry', 'restore_entry', 'delete_entry', 'star' ), true ) ) { if ( ! current_user_can( 'nyforms_manage_entries' ) ) { wp_die( esc_html__( 'You are not allowed to manage entries.', 'nyforms' ) ); } } else { $this->require_manage(); }
-		if ( 'save_settings' === $operation ) { $current = wp_parse_args( get_option( 'nyforms_settings', array() ), array( 'rate_limit' => 10, 'retention_days' => 0, 'delete_data_on_uninstall' => false, 'data_collection' => false, 'recaptcha_enabled' => false, 'recaptcha_site_key' => '', 'recaptcha_secret_key' => '', 'recaptcha_type' => 'checkbox', 'rest_api_enabled' => false ) ); $tab = sanitize_key( $_POST['settings_tab'] ?? 'general' ); if ( 'recaptcha' === $tab ) { $current['recaptcha_enabled'] = ! empty( $_POST['recaptcha_enabled'] ); $current['recaptcha_site_key'] = sanitize_text_field( wp_unslash( $_POST['recaptcha_site_key'] ?? '' ) ); $current['recaptcha_secret_key'] = sanitize_text_field( wp_unslash( $_POST['recaptcha_secret_key'] ?? '' ) ); $current['recaptcha_type'] = in_array( $_POST['recaptcha_type'] ?? '', array( 'checkbox', 'invisible' ), true ) ? $_POST['recaptcha_type'] : 'checkbox'; if ( $current['recaptcha_enabled'] && ( '' === $current['recaptcha_site_key'] || '' === $current['recaptcha_secret_key'] ) ) { $current['recaptcha_enabled'] = false; } } elseif ( 'rest-api' === $tab ) { $current['rest_api_enabled'] = ! empty( $_POST['rest_api_enabled'] ); } else { $current['rate_limit'] = min( 1000, max( 1, absint( $_POST['rate_limit'] ?? 10 ) ) ); $current['retention_days'] = absint( $_POST['retention_days'] ?? 0 ); $current['delete_data_on_uninstall'] = ! empty( $_POST['delete_data_on_uninstall'] ); $current['data_collection'] = ! empty( $_POST['data_collection'] ); } update_option( 'nyforms_settings', $current ); wp_safe_redirect( add_query_arg( array( 'page' => 'nyforms-settings', 'tab' => $tab, 'updated' => 1 ), admin_url( 'admin.php' ) ) ); exit; }
-		if ( 'bulk_forms' === $operation ) { $this->bulk_forms(); }
-		if ( 'bulk_entries' === $operation ) { $this->bulk_entries(); }
-		if ( 'export' === $operation ) { $this->export_csv( absint( $_GET['form'] ?? $_GET['id'] ?? 0 ) ); }
-		if ( 'export_excel' === $operation ) { $this->export_excel( absint( $_GET['id'] ?? 0 ) ); }
-		if ( 'export_form' === $operation ) { $this->export_form( absint( $_GET['id'] ?? 0 ) ); }
-		if ( 'import' === $operation ) { $this->import_form(); }
-		if ( 'download' === $operation ) { $this->download_file( absint( $_GET['file'] ?? 0 ) ); }
-		if ( in_array( $operation, array( 'read', 'spam', 'trash_entry', 'restore_entry', 'delete_entry', 'star' ), true ) ) { $this->entry_action( absint( $_GET['entry'] ?? 0 ), $operation ); }
-		if ( in_array( $operation, array( 'activate', 'deactivate', 'trash', 'restore', 'delete' ), true ) ) { $this->form_action( absint( $_GET['id'] ?? 0 ), $operation ); }
-		$id = 'new' === $operation ? $repo->create_form( array( 'title' => __( 'Untitled form', 'nyforms' ), 'fields' => array() ) ) : $repo->duplicate( absint( $_GET['id'] ?? 0 ) );
-		wp_safe_redirect( is_wp_error( $id ) ? admin_url( 'admin.php?page=nyforms' ) : add_query_arg( array( 'page' => 'nyforms', 'form' => $id ), admin_url( 'admin.php' ) ) ); exit;
+		check_admin_referer( 'nyforms_admin' );
+		$repo      = Plugin::instance()->repository;
+		$operation = sanitize_key( wp_unslash( $_REQUEST['operation'] ?? '' ) );
+		if ( in_array( $operation, array( 'bulk_entries', 'read', 'spam', 'trash_entry', 'restore_entry', 'delete_entry', 'star' ), true ) ) {
+			if ( ! current_user_can( 'nyforms_manage_entries' ) ) {
+				wp_die( esc_html__( 'You are not allowed to manage entries.', 'nyforms' ) );
+			}
+		} else {
+			$this->require_manage();
+		}
+		if ( 'save_settings' === $operation ) {
+			$current = wp_parse_args(
+				get_option( 'nyforms_settings', array() ),
+				array(
+					'rate_limit'               => 10,
+					'retention_days'           => 0,
+					'delete_data_on_uninstall' => false,
+					'data_collection'          => false,
+					'recaptcha_enabled'        => false,
+					'recaptcha_site_key'       => '',
+					'recaptcha_secret_key'     => '',
+					'recaptcha_type'           => 'checkbox',
+					'rest_api_enabled'         => false,
+				)
+			);
+			$tab     = sanitize_key( $_POST['settings_tab'] ?? 'general' );
+			if ( 'recaptcha' === $tab ) {
+				$current['recaptcha_enabled']    = ! empty( $_POST['recaptcha_enabled'] );
+				$current['recaptcha_site_key']   = sanitize_text_field( wp_unslash( $_POST['recaptcha_site_key'] ?? '' ) );
+				$current['recaptcha_secret_key'] = sanitize_text_field( wp_unslash( $_POST['recaptcha_secret_key'] ?? '' ) );
+				$recaptcha_type                  = sanitize_key( wp_unslash( $_POST['recaptcha_type'] ?? '' ) );
+				$current['recaptcha_type']       = in_array( $recaptcha_type, array( 'checkbox', 'invisible' ), true ) ? $recaptcha_type : 'checkbox';
+				if ( $current['recaptcha_enabled'] && ( '' === $current['recaptcha_site_key'] || '' === $current['recaptcha_secret_key'] ) ) {
+					$current['recaptcha_enabled'] = false;
+				}
+			} elseif ( 'rest-api' === $tab ) {
+				$current['rest_api_enabled'] = ! empty( $_POST['rest_api_enabled'] );
+			} else {
+				$current['rate_limit']               = min( 1000, max( 1, absint( $_POST['rate_limit'] ?? 10 ) ) );
+				$current['retention_days']           = absint( $_POST['retention_days'] ?? 0 );
+				$current['delete_data_on_uninstall'] = ! empty( $_POST['delete_data_on_uninstall'] );
+				$current['data_collection']          = ! empty( $_POST['data_collection'] );
+			} update_option( 'nyforms_settings', $current );
+			wp_safe_redirect(
+				add_query_arg(
+					array(
+						'page'    => 'nyforms-settings',
+						'tab'     => $tab,
+						'updated' => 1,
+					),
+					admin_url( 'admin.php' )
+				)
+			);
+			exit;
+		}
+		if ( 'bulk_forms' === $operation ) {
+			$this->bulk_forms();
+		}
+		if ( 'bulk_entries' === $operation ) {
+			$this->bulk_entries();
+		}
+		if ( 'export' === $operation ) {
+			$this->export_csv( absint( $_GET['form'] ?? $_GET['id'] ?? 0 ) );
+		}
+		if ( 'export_excel' === $operation ) {
+			$this->export_excel( absint( $_GET['id'] ?? 0 ) );
+		}
+		if ( 'export_form' === $operation ) {
+			$this->export_form( absint( $_GET['id'] ?? 0 ) );
+		}
+		if ( 'import' === $operation ) {
+			$this->import_form();
+		}
+		if ( 'download' === $operation ) {
+			$this->download_file( absint( $_GET['file'] ?? 0 ) );
+		}
+		if ( in_array( $operation, array( 'read', 'spam', 'trash_entry', 'restore_entry', 'delete_entry', 'star' ), true ) ) {
+			$this->entry_action( absint( $_GET['entry'] ?? 0 ), $operation );
+		}
+		if ( in_array( $operation, array( 'activate', 'deactivate', 'trash', 'restore', 'delete' ), true ) ) {
+			$this->form_action( absint( $_GET['id'] ?? 0 ), $operation );
+		}
+		$id = 'new' === $operation ? $repo->create_form(
+			array(
+				'title'  => __( 'Untitled form', 'nyforms' ),
+				'fields' => array(),
+			)
+		) : $repo->duplicate( absint( $_GET['id'] ?? 0 ) );
+		wp_safe_redirect(
+			is_wp_error( $id ) ? admin_url( 'admin.php?page=nyforms' ) : add_query_arg(
+				array(
+					'page' => 'nyforms',
+					'form' => $id,
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	private function export_csv( $form_id ) {
-		if ( ! current_user_can( 'nyforms_export_entries' ) ) { wp_die( esc_html__( 'You are not allowed to export entries.', 'nyforms' ) ); }
+		if ( ! current_user_can( 'nyforms_export_entries' ) ) {
+			wp_die( esc_html__( 'You are not allowed to export entries.', 'nyforms' ) );
+		}
 		$form = Plugin::instance()->repository->form( $form_id );
-		if ( ! $form ) { wp_die( esc_html__( 'Form not found.', 'nyforms' ) ); }
-		$data = $this->entry_export_data( $form ); nocache_headers(); header( 'Content-Type: text/csv; charset=utf-8' ); header( 'Content-Disposition: attachment; filename="nyforms-' . absint( $form_id ) . '-entries.csv"' ); $output = fopen( 'php://output', 'w' ); fputcsv( $output, $data['headers'] ); foreach ( $data['rows'] as $row ) { fputcsv( $output, $row ); } fclose( $output ); exit;
+		if ( ! $form ) {
+			wp_die( esc_html__( 'Form not found.', 'nyforms' ) );
+		}
+		$data = $this->entry_export_data( $form );
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="nyforms-' . absint( $form_id ) . '-entries.csv"' );
+		$output = fopen( 'php://output', 'w' );
+		fputcsv( $output, $data['headers'] );
+		foreach ( $data['rows'] as $row ) {
+			fputcsv( $output, $row );
+		}
+			exit;
 	}
 
 	private function export_excel( $form_id ) {
-		if ( ! current_user_can( 'nyforms_export_entries' ) ) { wp_die( esc_html__( 'You are not allowed to export entries.', 'nyforms' ) ); }
-		$form = Plugin::instance()->repository->form( $form_id ); if ( ! $form ) { wp_die( esc_html__( 'Form not found.', 'nyforms' ) ); }
-		$data = $this->entry_export_data( $form ); nocache_headers(); header( 'Content-Type: application/vnd.ms-excel; charset=utf-8' ); header( 'Content-Disposition: attachment; filename="nyforms-' . absint( $form_id ) . '-entries.xls"' ); echo '<!doctype html><html><head><meta charset="utf-8"></head><body><table><thead><tr>'; foreach ( $data['headers'] as $header ) { echo '<th>' . esc_html( $header ) . '</th>'; } echo '</tr></thead><tbody>'; foreach ( $data['rows'] as $row ) { echo '<tr>'; foreach ( $row as $value ) { echo '<td>' . esc_html( $value ) . '</td>'; } echo '</tr>'; } echo '</tbody></table></body></html>'; exit;
+		if ( ! current_user_can( 'nyforms_export_entries' ) ) {
+			wp_die( esc_html__( 'You are not allowed to export entries.', 'nyforms' ) );
+		}
+		$form = Plugin::instance()->repository->form( $form_id );
+		if ( ! $form ) {
+			wp_die( esc_html__( 'Form not found.', 'nyforms' ) );
+		}
+		$data = $this->entry_export_data( $form );
+		nocache_headers();
+		header( 'Content-Type: application/vnd.ms-excel; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="nyforms-' . absint( $form_id ) . '-entries.xls"' );
+		echo '<!doctype html><html><head><meta charset="utf-8"></head><body><table><thead><tr>';
+		foreach ( $data['headers'] as $header ) {
+			echo '<th>' . esc_html( $header ) . '</th>';
+		} echo '</tr></thead><tbody>';
+		foreach ( $data['rows'] as $row ) {
+			echo '<tr>';
+			foreach ( $row as $value ) {
+				echo '<td>' . esc_html( $value ) . '</td>';
+			} echo '</tr>';
+		} echo '</tbody></table></body></html>';
+		exit;
 	}
 
 	private function entry_export_data( $form ) {
-		$headers = array( 'entry_id', 'submitted_at', 'status' ); foreach ( $form['definition']['fields'] as $field ) { if ( ! in_array( $field['type'], array( 'html', 'section', 'page' ), true ) ) { $headers[] = $field['key']; } }
-		$rows = array(); foreach ( Plugin::instance()->repository->entries( $form['id'], 'active', '', 1000 ) as $entry ) { $detail = Plugin::instance()->repository->entry( $entry['id'] ); $row = array( $entry['id'], $entry['submitted_at'], $entry['status'] ); foreach ( array_slice( $headers, 3 ) as $key ) { $value = $detail['values'][ $key ] ?? ''; $value = is_array( $value ) ? implode( ', ', $value ) : (string) $value; $row[] = preg_match( '/^[=+\-@]/', $value ) ? "'" . $value : $value; } $rows[] = $row; } return array( 'headers' => $headers, 'rows' => $rows );
+		$headers = array( 'entry_id', 'submitted_at', 'status' );
+		foreach ( $form['definition']['fields'] as $field ) {
+			if ( ! in_array( $field['type'], array( 'html', 'section', 'page' ), true ) ) {
+				$headers[] = $field['key'];
+			}
+		}
+		$rows = array();
+		foreach ( Plugin::instance()->repository->entries( $form['id'], 'active', '', 1000 ) as $entry ) {
+			$detail = Plugin::instance()->repository->entry( $entry['id'] );
+			$row    = array( $entry['id'], $entry['submitted_at'], $entry['status'] );
+			foreach ( array_slice( $headers, 3 ) as $key ) {
+				$value = $detail['values'][ $key ] ?? '';
+				$value = is_array( $value ) ? implode( ', ', $value ) : (string) $value;
+				$row[] = preg_match( '/^[=+\-@]/', $value ) ? "'" . $value : $value;
+			} $rows[] = $row;
+		} return array(
+			'headers' => $headers,
+			'rows'    => $rows,
+		);
 	}
 
 	private function export_form( $form_id ) {
-		$form = Plugin::instance()->repository->form( $form_id ); if ( ! $form ) { wp_die( esc_html__( 'Form not found.', 'nyforms' ) ); }
-		nocache_headers(); header( 'Content-Type: application/json; charset=utf-8' ); header( 'Content-Disposition: attachment; filename="nyforms-form-' . absint( $form_id ) . '.json"' ); echo wp_json_encode( array( 'nyforms_format' => 1, 'exported_at' => gmdate( 'c' ), 'form' => $form['definition'] ), JSON_PRETTY_PRINT ); exit;
+		$form = Plugin::instance()->repository->form( $form_id );
+		if ( ! $form ) {
+			wp_die( esc_html__( 'Form not found.', 'nyforms' ) );
+		}
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="nyforms-form-' . absint( $form_id ) . '.json"' );
+		echo wp_json_encode(
+			array(
+				'nyforms_format' => 1,
+				'exported_at'    => gmdate( 'c' ),
+				'form'           => $form['definition'],
+			),
+			JSON_PRETTY_PRINT
+		);
+		exit;
 	}
 
 	private function import_form() {
-		$file = $_FILES['nyforms_import'] ?? array(); if ( empty( $file['tmp_name'] ) || UPLOAD_ERR_OK !== (int) $file['error'] || (int) $file['size'] > 2 * MB_IN_BYTES ) { wp_die( esc_html__( 'Choose a JSON export smaller than 2 MB.', 'nyforms' ) ); }
-		$payload = json_decode( file_get_contents( $file['tmp_name'] ), true ); if ( ! is_array( $payload ) || 1 !== absint( $payload['nyforms_format'] ?? 0 ) || ! is_array( $payload['form'] ?? null ) ) { wp_die( esc_html__( 'This is not a valid NYforms export.', 'nyforms' ) ); }
-		$id = Plugin::instance()->repository->create_form( $payload['form'] ); if ( is_wp_error( $id ) ) { wp_die( esc_html( $id->get_error_message() ) ); }
-		wp_safe_redirect( add_query_arg( array( 'page' => 'nyforms', 'form' => $id ), admin_url( 'admin.php' ) ) ); exit;
+		// The admin action capability and nonce were verified before dispatch.
+		$file = isset( $_FILES['nyforms_import'] ) && is_array( $_FILES['nyforms_import'] ) ? $_FILES['nyforms_import'] : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( empty( $file['tmp_name'] ) || UPLOAD_ERR_OK !== (int) $file['error'] || (int) $file['size'] > 2 * MB_IN_BYTES ) {
+			wp_die( esc_html__( 'Choose a JSON export smaller than 2 MB.', 'nyforms' ) );
+		}
+		$payload = json_decode( file_get_contents( $file['tmp_name'] ), true );
+		if ( ! is_array( $payload ) || 1 !== absint( $payload['nyforms_format'] ?? 0 ) || ! is_array( $payload['form'] ?? null ) ) {
+			wp_die( esc_html__( 'This is not a valid NYforms export.', 'nyforms' ) );
+		}
+		$id = Plugin::instance()->repository->create_form( $payload['form'] );
+		if ( is_wp_error( $id ) ) {
+			wp_die( esc_html( $id->get_error_message() ) );
+		}
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page' => 'nyforms',
+					'form' => $id,
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	private function entry_action( $entry_id, $operation ) {
-		if ( ! current_user_can( 'nyforms_manage_entries' ) ) { wp_die( esc_html__( 'You are not allowed to manage entries.', 'nyforms' ) ); }
-		$repo = Plugin::instance()->repository; $entry = $repo->entry( $entry_id ); if ( ! $entry ) { wp_die( esc_html__( 'Entry not found.', 'nyforms' ) ); }
-		if ( 'read' === $operation ) { $repo->update_entry_status( $entry_id, $entry['status'], ! $entry['is_read'] ); } elseif ( 'star' === $operation ) { $repo->update_entry_starred( $entry_id, empty( $entry['is_starred'] ) ); } elseif ( 'spam' === $operation ) { $repo->update_entry_status( $entry_id, 'spam', true ); } elseif ( 'restore_entry' === $operation ) { $repo->update_entry_status( $entry_id, 'active', false ); } elseif ( 'delete_entry' === $operation ) { $repo->delete_entry( $entry_id ); } else { $repo->update_entry_status( $entry_id, 'trashed', true ); }
-		wp_safe_redirect( add_query_arg( array( 'page' => 'nyforms-entries', 'form' => $entry['form_id'] ), admin_url( 'admin.php' ) ) ); exit;
+		if ( ! current_user_can( 'nyforms_manage_entries' ) ) {
+			wp_die( esc_html__( 'You are not allowed to manage entries.', 'nyforms' ) );
+		}
+		$repo  = Plugin::instance()->repository;
+		$entry = $repo->entry( $entry_id );
+		if ( ! $entry ) {
+			wp_die( esc_html__( 'Entry not found.', 'nyforms' ) );
+		}
+		if ( 'read' === $operation ) {
+			$repo->update_entry_status( $entry_id, $entry['status'], ! $entry['is_read'] );
+		} elseif ( 'star' === $operation ) {
+			$repo->update_entry_starred( $entry_id, empty( $entry['is_starred'] ) );
+		} elseif ( 'spam' === $operation ) {
+			$repo->update_entry_status( $entry_id, 'spam', true );
+		} elseif ( 'restore_entry' === $operation ) {
+			$repo->update_entry_status( $entry_id, 'active', false );
+		} elseif ( 'delete_entry' === $operation ) {
+			$repo->delete_entry( $entry_id );
+		} else {
+			$repo->update_entry_status( $entry_id, 'trashed', true );
+		}
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page' => 'nyforms-entries',
+					'form' => $entry['form_id'],
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	private function download_file( $file_id ) {
-		if ( ! current_user_can( 'nyforms_view_entries' ) ) { wp_die( esc_html__( 'You are not allowed to download uploads.', 'nyforms' ) ); }
-		$file = Plugin::instance()->repository->file( $file_id ); $path = $file ? get_attached_file( absint( $file['attachment_id'] ) ) : false;
-		if ( ! $file || ! $path || ! file_exists( $path ) ) { wp_die( esc_html__( 'Upload not found.', 'nyforms' ) ); }
-		nocache_headers(); header( 'Content-Type: ' . sanitize_mime_type( $file['mime_type'] ) ); header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $file['original_name'] ) . '"' ); header( 'Content-Length: ' . filesize( $path ) ); readfile( $path ); exit;
+		if ( ! current_user_can( 'nyforms_view_entries' ) ) {
+			wp_die( esc_html__( 'You are not allowed to download uploads.', 'nyforms' ) );
+		}
+		$file = Plugin::instance()->repository->file( $file_id );
+		$path = $file ? Storage::path( absint( $file['attachment_id'] ) ) : false;
+		$contents = $path ? Storage::contents( $path ) : false;
+		if ( ! $file || ! $path || false === $contents ) {
+			wp_die( esc_html__( 'Upload not found.', 'nyforms' ) );
+		}
+		nocache_headers();
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'Content-Type: ' . sanitize_mime_type( $file['mime_type'] ) );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $file['original_name'] ) . '"' );
+		header( 'Content-Length: ' . strlen( $contents ) );
+     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Authorized binary download contents cannot be HTML-escaped.
+		echo $contents;
+		exit;
 	}
 
 	private function form_action( $form_id, $operation ) {
 		$repo = Plugin::instance()->repository;
-		if ( 'delete' === $operation ) { $repo->delete_form( $form_id ); } else { $status = array( 'activate' => 'active', 'deactivate' => 'inactive', 'trash' => 'trash', 'restore' => 'inactive' ); $repo->set_form_status( $form_id, $status[ $operation ] ); }
-		wp_safe_redirect( admin_url( 'admin.php?page=nyforms' ) ); exit;
+		if ( 'delete' === $operation ) {
+			$repo->delete_form( $form_id );
+		} else {
+			$status = array(
+				'activate'   => 'active',
+				'deactivate' => 'inactive',
+				'trash'      => 'trash',
+				'restore'    => 'inactive',
+			);
+			$repo->set_form_status( $form_id, $status[ $operation ] );
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=nyforms' ) );
+		exit;
 	}
 
 	private function bulk_forms() {
-		$action = sanitize_key( wp_unslash( $_POST['bulk_action'] ?? '' ) ); $ids = array_map( 'absint', (array) ( $_POST['form_ids'] ?? array() ) );
-		if ( $ids && in_array( $action, array( 'activate', 'draft', 'inactive', 'trash' ), true ) ) { foreach ( $ids as $id ) { Plugin::instance()->repository->set_form_status( $id, $action ); } }
-		wp_safe_redirect( admin_url( 'admin.php?page=nyforms' ) ); exit;
+		// The admin action capability and nonce were verified before dispatch.
+		$action = sanitize_key( wp_unslash( $_POST['bulk_action'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$ids    = array_map( 'absint', (array) ( $_POST['form_ids'] ?? array() ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( $ids && in_array( $action, array( 'activate', 'draft', 'inactive', 'trash' ), true ) ) {
+			foreach ( $ids as $id ) {
+				Plugin::instance()->repository->set_form_status( $id, $action );
+			}
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=nyforms' ) );
+		exit;
 	}
 
 	private function bulk_entries() {
-		$action = sanitize_key( wp_unslash( $_POST['bulk_action'] ?? '' ) ); $ids = array_map( 'absint', (array) ( $_POST['entry_ids'] ?? array() ) ); $repo = Plugin::instance()->repository;
-		foreach ( $ids as $id ) { $entry = $repo->entry( $id ); if ( ! $entry ) { continue; } if ( 'read' === $action ) { $repo->update_entry_status( $id, $entry['status'], true ); } elseif ( 'unread' === $action ) { $repo->update_entry_status( $id, $entry['status'], false ); } elseif ( 'star' === $action ) { $repo->update_entry_starred( $id, true ); } elseif ( 'unstar' === $action ) { $repo->update_entry_starred( $id, false ); } elseif ( 'spam' === $action ) { $repo->update_entry_status( $id, 'spam', true ); } elseif ( 'trash' === $action ) { $repo->update_entry_status( $id, 'trashed', true ); } }
-		wp_safe_redirect( add_query_arg( array( 'page' => 'nyforms-entries', 'form' => absint( $_POST['form'] ?? 0 ) ), admin_url( 'admin.php' ) ) ); exit;
+		// The admin action capability and nonce were verified before dispatch.
+		$action = sanitize_key( wp_unslash( $_POST['bulk_action'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$ids    = array_map( 'absint', (array) ( $_POST['entry_ids'] ?? array() ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$repo   = Plugin::instance()->repository;
+		foreach ( $ids as $id ) {
+			$entry = $repo->entry( $id );
+			if ( ! $entry ) {
+				continue;
+			} if ( 'read' === $action ) {
+				$repo->update_entry_status( $id, $entry['status'], true );
+			} elseif ( 'unread' === $action ) {
+				$repo->update_entry_status( $id, $entry['status'], false );
+			} elseif ( 'star' === $action ) {
+				$repo->update_entry_starred( $id, true );
+			} elseif ( 'unstar' === $action ) {
+				$repo->update_entry_starred( $id, false );
+			} elseif ( 'spam' === $action ) {
+				$repo->update_entry_status( $id, 'spam', true );
+			} elseif ( 'trash' === $action ) {
+				$repo->update_entry_status( $id, 'trashed', true );
+			}
+		}
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page' => 'nyforms-entries',
+					'form' => absint( $_POST['form'] ?? 0 ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
-	private function require_manage() { if ( ! current_user_can( 'nyforms_manage_forms' ) ) { wp_die( esc_html__( 'You are not allowed to manage forms.', 'nyforms' ) ); } }
+	private function require_manage() {
+		if ( ! current_user_can( 'nyforms_manage_forms' ) ) {
+			wp_die( esc_html__( 'You are not allowed to manage forms.', 'nyforms' ) );
+		}
+	}
 }

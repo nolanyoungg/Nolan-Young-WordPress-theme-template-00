@@ -21,5 +21,16 @@ defined( 'ABSPATH' ) || exit;
 			?>
 		</p>
 	</header>
-	<div class="nytt01-entry-content"><?php the_content(); ?></div>
+	<div class="nytt01-entry-content">
+		<?php
+		the_content();
+		wp_link_pages(
+			array(
+				'before' => '<nav class="nytt01-page-links" aria-label="' . esc_attr__( 'Page navigation', 'nolan-young-theme-template-01' ) . '">',
+				'after'  => '</nav>',
+			)
+		);
+		?>
+	</div>
+	<footer class="nytt01-entry-footer"><?php edit_post_link( esc_html__( 'Edit policy', 'nolan-young-theme-template-01' ) ); ?></footer>
 </article>

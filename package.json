@@ -1,0 +1,27 @@
+{
+  "name": "nolan-young-wordpress-theme-template-00",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Repository-level Node tooling for the Nolan Young WordPress content template.",
+  "workspaces": [
+    "wp-content/themes/nolan-young-theme-template-01"
+  ],
+  "scripts": {
+    "start": "npm run start --workspace=nolan-young-theme-template-01",
+    "dev": "npm run dev --workspace=nolan-young-theme-template-01",
+    "dev:fast": "npm run dev:fast --workspace=nolan-young-theme-template-01",
+    "check": "npm run check --workspace=nolan-young-theme-template-01",
+    "lint": "npm run lint --workspace=nolan-young-theme-template-01",
+    "build": "npm run build --workspace=nolan-young-theme-template-01",
+    "package": "npm run package --workspace=nolan-young-theme-template-01",
+    "package:plugins": "node scripts/package-plugins.js",
+    "package:all": "npm run package && npm run package:plugins"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": ">=10"
+  },
+  "devDependencies": {
+    "archiver": "8.0.0"
+  }
+}

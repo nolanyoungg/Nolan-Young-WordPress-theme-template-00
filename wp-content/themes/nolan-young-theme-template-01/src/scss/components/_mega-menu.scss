@@ -1,5 +1,8 @@
 .nytt01-menu-item--mega {
 	position: static;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
 }
 
 .nytt01-menu__trigger {
@@ -398,13 +401,23 @@
 
 @media (max-width: 50rem) {
 
+	.nytt01-menu-item--mega {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.nytt01-menu-item--mega > .nytt01-menu__parent-link {
+		width: auto;
+	}
+
 	.nytt01-menu__trigger {
-		width: 100%;
+		width: auto;
 		justify-content: space-between;
 		padding: 0.65rem 0.25rem;
 	}
 
 	.nytt01-mega-menu {
+		grid-column: 1 / -1;
 		position: static;
 		width: 100%;
 		max-height: none;

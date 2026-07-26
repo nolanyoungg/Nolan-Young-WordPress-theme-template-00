@@ -1,0 +1,81 @@
+name: Plugin Packages
+
+on:
+  push:
+    tags:
+      - "nyforms-v*"
+      - "nymegamenu-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plugin-packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Build installable plugin ZIPs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked Node dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Package plugins
+        run: npm run package:plugins
+
+      - name: Validate installable ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          archives=(dist/plugins/*.zip)
+
+          if (( ${#archives[@]} != 2 )); then
+            echo "Expected exactly two plugin ZIPs; found ${#archives[@]}."
+            exit 1
+          fi
+
+          for archive in "${archives[@]}"; do
+            unzip -tqq "$archive"
+            filename="$(basename "$archive")"
+            slug="${filename%%-[0-9]*}"
+
+            mapfile -t roots < <(
+              unzip -Z1 "$archive" |
+                awk -F/ 'NF { print $1 }' |
+                sort -u
+            )
+
+            if (( ${#roots[@]} != 1 )) || [[ "${roots[0]}" != "$slug" ]]; then
+              echo "$archive must contain exactly one $slug/ root directory."
+              exit 1
+            fi
+
+            if unzip -Z1 "$archive" |
+              grep -Eq '(^|/)(vendor|tests|node_modules)(/|$)|/(composer\\.(json|lock)|phpcs\\.xml\\.dist|phpunit\\.xml\\.dist)$'; then
+              echo "$archive contains development-only files."
+              exit 1
+            fi
+          done
+
+      - name: Upload installable plugin artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: wordpress-plugin-packages
+          path: dist/plugins/*.zip
+          if-no-files-found: error
+          retention-days: 14

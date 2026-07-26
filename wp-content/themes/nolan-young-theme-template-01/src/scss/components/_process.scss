@@ -1,0 +1,26 @@
+.nytt01-process-list {
+	display: grid;
+	gap: 1rem;
+	counter-reset: process;
+	list-style: none;
+	padding: 0;
+}
+
+.nytt01-process-list li {
+	counter-increment: process;
+	padding: 1.25rem;
+	border-left: 4px solid var(--nytt01-color-blue);
+	background: var(--nytt01-color-white);
+	color: var(--nytt01-color-ink);
+}
+
+.nytt01-process-list li::before {
+	content: "0" counter(process);
+	display: block;
+	color: var(--nytt01-color-blue);
+	font-weight: 800;
+}
+
+.nytt01-process-list h3 {
+	color: var(--nytt01-color-navy);
+}

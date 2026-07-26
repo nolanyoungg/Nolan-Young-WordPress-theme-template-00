@@ -14,21 +14,21 @@
     "check": "npm run lint && npm run validate",
     "lint": "npm run lint:js && npm run lint:node && npm run lint:css",
     "lint:js": "wp-scripts lint-js \"src/js/**/*.js\" webpack.config.js",
-    "lint:node": "node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js",
-    "lint:css": "wp-scripts lint-style \"src/scss/**/*.scss\"",
+    "lint:node": "node --check build/clean.js && node --check build/dev.js && node --check build/generate-file-manifest.js && node --check build/package-theme.js && node --check build/validate-scss-architecture.js && node --check build/validate.js",
+    "lint:css": "wp-scripts lint-style \"src/scss/**/*.scss\" && node build/validate-scss-architecture.js",
     "format": "wp-scripts format \"src/js/**/*.js\" \"src/scss/**/*.scss\" webpack.config.js",
-    "validate": "node build/validate.js",
-    "test": "npm run build",
+    "validate": "node build/generate-file-manifest.js --check && node build/validate.js",
+    "manifest": "node build/generate-file-manifest.js",
     "package": "npm run build && node build/package-theme.js"
   },
   "engines": {
-    "node": ">=18.12.0",
-    "npm": ">=8.19.2"
+    "node": "20.x",
+    "npm": ">=10"
   },
   "devDependencies": {
-    "@wordpress/scripts": "32.5.1",
+    "@wordpress/scripts": "^33.0.0",
     "archiver": "8.0.0",
-    "webpack": "5.108.4",
+    "webpack": "^5.109.0",
     "webpack-remove-empty-scripts": "1.1.1"
   }
 }

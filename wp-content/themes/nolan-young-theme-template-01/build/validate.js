@@ -4,6 +4,8 @@ const fs = require( 'node:fs' );
 const path = require( 'node:path' );
 
 const root = path.resolve( __dirname, '..' );
+const repositoryRoot = path.resolve( root, '../../..' );
+const workspacePath = 'wp-content/themes/nolan-young-theme-template-01';
 
 const requiredFiles = [
 	'style.css',
@@ -20,11 +22,12 @@ const requiredFiles = [
 	'CHANGELOG.md',
 	'webpack.config.js',
 	'package.json',
-	'package-lock.json',
 	'phpunit.xml.dist',
 	'build/clean.js',
 	'build/dev.js',
+	'build/generate-file-manifest.js',
 	'build/package-theme.js',
+	'build/validate-scss-architecture.js',
 	'build/validate.js',
 	'assets/css/bundle.css',
 	'assets/css/bundle-rtl.css',
@@ -39,17 +42,36 @@ const requiredFiles = [
 	'inc/enqueue.php',
 	'template-parts/header/mega-menu-featured.php',
 	'template-parts/header/mega-menu-blog.php',
+	'template-parts/header/mobile-navigation.php',
+	'template-parts/content/content-front-page.php',
 	'src/js/components/mega-menu.js',
 	'src/scss/components/_mega-menu.scss',
 	'languages/nolan-young-theme-template-01.pot',
 ];
 
+const requiredRepositoryFiles = [ '.nvmrc', 'package.json', 'package-lock.json' ];
+
 const missingFiles = requiredFiles.filter(
 	( relativePath ) => ! fs.existsSync( path.join( root, relativePath ) )
+);
+const missingRepositoryFiles = requiredRepositoryFiles.filter(
+	( relativePath ) => ! fs.existsSync( path.join( repositoryRoot, relativePath ) )
 );
 
 if ( missingFiles.length ) {
 	throw new Error( `Missing required theme files:\n${ missingFiles.join( '\n' ) }` );
+}
+
+if ( missingRepositoryFiles.length ) {
+	throw new Error(
+		`Missing required repository files:\n${ missingRepositoryFiles.join( '\n' ) }`
+	);
+}
+
+if ( fs.existsSync( path.join( root, 'package-lock.json' ) ) ) {
+	throw new Error(
+		'The authoritative package-lock.json must be at the repository root.'
+	);
 }
 
 const nonEmptyFiles = [
@@ -72,11 +94,17 @@ for ( const relativePath of nonEmptyFiles ) {
 const packageJson = JSON.parse(
 	fs.readFileSync( path.join( root, 'package.json' ), 'utf8' )
 );
+const repositoryPackageJson = JSON.parse(
+	fs.readFileSync( path.join( repositoryRoot, 'package.json' ), 'utf8' )
+);
+const packageLock = JSON.parse(
+	fs.readFileSync( path.join( repositoryRoot, 'package-lock.json' ), 'utf8' )
+);
 const themeJson = JSON.parse(
 	fs.readFileSync( path.join( root, 'theme.json' ), 'utf8' )
 );
 
-const requiredScripts = {
+const requiredThemeScripts = {
 	start: 'wp-scripts start',
 	dev: 'npm run clean && npm run lint && node build/dev.js',
 	'dev:fast': 'npm run start',
@@ -84,21 +112,83 @@ const requiredScripts = {
 	'build:assets': 'wp-scripts build',
 	build: 'npm run clean && npm run lint && npm run build:assets && npm run validate',
 	check: 'npm run lint && npm run validate',
-	'lint:node': 'node --check build/clean.js && node --check build/dev.js && node --check build/package-theme.js && node --check build/validate.js',
-	test: 'npm run build',
+	'lint:node': 'node --check build/clean.js && node --check build/dev.js && node --check build/generate-file-manifest.js && node --check build/package-theme.js && node --check build/validate-scss-architecture.js && node --check build/validate.js',
+	validate: 'node build/generate-file-manifest.js --check && node build/validate.js',
 	package: 'npm run build && node build/package-theme.js',
 };
 
-for ( const [ scriptName, expectedCommand ] of Object.entries( requiredScripts ) ) {
+for ( const [ scriptName, expectedCommand ] of Object.entries(
+	requiredThemeScripts
+) ) {
 	if ( packageJson.scripts?.[ scriptName ] !== expectedCommand ) {
 		throw new Error(
-			`package.json script ${ scriptName } must equal: ${ expectedCommand }`
+			`Theme package.json script ${ scriptName } must equal: ${ expectedCommand }`
 		);
 	}
 }
 
-if ( packageJson.devDependencies?.webpack !== '5.108.4' ) {
-	throw new Error( 'webpack 5.108.4 must be declared directly in devDependencies.' );
+const requiredRepositoryScripts = [
+	'start',
+	'dev',
+	'dev:fast',
+	'check',
+	'lint',
+	'build',
+	'package',
+];
+
+for ( const scriptName of requiredRepositoryScripts ) {
+	const expectedCommand = `npm run ${ scriptName } --workspace=${ packageJson.name }`;
+
+	if ( repositoryPackageJson.scripts?.[ scriptName ] !== expectedCommand ) {
+		throw new Error(
+			`Root package.json script ${ scriptName } must equal: ${ expectedCommand }`
+		);
+	}
+}
+
+if ( packageJson.scripts?.test || repositoryPackageJson.scripts?.test ) {
+	throw new Error( 'A test package script is not supported.' );
+}
+
+if ( repositoryPackageJson.private !== true ) {
+	throw new Error( 'The root npm workspace package must be private.' );
+}
+
+if (
+	! Array.isArray( repositoryPackageJson.workspaces ) ||
+	! repositoryPackageJson.workspaces.includes( workspacePath )
+) {
+	throw new Error(
+		`The root npm workspace must include ${ workspacePath }.`
+	);
+}
+
+if ( repositoryPackageJson.engines?.node !== '20.x' ) {
+	throw new Error( 'The root npm workspace must require Node 20.x.' );
+}
+
+if (
+	fs.readFileSync( path.join( repositoryRoot, '.nvmrc' ), 'utf8' ).trim() !==
+	'20'
+) {
+	throw new Error( '.nvmrc must pin Node 20.' );
+}
+
+if (
+	packageLock.packages?.[ '' ]?.name !== repositoryPackageJson.name ||
+	packageLock.packages?.[ '' ]?.version !== repositoryPackageJson.version ||
+	packageLock.packages?.[ workspacePath ]?.version !== packageJson.version ||
+	packageLock.packages?.[ `node_modules/${ packageJson.name }` ]?.resolved !==
+		workspacePath
+) {
+	throw new Error(
+		'The root package-lock.json must describe the repository and theme workspace.'
+	);
+}
+
+if ( ! packageJson.devDependencies?.webpack ) {
+	throw new Error( 'webpack must be declared directly in devDependencies.' );
 }
 
 if ( themeJson.version !== 3 ) {
@@ -194,5 +284,5 @@ for ( const metadataPath of [
 }
 
 console.log(
-	`Validated ${ requiredFiles.length } required files, ${ phpFiles.length } PHP files, theme.json, style.css metadata, asset metadata, architecture boundaries, and the 1200x900 screenshot.`
+	`Validated the root npm workspace, ${ requiredFiles.length } required theme files, ${ phpFiles.length } PHP files, theme.json, style.css metadata, asset metadata, architecture boundaries, and the 1200x900 screenshot.`
 );

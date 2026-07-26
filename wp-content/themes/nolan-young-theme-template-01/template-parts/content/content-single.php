@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 		the_content();
 		wp_link_pages(
 			array(
-				'before' => '<nav class="nytt01-page-links" aria-label="' . esc_attr__( 'Page', 'nolan-young-theme-template-01' ) . '">',
+				'before' => '<nav class="nytt01-page-links" aria-label="' . esc_attr__( 'Page navigation', 'nolan-young-theme-template-01' ) . '">',
 				'after'  => '</nav>',
 			)
 		);

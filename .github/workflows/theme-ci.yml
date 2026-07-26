@@ -1,4 +1,4 @@
-name: Theme CI
+name: Repository CI
 
 on:
   push:
@@ -8,23 +8,75 @@ on:
   pull_request:
     branches:
       - main
+      - staging
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: theme-ci-${{ github.workflow }}-${{ github.ref }}
+  group: repository-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  production-build:
-    name: Production build and package
+  guardrails:
+    name: Repository guardrails
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check tracked files and diff hygiene
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          empty_tree="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            bash scripts/ci/repository-guardrails.sh \
+              "${PR_BASE_SHA}...${PR_HEAD_SHA}"
+          elif [[ -n "$PUSH_BEFORE_SHA" && ! "$PUSH_BEFORE_SHA" =~ ^0+$ ]]; then
+            bash scripts/ci/repository-guardrails.sh \
+              "${PUSH_BEFORE_SHA}..${GITHUB_SHA}"
+          elif git rev-parse --verify "${GITHUB_SHA}^" >/dev/null 2>&1; then
+            bash scripts/ci/repository-guardrails.sh \
+              "${GITHUB_SHA}^..${GITHUB_SHA}"
+          else
+            bash scripts/ci/repository-guardrails.sh \
+              "$empty_tree" "$GITHUB_SHA"
+          fi
+
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Scan committed history for secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+          GITLEAKS_VERSION: "8.30.1"
+
+  root-npm-build:
+    name: Root npm build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: wp-content/themes/nolan-young-theme-template-01
 
     steps:
       - name: Check out source
@@ -35,49 +87,55 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: wp-content/themes/nolan-young-theme-template-01/package-lock.json
-
-      - name: Report tool versions
-        run: |
-          node --version
-          npm --version
+          cache-dependency-path: package-lock.json
 
       - name: Install locked Node dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build, validate, and package production theme
-        run: npm run package
+      - name: Build production assets
+        run: npm run build
 
       - name: Verify committed generated assets are current
-        run: git diff --exit-code -- assets/css assets/js
-
-      - name: Verify WordPress ZIP integrity and root folder
         shell: bash
         run: |
           set -euo pipefail
-          archive="dist/nolan-young-theme-template-01.zip"
-          test -f "$archive"
-          unzip -t "$archive"
+          asset_paths=(
+            "wp-content/themes/nolan-young-theme-template-01/assets/css"
+            "wp-content/themes/nolan-young-theme-template-01/assets/js"
+          )
+          failed=0
 
-          unexpected_roots="$(unzip -Z1 "$archive" | awk -F/ 'NF { print $1 }' | sort -u | grep -v '^nolan-young-theme-template-01$' || true)"
-          if [ -n "$unexpected_roots" ]; then
-            echo "Unexpected ZIP root entries:" >&2
-            echo "$unexpected_roots" >&2
+          if ! git diff --quiet HEAD -- "${asset_paths[@]}"; then
+            echo "Generated assets differ from the committed files."
+            echo "Changed asset paths:"
+            git diff --name-only HEAD -- "${asset_paths[@]}"
+            failed=1
+          fi
+
+          mapfile -d '' untracked_assets < <(
+            git ls-files --others --exclude-standard -z -- "${asset_paths[@]}"
+          )
+
+          if (( ${#untracked_assets[@]} > 0 )); then
+            echo "The build created untracked generated assets:"
+            printf ' - %q\n' "${untracked_assets[@]}"
+            failed=1
+          fi
+
+          if (( failed != 0 )); then
             exit 1
           fi
 
-      - name: Upload installable theme artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: nolan-young-theme-template-01
-          path: wp-content/themes/nolan-young-theme-template-01/dist/nolan-young-theme-template-01.zip
-          if-no-files-found: error
-          retention-days: 14
-
   php-syntax:
-    name: PHP syntax
+    name: PHP syntax (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "7.4"
+          - "8.4"
 
     steps:
       - name: Check out source
@@ -86,19 +144,143 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php-version }}
           coverage: none
 
-      - name: Validate every PHP file
+      - name: Validate tracked PHP files
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r -d '' file; do
             php -l "$file"
-          done < <(find . -type f -name '*.php' \
-            -not -path './node_modules/*' \
-            -not -path './vendor/*' \
-            -not -path './dist/*' -print0)
+          done < <(git ls-files -z -- '*.php')
 
-# This workflow intentionally validates both the source tree and the generated
-# WordPress installation archive before changes can be treated as release-ready.
+  composer-standards:
+    name: Composer standards (${{ matrix.component }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: Theme
+            directory: wp-content/themes/nolan-young-theme-template-01
+            script: lint:php
+          - component: NYForms
+            directory: wp-content/plugins/nyforms
+            script: lint
+          - component: NY Mega Menu
+            directory: wp-content/plugins/nymegamenu
+            script: lint
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          # PHPCompatibility's current stable release supports PHPCS reliably
+          # on PHP 8.1; PHP 7.4 and 8.4 syntax are checked separately above.
+          php-version: "8.1"
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate Composer metadata
+        working-directory: ${{ matrix.directory }}
+        run: composer validate --strict --no-check-publish
+
+      - name: Install locked Composer dependencies
+        working-directory: ${{ matrix.directory }}
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run WordPress coding standards
+        working-directory: ${{ matrix.directory }}
+        run: composer run ${{ matrix.script }}
+
+  php-tests:
+    name: PHP tests (${{ matrix.component }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: wordpress_tests
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: Theme
+            directory: wp-content/themes/nolan-young-theme-template-01
+            script: test:php
+          - component: NYForms
+            directory: wp-content/plugins/nyforms
+            script: test
+          - component: NY Mega Menu
+            directory: wp-content/plugins/nymegamenu
+            script: test
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          coverage: none
+          tools: composer:v2
+
+      - name: Install MySQL client
+        run: sudo apt-get update && sudo apt-get install -y default-mysql-client
+
+      - name: Install WordPress test library
+        env:
+          WP_VERSION: "7.0"
+          WP_TESTS_DB_NAME: wordpress_tests
+          WP_TESTS_DB_USER: root
+          WP_TESTS_DB_PASSWORD: root
+          WP_TESTS_DB_HOST: 127.0.0.1
+        run: bash scripts/ci/install-wp-tests.sh
+
+      - name: Install locked Composer dependencies
+        working-directory: ${{ matrix.directory }}
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        working-directory: ${{ matrix.directory }}
+        env:
+          WP_TESTS_DIR: /tmp/wordpress-tests-lib
+        run: composer run ${{ matrix.script }}
+
+  plugin-check:
+    name: Plugin Check (${{ matrix.plugin }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - plugin: NYForms
+            directory: wp-content/plugins/nyforms
+          - plugin: NY Mega Menu
+            directory: wp-content/plugins/nymegamenu
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Run official WordPress Plugin Check
+        uses: wordpress/plugin-check-action@18573eb38f13543484a1f095672dae3849a4fbb0 # v1.1.6
+        with:
+          build-dir: ${{ matrix.directory }}
+          exclude-directories: vendor

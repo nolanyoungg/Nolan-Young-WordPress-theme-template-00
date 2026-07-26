@@ -2,8 +2,13 @@
 
 ## Unreleased
 
+- Moved the supported npm command surface and authoritative lockfile to the repository root, pinned Node 20, and removed the `npm test` alias; `npm run package` remains an optional release command.
 - Replaced the Core-specific contact-form integration with theme-owned contact and newsletter shortcode slots.
 - Documented the optional bundled NYforms and NY Mega Menu integrations; neither is required by the theme.
+- Implemented accessible native desktop/mobile navigation with separate submenu controls and removed plugin coupling from theme templates.
+- Corrected static-front-page/posts-page routing, template heading hierarchy, destination links, featured/latest post selection, and editor-content rendering.
+- Reorganized maintained SCSS by ownership, removed unused component sources, and added an architecture validator.
+- Added a generated source manifest and replaced the unrelated screenshot with a representative 1200×900 theme preview.
 
 ## 1.2.1 - 2026-06-23
 

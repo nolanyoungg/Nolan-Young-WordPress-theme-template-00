@@ -32,7 +32,7 @@ Custom post types and form handlers do not belong in this theme. A site may inst
 
 ## Source and generated files
 
-Edit PHP templates and files under `inc/`, `template-parts/`, `patterns/`, `src/scss/`, and `src/js/`. Do not edit generated runtime assets under `assets/css/` or `assets/js/` by hand.
+Edit PHP templates and files under `inc/`, `template-parts/`, `patterns/`, `src/scss/`, and `src/js/`. Do not edit generated runtime assets under `assets/css/` or `assets/js/` by hand. In a source checkout, run every npm command from the repository root:
 
 ```bash
 npm ci
@@ -40,11 +40,11 @@ npm run build
 npm run package
 ```
 
-`npm run build` cleans, lints, compiles, and validates the theme. `npm run package` also creates an installable, timestamped ZIP in `dist/`, such as `nolan-young-theme-template-01-07-22-2026-T03-40PM.zip`, without replacing earlier packages.
+`npm run build` cleans, lints, compiles, and validates the theme. The optional `npm run package` command also creates a timestamped installable ZIP in `dist/`, such as `nolan-young-theme-template-01-07-25-2026-T03-40PM.zip`, without replacing an earlier package.
 
 ## Validation
 
-Run the following before release:
+From the repository root, run the following before release:
 
 ```bash
 npm run build

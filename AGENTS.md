@@ -6,13 +6,16 @@ This repository tracks WordPress content only, not WordPress core, the database,
 
 ## Build, Test, and Development Commands
 
-Run theme commands from `wp-content/themes/nolan-young-theme-template-01`:
+Run all npm commands from the repository root:
 
 - `npm ci` installs the locked JavaScript dependencies for a fresh checkout or lockfile change.
 - `npm run start` watches theme source assets during development.
+- `npm run dev` watches theme source assets with minified production-mode output.
+- `npm run dev:fast` is the fast, readable watcher alias.
 - `npm run check` runs JavaScript, Node, and SCSS linting plus asset validation.
+- `npm run lint` runs JavaScript, Node, and SCSS linting.
 - `npm run build` performs the release asset build and validation.
-- `npm run package` builds and verifies the distributable theme ZIP.
+- `npm run package` optionally builds and creates the distributable theme ZIP.
 
 Use `composer run lint:php` and `composer run test:php` for theme PHP quality checks. In either plugin directory, run `composer run lint` and `composer run test`. Perform runtime WordPress checks only in the designated local sandbox: `C:\Users\NolanYoung\Local Sites\7-20-wp-playground`.
 

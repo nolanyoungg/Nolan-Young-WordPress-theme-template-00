@@ -7,6 +7,7 @@
   "description": "Display an enabled NY Mega Menu location.",
   "textdomain": "nymegamenu",
   "attributes": { "location": { "type": "string" } },
+  "editorScript": "file:./index.js",
   "render": "file:./render.php",
-  "supports": { "html": false }
+  "supports": { "autoRegister": true, "html": false }
 }

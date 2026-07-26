@@ -8,9 +8,10 @@
 
 ## Development
 
-Install the locked dependencies:
+From the repository root, use the pinned Node 20 release and install the locked dependencies:
 
 ```bash
+nvm use
 npm ci
 ```
 
@@ -32,6 +33,6 @@ Stop either watcher with `Ctrl + C`. When development is complete, run the final
 npm run build
 ```
 
-`npm run build` cleans generated assets, lints maintained source, creates optimized production assets, and validates the theme structure. `npm test` is an alias for the same final gate.
+`npm run build` cleans generated assets, lints maintained source, creates optimized production assets, and validates the theme structure.
 
 For PHP standards, install Composer dependencies and run `composer lint:php`.

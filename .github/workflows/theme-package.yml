@@ -1,0 +1,87 @@
+name: Theme Package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-package-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Build installable theme ZIP
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked Node dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build and package production theme
+        run: npm run package
+
+      - name: Discover and validate the installable ZIP
+        id: archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          dist="wp-content/themes/nolan-young-theme-template-01/dist"
+          slug="nolan-young-theme-template-01"
+          mapfile -d '' archives < <(
+            find "$dist" -maxdepth 1 -type f -name "${slug}-*.zip" -print0
+          )
+
+          if (( ${#archives[@]} != 1 )); then
+            echo "Expected exactly one timestamped theme ZIP; found ${#archives[@]}."
+            if (( ${#archives[@]} > 0 )); then
+              printf ' - %q\n' "${archives[@]}"
+            fi
+            exit 1
+          fi
+
+          archive="${archives[0]}"
+          filename="$(basename "$archive")"
+
+          if [[ ! "$filename" =~ ^${slug}-[0-9]{2}-[0-9]{2}-[0-9]{4}-T[0-9]{2}-[0-9]{2}(AM|PM)(-[0-9]+)?\.zip$ ]]; then
+            echo "Theme ZIP does not use the required timestamped filename."
+            exit 1
+          fi
+
+          unzip -tqq "$archive"
+
+          mapfile -t roots < <(
+            unzip -Z1 "$archive" |
+              awk -F/ 'NF { print $1 }' |
+              sort -u
+          )
+
+          if (( ${#roots[@]} != 1 )) || [[ "${roots[0]}" != "$slug" ]]; then
+            echo "Theme ZIP must contain exactly one ${slug}/ root directory."
+            exit 1
+          fi
+
+          echo "path=$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Upload installable theme artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nolan-young-theme-template-01-package
+          path: ${{ steps.archive.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14

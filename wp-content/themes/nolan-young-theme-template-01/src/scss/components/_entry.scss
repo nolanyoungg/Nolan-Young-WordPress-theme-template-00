@@ -1,0 +1,15 @@
+.nytt01-entry-media img {
+	width: 100%;
+	aspect-ratio: 3 / 2;
+	object-fit: cover;
+}
+
+.nytt01-entry-meta {
+	color: #556174;
+	font-size: 0.88rem;
+}
+
+.nytt01-page-intro,
+.nytt01-front-page-content {
+	padding-block: 3rem;
+}

@@ -6,7 +6,41 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+auth.json
+.npmrc
 coverage/
 .phpunit.result.cache
+
+# WordPress core, local configuration, runtime data, and exports.
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/wp-config.php
+/local-config.php
+/wp-config-local.php
+/wp-content/uploads/
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.wpress
+
+# Credentials, certificates, local archives, and release output.
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.phar
 
 dist/

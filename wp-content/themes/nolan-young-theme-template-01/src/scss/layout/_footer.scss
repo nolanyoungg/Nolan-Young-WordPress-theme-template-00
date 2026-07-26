@@ -23,7 +23,30 @@
 }
 
 .nytt01-site-footer__legal {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
 	padding-block: 1rem;
 	border-top: 1px solid rgba(255, 255, 255, 0.2);
 	font-size: 0.875rem;
+}
+
+.nytt01-site-footer__legal p {
+	margin: 0;
+}
+
+.nytt01-footer-menu {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nytt01-site-footer__title {
+	font-size: 1.25rem;
+	font-weight: 800;
 }

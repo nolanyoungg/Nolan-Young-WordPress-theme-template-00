@@ -19,15 +19,16 @@ The repository is designed to be a durable starting point for one or more WordPr
 - [Testing, CI, and release packaging](#testing-ci-and-release-packaging)
 - [Git workflow](#git-workflow)
 - [Security and maintenance rules](#security-and-maintenance-rules)
+- [Release readiness tasks 1–9](docs/RELEASE-READINESS-TASKS.md)
 
 ## What is in this repository?
 
 | Area | Current contents | Purpose |
 | --- | --- | --- |
 | `wp-content/themes/` | `nolan-young-theme-template-01` | The active, production-oriented classic WordPress theme and its source/build tooling. |
-| `wp-content/plugins/` | `nyforms` | Original WordPress-native forms plugin with form building, entries, exports, privacy tooling, and a protected REST API. |
+| `wp-content/plugins/` | `nyforms`, `nymegamenu` | Original WordPress-native form and navigation plugins with independent release packages. |
 | `wp-content/mu-plugins/` | `.gitkeep` only | Reserved for must-use plugins that should load for every request. |
-| `.github/workflows/` | `theme-ci.yml` | GitHub Actions build, package, generated-asset, ZIP, and PHP syntax validation. |
+| `.github/workflows/` | `theme-ci.yml`, `theme-package.yml`, `plugin-package.yml` | Required repository CI plus optional installable theme/plugin packaging. |
 
 The repository has one theme today. The directory structure intentionally supports adding more theme directories later without changing the root development model.
 
@@ -53,10 +54,13 @@ The repository has one theme today. The directory structure intentionally suppor
 │           ├── template-parts/      # Reusable PHP presentation parts
 │           ├── tests/               # Theme test bootstrap and tests
 │           ├── theme.json           # Editor/design-system configuration
-│           └── package.json         # Theme Node command interface
+│           └── package.json         # Theme workspace tooling
 ├── .editorconfig
 ├── .gitattributes
 ├── .gitignore
+├── .nvmrc                          # Supported Node.js major version
+├── package.json                    # Supported repository npm commands/workspace
+├── package-lock.json               # Authoritative locked Node dependency graph
 └── README.md                        # This repository guide
 ```
 
@@ -77,7 +81,7 @@ Do not add WordPress core, `wp-config.php`, `wp-content/uploads/`, database dump
 | WordPress requirement | 7.0 or newer |
 | PHP requirement | 7.4 or newer |
 | Text domain | `nolan-young-theme-template-01` |
-| Node requirement | 18.12 or newer |
+| Node requirement | 20.x |
 | Package tooling | npm, `@wordpress/scripts`, webpack |
 | PHP development tooling | Composer, PHP_CodeSniffer, PHPUnit |
 
@@ -140,8 +144,8 @@ To run this content in WordPress, use a standard WordPress installation that sat
 For the complete current-theme workflow, install:
 
 - Git.
-- Node.js 18.12+ and npm 8.19+.
-- PHP 7.4+; PHP 8.2 is used by CI for syntax validation.
+- Node.js 20.x and npm 10+.
+- PHP 7.4+; CI checks syntax on PHP 7.4 and the current Pressable-supported PHP 8.4.
 - Composer when using the theme’s PHP_CodeSniffer or PHPUnit commands.
 - A disposable local WordPress site (Local, Docker, wp-env, or comparable tooling).
 
@@ -188,17 +192,19 @@ In WordPress Admin:
 
 ### 4. Install the current theme’s development dependencies
 
-Run npm commands from the theme directory—not from the repository root:
+Use the Node 20 version pinned by `.nvmrc`, then run npm commands from the repository root:
 
 ```powershell
-Set-Location .\wp-content\themes\nolan-young-theme-template-01
+nvm use 20
 npm ci
 ```
 
-Install Composer dependencies only when you will run PHP standards checks or PHPUnit:
+Install Composer dependencies from the theme directory only when you will run PHP standards checks or PHPUnit:
 
 ```powershell
+Set-Location .\wp-content\themes\nolan-young-theme-template-01
 composer install
+Set-Location ..\..\..
 ```
 
 ### 5. Build once before reviewing
@@ -223,7 +229,7 @@ The theme has a strict source/output boundary:
 
 ### Day-to-day commands
 
-From `wp-content/themes/nolan-young-theme-template-01`:
+Run every npm command from the repository root:
 
 ```powershell
 # Install the locked Node dependency tree.
@@ -235,24 +241,30 @@ npm run start
 # Alternative minified watch workflow.
 npm run dev
 
+# Alias for the fast, readable watcher.
+npm run dev:fast
+
 # Run JS, Node helper, and SCSS linting.
 npm run lint
 
-# Validate structure and version relationships.
-npm run validate
+# Run linting plus structural validation without compiling.
+npm run check
 
 # Final production build (required before review/release).
 npm run build
 
-# Build, validate, and create an installable ZIP in dist/.
+# Optional: build, validate, and create an installable ZIP in dist/.
 npm run package
-
-# PHP code standards and test suite when Composer dependencies are installed.
-composer lint:php
-composer test:php
 ```
 
 Use `npm run start` while iterating when readable development output is helpful. Stop the watcher before your final `npm run build`; do not leave a watcher running when packaging or committing.
+
+Run the PHP commands separately from `wp-content/themes/nolan-young-theme-template-01` when its Composer dependencies are installed:
+
+```powershell
+composer lint:php
+composer test:php
+```
 
 ## How to modify the current theme
 
@@ -324,7 +336,7 @@ For a new theme:
 
 1. Choose a unique, stable folder name, stylesheet header name, text domain, package name, and asset prefix.
 2. Add a self-contained `README.md` that documents its runtime requirements, development commands, source/output boundaries, and packaging process.
-3. Add its own `package.json`, lockfile, and build configuration if it needs compiled assets. Do not make a second theme depend on another theme’s `node_modules`.
+3. Add its own workspace `package.json` and build configuration if it needs compiled assets, register the workspace and supported delegating commands in the root `package.json`, and update the root `package-lock.json`. Do not add a nested lockfile or make a second theme depend on another theme’s package.
 4. Keep theme-specific templates, `theme.json`, styles, scripts, screenshot, patterns, and documentation inside that theme’s directory.
 5. Extend `.github/workflows/theme-ci.yml` so CI builds and validates the new theme independently. Do not silently replace the existing theme’s CI target.
 6. Update this root README’s contents table and repository layout so contributors know the new theme exists and how to work on it.
@@ -363,39 +375,42 @@ Run these only in an appropriate WordPress-aware test setup; Composer tooling is
 Before committing theme changes, run the relevant smallest checks plus the full build when source assets changed:
 
 ```powershell
-Set-Location .\wp-content\themes\nolan-young-theme-template-01
 npm run lint
 npm run build
+Set-Location .\wp-content\themes\nolan-young-theme-template-01
 composer lint:php
 composer test:php
+Set-Location ..\..\..
 ```
 
 Then test the actual WordPress site: template routes, menus, editor styles, responsive behavior, keyboard access, forms where installed, and the browser console. Use a local/staging site with `WP_DEBUG` enabled; never enable verbose debugging on production sites.
 
 ### GitHub Actions
 
-`Theme CI` runs on pushes to `main` and `staging`, on pull requests targeting `main`, and when manually dispatched. It:
+`Repository CI` runs on pushes to `main` and `staging`, on pull requests targeting either branch, and when manually dispatched. It:
 
-1. installs the current theme’s locked Node dependencies;
-2. runs the production build and creates the installable theme ZIP;
-3. confirms generated assets are current;
-4. checks that the ZIP is structurally valid and contains one expected top-level theme directory; and
-5. runs `php -l` across PHP files in the repository, excluding dependency and distribution directories.
+1. rejects tracked sensitive, local, dependency, archive, and oversized files without printing file contents;
+2. runs a redacted Gitleaks history scan alongside GitHub secret scanning and push protection;
+3. installs the root locked Node dependency graph, runs `npm run build`, and confirms committed theme assets are current;
+4. runs `php -l` over tracked PHP files on PHP 7.4 and PHP 8.4; and
+5. installs each locked Composer development toolchain and runs the theme, NYForms, and NY Mega Menu WordPress coding standards.
 
-The installable ZIP is uploaded as a short-retention GitHub Actions artifact. CI currently targets `nolan-young-theme-template-01`; update it when adding a second buildable theme.
+The WordPress PHPUnit suites require a configured WordPress test library and database, so routine CI does not claim those integration tests passed. `Theme Package` is a separate optional workflow for manual dispatches and `v*` tags. It runs `npm run package`, validates the single timestamped ZIP, and uploads it as a short-retention artifact. Do not configure the packaging workflow as a required branch check.
+
+GitHub branch rules are configured outside this repository. Protect both `main` and `staging`, require pull requests, and require every `Repository CI` job before merging. Direct pushes to a Pressable deployment branch bypass the pre-merge gate and should remain blocked.
 
 ### Packaging the current theme
 
-From the current theme directory:
+From the repository root, optionally create a release package:
 
 ```powershell
 npm run package
 ```
 
-This reruns the final build gate and creates:
+This reruns the final build gate and creates a timestamped file such as:
 
 ```text
-wp-content/themes/nolan-young-theme-template-01/dist/nolan-young-theme-template-01.zip
+wp-content/themes/nolan-young-theme-template-01/dist/nolan-young-theme-template-01-07-25-2026-T03-40PM.zip
 ```
 
 Install that ZIP on a clean staging WordPress site before treating it as a release candidate. The ZIP is a deployment artifact, not the source of truth.
@@ -436,3 +451,4 @@ Before merging or pushing:
 - Building or administering forms? Read [NYforms documentation](wp-content/plugins/nyforms/readme.md).
 - Need an overview of the theme architecture? Read [theme architecture notes](wp-content/themes/nolan-young-theme-template-01/docs/architecture.md).
 - Preparing a theme release? Follow the [theme release process](wp-content/themes/nolan-young-theme-template-01/docs/release-process.md).
+- Connecting GitHub to Pressable? Follow the [Pressable deployment runbook](docs/PRESSABLE-DEPLOYMENT.md).

@@ -24,16 +24,14 @@ defined( 'ABSPATH' ) || exit;
 		<div class="nytt01-container nytt01-site-header__inner">
 			<?php get_template_part( 'template-parts/header/site', 'branding' ); ?>
 			<?php get_template_part( 'template-parts/header/primary', 'navigation' ); ?>
-			<a class="nytt01-button nytt01-site-header__cta" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">
-				<?php esc_html_e( 'Contact', 'nolan-young-theme-template-01' ); ?>
-			</a>
 			<?php
-			if ( ! ( function_exists( 'nymegamenu_is_enabled' ) && nymegamenu_is_enabled( 'primary' ) ) ) :
+			$nytt01_contact_url = nytt01_get_destination_url( 'contact' );
+			if ( $nytt01_contact_url ) :
 				?>
-			<button class="nytt01-menu-toggle" type="button" data-nytt01-menu-toggle aria-controls="site-navigation" aria-expanded="false">
-				<span class="nytt01-menu-toggle__label"><?php esc_html_e( 'Menu', 'nolan-young-theme-template-01' ); ?></span>
-				<span class="nytt01-menu-toggle__icon" aria-hidden="true"></span>
-			</button>
+				<a class="nytt01-button nytt01-site-header__cta" href="<?php echo esc_url( $nytt01_contact_url ); ?>">
+					<?php esc_html_e( 'Contact', 'nolan-young-theme-template-01' ); ?>
+				</a>
 			<?php endif; ?>
+			<?php get_template_part( 'template-parts/header/mobile', 'navigation' ); ?>
 		</div>
 	</header>

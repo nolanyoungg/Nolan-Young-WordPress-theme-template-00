@@ -5,7 +5,19 @@ label {
 	font-weight: 700;
 }
 
-input,
+input:not([type]),
+input[type="date"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
 textarea,
 select {
 	width: 100%;
@@ -22,10 +34,21 @@ textarea {
 	resize: vertical;
 }
 
-input:focus,
+input:not([type]):focus-visible,
+input[type="date"]:focus-visible,
+input[type="datetime-local"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="month"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="search"]:focus-visible,
+input[type="tel"]:focus-visible,
+input[type="text"]:focus-visible,
+input[type="time"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="week"]:focus-visible,
 textarea:focus,
 select:focus {
 	border-color: var(--nytt01-color-blue);
 	box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.17);
-	outline: none;
 }

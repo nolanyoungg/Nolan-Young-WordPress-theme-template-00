@@ -448,7 +448,7 @@ class Settings {
 	private static function contains_external_resource( $css ) {
 		$normalized = preg_replace_callback(
 			'/\\\\([0-9a-f]{1,6})\s?|\\\\(.)/is',
-			static function( $matches ) {
+			static function ( $matches ) {
 				if ( isset( $matches[1] ) && '' !== $matches[1] ) {
 					$code_point = hexdec( $matches[1] );
 					if ( $code_point <= 127 ) {

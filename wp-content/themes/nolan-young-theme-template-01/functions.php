@@ -20,10 +20,7 @@ $nytt01_theme_includes = array(
 );
 foreach ( $nytt01_theme_includes as $nytt01_theme_include ) {
 	$nytt01_theme_include_path = get_theme_file_path( $nytt01_theme_include );
-
-	if ( file_exists( $nytt01_theme_include_path ) ) {
-		require_once $nytt01_theme_include_path;
-	}
+	require_once $nytt01_theme_include_path;
 }
 
 unset( $nytt01_theme_include, $nytt01_theme_include_path, $nytt01_theme_includes );

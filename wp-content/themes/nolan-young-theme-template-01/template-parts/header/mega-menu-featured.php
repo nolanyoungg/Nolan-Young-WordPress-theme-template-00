@@ -22,7 +22,7 @@ if ( empty( $panel_id ) || empty( $trigger_id ) || empty( $items ) ) {
 
 $first_subitems       = ! empty( $first_item['subitems'] ) && is_array( $first_item['subitems'] ) ? array_values( $first_item['subitems'] ) : array();
 $first_subitems_label = sprintf(
-	/* translators: %s: Selected mega-menu item title. */
+	/* translators: %s: Mega-menu item title. */
 	esc_html__( '%s related links', 'nolan-young-theme-template-01' ),
 	$first_item['title']
 );
@@ -110,7 +110,7 @@ $first_subitems_label = sprintf(
 				<a class="nytt01-text-link nytt01-mega-feature__link" href="<?php echo esc_url( $first_item['url'] ); ?>" data-nytt01-mega-feature-link>
 					<?php
 					printf(
-						/* translators: %s: Selected mega-menu item title. */
+						/* translators: %s: Mega-menu item title. */
 						esc_html__( 'Explore %s', 'nolan-young-theme-template-01' ),
 						esc_html( $first_item['title'] )
 					);

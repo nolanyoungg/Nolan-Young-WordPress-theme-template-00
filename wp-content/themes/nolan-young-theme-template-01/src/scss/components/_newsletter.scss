@@ -1,0 +1,12 @@
+.nytt01-newsletter {
+	padding: 1.5rem;
+	border-radius: var(--nytt01-radius-medium);
+	background: var(--nytt01-color-mist);
+	color: var(--nytt01-color-ink);
+}
+
+.nytt01-newsletter a,
+.nytt01-newsletter h2,
+.nytt01-newsletter h3 {
+	color: var(--nytt01-color-navy);
+}

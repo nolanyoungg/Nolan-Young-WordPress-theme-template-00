@@ -1,6 +1,5 @@
 .nytt01-button,
 .wp-element-button,
-button,
 input[type="submit"] {
 	display: inline-flex;
 	min-height: 2.75rem;
@@ -23,7 +22,6 @@ input[type="submit"] {
 
 .nytt01-button:hover,
 .wp-element-button:hover,
-button:hover,
 input[type="submit"]:hover {
 	border-color: var(--nytt01-color-blue-dark);
 	background: var(--nytt01-color-blue-dark);

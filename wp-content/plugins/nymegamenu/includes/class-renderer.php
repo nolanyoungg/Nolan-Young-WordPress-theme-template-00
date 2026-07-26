@@ -170,7 +170,7 @@ class Renderer {
 		}
 
 		return sprintf(
-			'<section id="%1$s" class="nymegamenu__panel" aria-labelledby="%2$s" hidden><div class="nymegamenu__panel-inner"><div class="nymegamenu__grid" style="--nymega-grid-columns:%3$d">%4$s</div></div></section>',
+			'<section id="%1$s" class="nymegamenu__panel" aria-labelledby="%2$s"><div class="nymegamenu__panel-inner"><div class="nymegamenu__grid" style="--nymega-grid-columns:%3$d">%4$s</div></div></section>',
 			esc_attr( $trigger_id . '-panel' ),
 			esc_attr( $trigger_id ),
 			absint( $settings['grid_columns'] ),
@@ -183,6 +183,23 @@ class Renderer {
  * WordPress-compatible walker that adds NY Mega Menu controls.
  */
 class Menu_Walker extends \Walker_Nav_Menu {
+	/**
+	 * Unique render prefix.
+	 *
+	 * @var string
+	 */
+	private $instance_prefix;
+
+	/**
+	 * Create a walker with collision-free control IDs.
+	 */
+	public function __construct() {
+		static $instance = 0;
+
+		++$instance;
+		$this->instance_prefix = 'nymega-' . $instance;
+	}
+
 	/**
 	 * Submenu IDs keyed by the parent depth.
 	 *
@@ -251,7 +268,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 
 		$has_panel    = Renderer::has_panel( $settings, $item );
 		$has_children = ! empty( $args->has_children ) || in_array( 'menu-item-has-children', $classes, true );
-		$trigger_id   = 'nymega-trigger-' . (int) $item->ID;
+		$trigger_id   = $this->instance_prefix . '-trigger-' . (int) $item->ID;
 		if ( $has_children && ! $has_panel ) {
 			$this->submenu_ids[ $depth ] = $trigger_id . '-submenu';
 		}
@@ -308,7 +325,7 @@ class Menu_Walker extends \Walker_Nav_Menu {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve WordPress's native submenu extension point.
 		$attributes = apply_filters( 'nav_menu_submenu_attributes', $attributes, $args, $depth );
 		$output    .= sprintf(
-			'<ul%1$s hidden>',
+			'<ul%1$s>',
 			$this->build_attributes( $attributes )
 		);
 	}

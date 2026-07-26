@@ -95,47 +95,6 @@ function nytt01_register_sidebars() {
 add_action( 'widgets_init', 'nytt01_register_sidebars' );
 
 /**
- * Create and assign the default primary menu when the theme is activated.
- *
- * The menu only includes pages that already exist on the site. This gives a
- * new site a manageable default while avoiding links to content that has not
- * been created.
- *
- * @return void
- */
-function nytt01_maybe_create_default_primary_menu() {
-	$menu_locations = get_nav_menu_locations();
-
-	if ( ! empty( $menu_locations['primary'] ) ) {
-		return;
-	}
-
-	$menu_name = 'Primary Navigation';
-	$menu      = wp_get_nav_menu_object( $menu_name );
-	$menu_id   = $menu ? (int) $menu->term_id : 0;
-
-	if ( ! $menu_id ) {
-		$menu_id = (int) wp_create_nav_menu( $menu_name );
-	}
-
-	if ( ! $menu_id ) {
-		return;
-	}
-
-	$existing_items = wp_get_nav_menu_items( $menu_id );
-
-	if ( empty( $existing_items ) ) {
-		foreach ( nytt01_get_default_primary_menu_items() as $menu_item ) {
-			wp_update_nav_menu_item( $menu_id, 0, $menu_item );
-		}
-	}
-
-	$menu_locations['primary'] = $menu_id;
-	set_theme_mod( 'nav_menu_locations', $menu_locations );
-}
-add_action( 'after_switch_theme', 'nytt01_maybe_create_default_primary_menu' );
-
-/**
  * Return primary menu item definitions for existing site content.
  *
  * @return array<int, array<string, mixed>>

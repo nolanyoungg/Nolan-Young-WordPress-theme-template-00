@@ -8,10 +8,10 @@
 defined( 'ABSPATH' ) || exit;
 
 $nytt01_steps = array(
-	array( '01', esc_html__( 'Discover', 'nolan-young-theme-template-01' ), esc_html__( 'Define users, outcomes, constraints, and measurable success.', 'nolan-young-theme-template-01' ) ),
-	array( '02', esc_html__( 'Design', 'nolan-young-theme-template-01' ), esc_html__( 'Create a clear information system and accessible interaction model.', 'nolan-young-theme-template-01' ) ),
-	array( '03', esc_html__( 'Build', 'nolan-young-theme-template-01' ), esc_html__( 'Implement maintainable WordPress components with explicit boundaries.', 'nolan-young-theme-template-01' ) ),
-	array( '04', esc_html__( 'Validate', 'nolan-young-theme-template-01' ), esc_html__( 'Test functionality, accessibility, performance, and release packaging.', 'nolan-young-theme-template-01' ) ),
+	array( __( 'Discover', 'nolan-young-theme-template-01' ), __( 'Define users, outcomes, constraints, and measurable success.', 'nolan-young-theme-template-01' ) ),
+	array( __( 'Design', 'nolan-young-theme-template-01' ), __( 'Create a clear information system and accessible interaction model.', 'nolan-young-theme-template-01' ) ),
+	array( __( 'Build', 'nolan-young-theme-template-01' ), __( 'Implement maintainable WordPress components with explicit boundaries.', 'nolan-young-theme-template-01' ) ),
+	array( __( 'Validate', 'nolan-young-theme-template-01' ), __( 'Test functionality, accessibility, performance, and release packaging.', 'nolan-young-theme-template-01' ) ),
 );
 ?>
 <section class="nytt01-section nytt01-section--dark">
@@ -25,9 +25,8 @@ $nytt01_steps = array(
 		<ol class="nytt01-process-list">
 			<?php foreach ( $nytt01_steps as $nytt01_step ) : ?>
 				<li>
-					<span><?php echo esc_html( $nytt01_step[0] ); ?></span>
-					<h3><?php echo esc_html( $nytt01_step[1] ); ?></h3>
-					<p><?php echo esc_html( $nytt01_step[2] ); ?></p>
+					<h3><?php echo esc_html( $nytt01_step[0] ); ?></h3>
+					<p><?php echo esc_html( $nytt01_step[1] ); ?></p>
 				</li>
 			<?php endforeach; ?>
 		</ol>

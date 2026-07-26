@@ -16,6 +16,9 @@ class Plugin {
 	/** @var Plugin|null */
 	private static $instance;
 
+	/** @var int */
+	private $render_instance = 0;
+
 	/**
 	 * Get the singleton plugin instance.
 	 *
@@ -134,6 +137,7 @@ class Plugin {
 	 * @return string
 	 */
 	private function wrapper( $location, $profile, $content ) {
+		++$this->render_instance;
 		$settings  = Settings::all();
 		$themes    = $settings['themes'];
 		$theme_key = sanitize_key( $profile['theme'] ?? 'default' );
@@ -149,7 +153,7 @@ class Plugin {
 		}
 
 		$mobile_type = $profile['mobile_type'] ?? 'show-hide';
-		$drawer_id   = 'nymega-drawer-' . sanitize_html_class( $location );
+		$drawer_id   = 'nymega-drawer-' . sanitize_html_class( $location ) . '-' . $this->render_instance;
 		$toggle      = sprintf(
 			'<button class="nymegamenu__toggle" type="button" aria-expanded="false" aria-controls="%1$s" data-nymega-toggle>%2$s</button>',
 			esc_attr( $drawer_id ),
@@ -308,10 +312,19 @@ class Menu_Widget extends \WP_Widget {
 	 * @return void
 	 */
 	public function form( $instance ) {
+		$registered_locations = get_registered_nav_menus();
+		$current_location     = sanitize_key( $instance['location'] ?? '' );
 		?>
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'location' ) ); ?>"><?php esc_html_e( 'Menu location', 'nymegamenu' ); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'location' ) ); ?>" class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'location' ) ); ?>" value="<?php echo esc_attr( $instance['location'] ?? '' ); ?>">
+			<select id="<?php echo esc_attr( $this->get_field_id( 'location' ) ); ?>" class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'location' ) ); ?>">
+				<option value=""><?php esc_html_e( 'Select an enabled location', 'nymegamenu' ); ?></option>
+				<?php foreach ( $registered_locations as $location => $label ) : ?>
+					<?php if ( Settings::is_enabled( $location ) ) : ?>
+						<option value="<?php echo esc_attr( $location ); ?>" <?php selected( $current_location, $location ); ?>><?php echo esc_html( $label ); ?></option>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</select>
 		</p>
 		<?php
 	}

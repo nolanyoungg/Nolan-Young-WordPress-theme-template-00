@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 get_header();
 ?>
 
-<main id="primary" class="nytt01-site-main nytt01-page-policy">
+<main id="primary" class="nytt01-site-main nytt01-page-policy nytt01-container nytt01-content-area nytt01-policy-layout">
 	<?php
 	while ( have_posts() ) {
 		the_post();

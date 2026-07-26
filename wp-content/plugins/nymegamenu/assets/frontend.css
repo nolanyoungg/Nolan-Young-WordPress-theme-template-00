@@ -132,6 +132,26 @@
 	display: block;
 }
 
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__list {
+	align-items: stretch;
+	flex-direction: column;
+}
+
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__panel,
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__submenu,
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__submenu .nymegamenu__submenu {
+	position: static;
+	width: 100%;
+	margin-block: 0.25rem;
+	box-shadow: none;
+}
+
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__trigger,
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__toggle,
+.nymegamenu:not(.nymegamenu--enhanced) .nymegamenu__overlay {
+	display: none;
+}
+
 .nymegamenu__submenu .nymegamenu__link,
 .nymegamenu__submenu .nymegamenu__trigger {
 	justify-content: space-between;
@@ -379,7 +399,7 @@ body.nymega-drawer-open {
  * themes or menu locations.
  */
 #site-navigation.nytt01-primary-navigation--nymega .nymegamenu,
-#site-navigation.nytt01-primary-navigation--nymega .nymegamenu__drawer {
+#site-navigation.nytt01-primary-navigation--nymega .nymegamenu:not(.is-compact) .nymegamenu__drawer {
 	position: static;
 }
 
@@ -467,8 +487,12 @@ body.nymega-drawer-open {
 		gap: 0.25rem;
 	}
 
-	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__list > .nymegamenu__item,
-	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__link {
+	#site-navigation.nytt01-primary-navigation--nymega
+		.nymegamenu.is-compact
+		.nymegamenu__list
+		> .nymegamenu__item {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
 		width: 100%;
 	}
 
@@ -478,7 +502,31 @@ body.nymega-drawer-open {
 		padding: 0.65rem 0.25rem;
 	}
 
-	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__drawer {
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__link {
+		width: auto;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__trigger {
+		width: auto;
+		margin-inline-start: 0;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__panel,
+	#site-navigation.nytt01-primary-navigation--nymega .nymegamenu.is-compact .nymegamenu__submenu {
+		grid-column: 1 / -1;
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega
+		.nymegamenu.is-compact[data-nymega-mobile-type="offcanvas"]
+		.nymegamenu__drawer {
+		padding: 1rem;
+		background: var(--nytt01-color-white, #fff);
+		box-shadow: -12px 0 32px rgb(11 40 71 / 18%);
+	}
+
+	#site-navigation.nytt01-primary-navigation--nymega
+		.nymegamenu.is-compact:not([data-nymega-mobile-type="offcanvas"])
+		.nymegamenu__drawer {
 		top: 100%;
 		left: 0;
 		right: 0;

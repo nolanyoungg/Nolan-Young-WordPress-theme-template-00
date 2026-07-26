@@ -1,13 +1,4 @@
 /*
- * Reusable source-level utility classes for the webpack and Sass build.
+ * Add Sass mixins here when multiple owned partials need the same declaration
+ * group. Abstract files must not emit selectors.
  */
-.nytt01-flow > * + * {
-	margin-block-start: 1.5rem;
-}
-
-.nytt01-cluster {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1rem;
-	align-items: center;
-}

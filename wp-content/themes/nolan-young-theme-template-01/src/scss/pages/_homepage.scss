@@ -43,36 +43,3 @@
 .nytt01-hero__panel--small {
 	background: var(--nytt01-color-navy);
 }
-
-.nytt01-brand-statement {
-	font-family: var(--nytt01-font-serif);
-	font-size: clamp(1.5rem, 4vw, 2.8rem);
-}
-
-.nytt01-process-list {
-	display: grid;
-	gap: 1rem;
-	counter-reset: process;
-	list-style: none;
-	padding: 0;
-}
-
-.nytt01-process-list li {
-	counter-increment: process;
-	padding: 1.25rem;
-	border-left: 4px solid var(--nytt01-color-blue);
-	background: var(--nytt01-color-white);
-}
-
-.nytt01-process-list li::before {
-	content: "0" counter(process);
-	display: block;
-	color: var(--nytt01-color-blue);
-	font-weight: 800;
-}
-
-.nytt01-cta-banner {
-	border-radius: var(--nytt01-radius-large);
-	padding: clamp(2rem, 6vw, 4.5rem);
-	background: var(--nytt01-color-sky);
-}

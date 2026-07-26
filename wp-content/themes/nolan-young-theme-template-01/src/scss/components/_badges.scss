@@ -1,5 +1,4 @@
-.nytt01-eyebrow,
-.nytt01-badge {
+.nytt01-eyebrow {
 	display: inline-block;
 	margin-bottom: 0.8rem;
 	color: var(--nytt01-color-blue);
@@ -7,4 +6,8 @@
 	font-weight: 800;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
+}
+
+.nytt01-section--dark > .nytt01-container > .nytt01-section-header .nytt01-eyebrow {
+	color: var(--nytt01-color-sky);
 }

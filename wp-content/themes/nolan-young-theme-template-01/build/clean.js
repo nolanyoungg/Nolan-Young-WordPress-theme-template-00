@@ -6,12 +6,15 @@ const path = require( 'node:path' );
 const root = path.resolve( __dirname, '..' );
 const generatedFiles = [
 	'assets/css/bundle.css',
+	'assets/css/bundle.css.map',
 	'assets/css/bundle-rtl.css',
 	'assets/css/bundle.asset.php',
 	'assets/css/editor.css',
+	'assets/css/editor.css.map',
 	'assets/css/editor-rtl.css',
 	'assets/css/editor.asset.php',
 	'assets/js/bundle.js',
+	'assets/js/bundle.js.map',
 	'assets/js/bundle.asset.php',
 ];
 

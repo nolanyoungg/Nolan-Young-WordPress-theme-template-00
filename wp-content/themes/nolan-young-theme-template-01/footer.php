@@ -24,12 +24,13 @@ defined( 'ABSPATH' ) || exit;
 				<?php
 				wp_nav_menu(
 					array(
-						'theme_location'  => 'footer',
-						'container'       => 'nav',
-						'container_class' => 'nytt01-footer-navigation',
-						'menu_class'      => 'nytt01-footer-menu',
-						'fallback_cb'     => false,
-						'depth'           => 1,
+						'theme_location'       => 'footer',
+						'container'            => 'nav',
+						'container_class'      => 'nytt01-footer-navigation',
+						'container_aria_label' => esc_attr__( 'Footer navigation', 'nolan-young-theme-template-01' ),
+						'menu_class'           => 'nytt01-footer-menu',
+						'fallback_cb'          => false,
+						'depth'                => 1,
 					)
 				);
 				?>

@@ -17,7 +17,10 @@ let outputPath = baseOutputPath;
 let sequence = 2;
 
 while ( fs.existsSync( outputPath ) ) {
-	outputPath = path.join( distDirectory, `${ slug }-${ timestamp }-${ sequence }.zip` );
+	outputPath = path.join(
+		distDirectory,
+		`${ slug }-${ timestamp }-${ sequence }.zip`
+	);
 	sequence += 1;
 }
 

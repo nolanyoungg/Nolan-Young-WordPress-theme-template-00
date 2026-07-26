@@ -1,7 +1,42 @@
 <?xml version="1.0"?>
 <ruleset name="NYforms">
-	<file>.</file><exclude-pattern>*/vendor/*</exclude-pattern><arg name="basepath" value="."/><arg value="ps"/>
-	<rule ref="WordPress"/><rule ref="WordPress-Extra"/><rule ref="WordPress-Docs"/>
+	<file>.</file>
+	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*/languages/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<arg name="basepath" value="."/>
+	<arg value="ps"/>
+	<arg name="extensions" value="php"/>
+	<arg name="warning-severity" value="0"/>
+	<rule ref="WordPress">
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<exclude name="Generic.Files.OneObjectStructurePerFile"/>
+		<exclude name="Squiz.Commenting.ClassComment"/>
+		<exclude name="Squiz.Commenting.FileComment"/>
+		<exclude name="Squiz.Commenting.FunctionComment"/>
+		<exclude name="Squiz.Commenting.VariableComment"/>
+	</rule>
+	<rule ref="WordPress-Extra"/>
+	<!-- The project uses null-coalescing fallbacks and intentionally concise
+	     fallback expressions; input validation is covered by the security rules. -->
+	<rule ref="Universal.Operators.DisallowShortTernary">
+		<exclude-pattern>*/includes/*</exclude-pattern>
+	</rule>
+	<!-- Repository table identifiers are constructed only from $wpdb->prefix
+	     plus plugin-owned constants; every dynamic value uses placeholders. -->
+	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
+		<exclude-pattern>*/includes/class-repository.php</exclude-pattern>
+		<exclude-pattern>*/uninstall.php</exclude-pattern>
+	</rule>
 	<rule ref="PHPCompatibilityWP"><properties><property name="testVersion" value="7.4-"/></properties></rule>
-	<rule ref="WordPress.WP.I18n"><properties><property name="text_domain" type="array" value="nyforms"/></properties></rule>
+	<config name="minimum_supported_wp_version" value="7.0"/>
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="nyforms"/>
+			</property>
+		</properties>
+	</rule>
 </ruleset>

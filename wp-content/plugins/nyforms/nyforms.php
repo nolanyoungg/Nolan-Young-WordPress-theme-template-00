@@ -21,22 +21,13 @@ define( 'NYFORMS_FILE', __FILE__ );
 define( 'NYFORMS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NYFORMS_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * Load plugin translations from the bundled languages directory.
- *
- * @return void
- */
-function nyforms_load_textdomain() {
-	load_plugin_textdomain( 'nyforms', false, dirname( plugin_basename( NYFORMS_FILE ) ) . '/languages' );
-}
-add_action( 'init', 'nyforms_load_textdomain' );
-
 $nyforms_files = array(
 	'includes/class-installer.php',
 	'includes/class-schema.php',
 	'includes/class-conditions.php',
 	'includes/class-extensions.php',
 	'includes/class-fields.php',
+	'includes/class-storage.php',
 	'includes/class-repository.php',
 	'includes/class-renderer.php',
 	'includes/class-submissions.php',
@@ -58,6 +49,17 @@ add_action( 'admin_init', array( '\\NYforms\\Installer', 'maybe_upgrade' ) );
 
 function nyforms() {
 	return \NYforms\Plugin::instance();
+}
+
+/**
+ * Render a form from a theme or another plugin.
+ *
+ * @param int   $form_id Form ID.
+ * @param array $args    Optional renderer arguments.
+ * @return string
+ */
+function nyforms_render_form( $form_id, $args = array() ) {
+	return \NYforms\Plugin::instance()->renderer->render( $form_id, $args );
 }
 
 nyforms();

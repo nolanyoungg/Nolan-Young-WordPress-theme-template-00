@@ -69,9 +69,9 @@
 			return;
 		}
 
-		if ( ! preserveOpenItems && ( ! isCompact( menu ) || 'multiple' !== menu.dataset.nymegaMobileBehavior ) ) {
-			menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( other ) => {
-				if ( other !== item ) {
+			if ( ! preserveOpenItems && ( ! isCompact( menu ) || 'multiple' !== menu.dataset.nymegaMobileBehavior ) ) {
+				menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( other ) => {
+					if ( other !== item && ! other.contains( item ) ) {
 					closeItem( other );
 				}
 			} );
@@ -187,8 +187,14 @@
 		} );
 	};
 
-	const initialize = () => {
-		setCompact();
+		const initialize = () => {
+			menus().forEach( ( menu ) => {
+				menu.classList.add( 'nymegamenu--enhanced' );
+				menu.querySelectorAll( '[data-nymega-panel], .nymegamenu__panel, .nymegamenu__submenu' ).forEach( ( panel ) => {
+					panel.hidden = true;
+				} );
+			} );
+			setCompact();
 		setSticky();
 		menus().forEach( ( menu ) => {
 			installHoverBehavior( menu );
@@ -243,7 +249,7 @@
 
 		menus().forEach( ( menu ) => {
 			if ( ! menu.contains( event.target ) ) {
-				menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( closeItem );
+					menu.querySelectorAll( '.nymegamenu__item.is-open' ).forEach( ( item ) => closeItem( item ) );
 				closeDrawer( menu );
 			}
 		} );
