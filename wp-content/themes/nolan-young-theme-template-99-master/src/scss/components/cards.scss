@@ -1,0 +1,1 @@
+.feature-grid,.post-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; } .card { padding:1.5rem; border:2px solid $ink; border-radius:$radius; background:#fff; box-shadow:5px 5px 0 $ink; }

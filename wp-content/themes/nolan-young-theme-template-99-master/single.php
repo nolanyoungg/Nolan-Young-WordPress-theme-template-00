@@ -1,0 +1,1 @@
+<?php get_header(); ?><main id="content"><?php nytt99_part( 'blog-single-hero' ); nytt99_part( 'blog-single-page' ); nytt99_part( 'blog-single-next-blog' ); nytt99_part( 'blog-single-cta-bottom' ); ?></main><?php get_footer();

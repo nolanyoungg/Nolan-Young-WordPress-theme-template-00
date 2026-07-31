@@ -1,0 +1,1 @@
+<?php get_header(); ?><main id="content" class="page-content"><?php while ( have_posts() ) : the_post(); ?><article><header class="page-title"><p class="eyebrow">NORTHSTAR STUDIO</p><h1><?php the_title(); ?></h1></header><div class="entry-content"><?php the_content(); ?></div><?php comments_template(); ?></article><?php endwhile; ?></main><?php get_footer();

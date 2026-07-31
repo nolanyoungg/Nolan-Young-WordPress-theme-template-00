@@ -1,0 +1,1 @@
+<?php defined( 'ABSPATH' ) || exit; ?><section class="section blog-single-next-blog"><p class="eyebrow">NORTHSTAR / 01</p><h2>Keep exploring.</h2><p>We bring together strategy, storytelling, and considered digital craft to help ambitious teams turn attention into lasting momentum.</p></section>

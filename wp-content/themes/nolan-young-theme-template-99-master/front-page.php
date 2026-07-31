@@ -1,0 +1,1 @@
+<?php get_header(); ?><main id="content"><?php nytt99_part( 'front-page-hero' ); nytt99_part( 'front-page-services' ); nytt99_part( 'front-page-work' ); nytt99_part( 'front-page-process' ); nytt99_part( 'front-page-cta' ); ?></main><?php get_footer();

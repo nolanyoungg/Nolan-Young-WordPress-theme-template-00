@@ -1,0 +1,2 @@
+@mixin wrap { width: min(calc(100% - 2.5rem), $wide); margin-inline: auto; }
+@mixin focus { outline: 3px solid $coral; outline-offset: 4px; }

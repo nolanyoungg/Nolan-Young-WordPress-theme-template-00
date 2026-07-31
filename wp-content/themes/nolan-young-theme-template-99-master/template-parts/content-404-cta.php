@@ -1,0 +1,1 @@
+<?php defined( 'ABSPATH' ) || exit; ?><section class="section 404-cta"><p class="eyebrow">NORTHSTAR / 01</p><h2>Back to the home page.</h2><p>We bring together strategy, storytelling, and considered digital craft to help ambitious teams turn attention into lasting momentum.</p><?php nytt99_cta(); ?></section>

@@ -1,0 +1,1 @@
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?><article class="section article"><div class="entry-content"><?php the_content(); ?></div><?php comments_template(); ?></article><?php endwhile; endif; ?>

@@ -1,0 +1,1 @@
+.button { display:inline-flex; gap:.7rem; align-items:center; background:$lime; border:2px solid $ink; border-radius:99px; padding:.8rem 1.2rem; font-weight:800; text-decoration:none; transition:transform .2s, background .2s; } .button:hover { background:$coral; transform:translateY(-2px); }

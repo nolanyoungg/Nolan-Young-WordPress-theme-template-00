@@ -1,0 +1,1 @@
+<?php defined( 'ABSPATH' ) || exit; ?><section class="section work-sect01"><p class="eyebrow">NORTHSTAR / 01</p><h2>Featured case study.</h2><p>We bring together strategy, storytelling, and considered digital craft to help ambitious teams turn attention into lasting momentum.</p></section>
