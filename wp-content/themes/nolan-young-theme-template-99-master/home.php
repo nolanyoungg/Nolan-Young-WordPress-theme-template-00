@@ -1,1 +1,9 @@
-<?php get_header(); ?><main id="content"><?php nytt99_part( 'blog-hero' ); nytt99_part( 'blog-page-grid' ); nytt99_part( 'blog-cta-bottom' ); ?></main><?php get_footer();
+<?php
+get_header();
+?>
+<main id="content">
+	<?php get_template_part( 'template-parts/content', 'blog-hero' ); ?>
+	<?php get_template_part( 'template-parts/content', 'blog-page-grid' ); ?>
+	<?php get_template_part( 'template-parts/content', 'blog-cta-bottom' ); ?>
+</main>
+<?php get_footer();

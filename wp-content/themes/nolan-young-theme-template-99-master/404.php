@@ -1,1 +1,10 @@
-<?php get_header(); ?><main id="content"><?php nytt99_part( '404-hero' ); nytt99_part( '404-sect01' ); nytt99_part( '404-sect02' ); nytt99_part( '404-cta' ); ?></main><?php get_footer();
+<?php
+get_header();
+?>
+<main id="content">
+	<?php get_template_part( 'template-parts/content', '404-hero' ); ?>
+	<?php get_template_part( 'template-parts/content', '404-sect01' ); ?>
+	<?php get_template_part( 'template-parts/content', '404-sect02' ); ?>
+	<?php get_template_part( 'template-parts/content', '404-cta' ); ?>
+</main>
+<?php get_footer();

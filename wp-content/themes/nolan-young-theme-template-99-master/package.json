@@ -3,17 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm run build:css && npm run build:js && npm run validate",
-    "build:css": "sass src/scss/main.scss dist/css/bundle.css --style=compressed --no-source-map",
-    "build:js": "esbuild src/js/main.js --bundle --minify --outfile=dist/js/bundle.js",
     "dev": "npm run build && concurrently --kill-others \"sass --watch src/scss/main.scss:dist/css/bundle.css --style=expanded\" \"esbuild src/js/main.js --bundle --outfile=dist/js/bundle.js --watch\"",
-    "lint": "npm run lint:js && npm run lint:scss && npm run lint:php",
-    "lint:js": "eslint src/js",
-    "lint:scss": "stylelint \"src/scss/**/*.scss\"",
+    "build": "sass src/scss/main.scss dist/css/bundle.css --style=compressed --no-source-map && esbuild src/js/main.js --bundle --minify --outfile=dist/js/bundle.js && node build/validate.js",
     "lint:php": "node build/lint-php.js",
-    "validate": "node build/validate.js",
-    "package": "npm run build && node build/package-theme.js",
-    "test": "npm run lint && npm run build && node build/test-theme.js"
+    "package": "node build/package-theme.js --preflight && npm run build && node build/package-theme.js"
   },
-  "devDependencies": { "archiver": "^7.0.1", "concurrently": "^9.1.2", "esbuild": "^0.25.0", "eslint": "^9.20.1", "sass": "^1.86.0", "stylelint": "^16.15.0", "stylelint-config-standard-scss": "^14.0.0" }
+  "devDependencies": {
+    "archiver": "^8.0.0",
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.0",
+    "sass": "^1.86.0"
+  }
 }

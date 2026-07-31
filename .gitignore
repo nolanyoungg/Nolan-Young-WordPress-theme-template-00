@@ -10,3 +10,7 @@ coverage/
 .phpunit.result.cache
 
 dist/
+!wp-content/themes/nolan-young-theme-template-99-master/dist/
+!wp-content/themes/nolan-young-theme-template-99-master/dist/**
+wp-content/zipped-theme/*.zip
+!wp-content/zipped-theme/.gitkeep

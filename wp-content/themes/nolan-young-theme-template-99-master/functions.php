@@ -1,8 +1,23 @@
 <?php
-/** Theme bootstrap. @package NYTT99 */
+/**
+ * Theme bootstrap.
+ *
+ * @package NolanYoungThemeTemplate99Master
+ */
+
 defined( 'ABSPATH' ) || exit;
-$nytt99_modules = array( '/inc/setup.php', '/inc/helpers.php', '/inc/enqueue.php', '/inc/template-tags.php', '/inc/customizer.php' );
-foreach ( $nytt99_modules as $nytt99_module ) {
-	require_once get_theme_file_path( $nytt99_module );
+
+$nytt99_includes = array(
+	'/inc/setup.php',
+	'/inc/helpers.php',
+	'/inc/enqueue.php',
+	'/inc/template-tags.php',
+	'/inc/customizer.php',
+	'/inc/navigation.php',
+);
+
+foreach ( $nytt99_includes as $nytt99_include ) {
+	require_once get_theme_file_path( $nytt99_include );
 }
-unset( $nytt99_module, $nytt99_modules );
+
+unset( $nytt99_include, $nytt99_includes );

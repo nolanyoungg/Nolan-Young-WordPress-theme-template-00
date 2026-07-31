@@ -1,1 +1,10 @@
-<?php get_header(); ?><main id="content"><?php nytt99_part( 'blog-single-hero' ); nytt99_part( 'blog-single-page' ); nytt99_part( 'blog-single-next-blog' ); nytt99_part( 'blog-single-cta-bottom' ); ?></main><?php get_footer();
+<?php
+get_header();
+?>
+<main id="content">
+	<?php get_template_part( 'template-parts/content', 'blog-single-hero' ); ?>
+	<?php get_template_part( 'template-parts/content', 'blog-single-page' ); ?>
+	<?php get_template_part( 'template-parts/content', 'blog-single-next-blog' ); ?>
+	<?php get_template_part( 'template-parts/content', 'blog-single-cta-bottom' ); ?>
+</main>
+<?php get_footer();

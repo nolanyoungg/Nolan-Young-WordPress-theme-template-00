@@ -1,6 +1,19 @@
 <?php
 /**
  * Template Name: Services
- * @package NYTT99
+ *
+ * @package NolanYoungThemeTemplate99Master
  */
-get_header(); ?><main id="content" class="page-content">nytt99_part( 'services-hero' ); nytt99_part( 'services-sect01' ); nytt99_part( 'services-sect02' ); nytt99_part( 'services-sect03' ); nytt99_part( 'services-sect04' ); nytt99_part( 'services-sect05' ); nytt99_part( 'services-cta' );</main><?php get_footer();
+
+get_header();
+?>
+<main id="content">
+	<?php get_template_part( 'template-parts/content', 'services-hero' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-sect01' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-sect02' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-sect03' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-sect04' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-sect05' ); ?>
+	<?php get_template_part( 'template-parts/content', 'services-cta' ); ?>
+</main>
+<?php get_footer();
