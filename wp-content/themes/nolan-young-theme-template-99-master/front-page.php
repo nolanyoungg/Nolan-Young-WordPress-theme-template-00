@@ -1,1 +1,11 @@
-<?php get_header(); ?><main id="content"><?php nytt99_part( 'front-page-hero' ); nytt99_part( 'front-page-services' ); nytt99_part( 'front-page-work' ); nytt99_part( 'front-page-process' ); nytt99_part( 'front-page-cta' ); ?></main><?php get_footer();
+<?php
+get_header();
+?>
+<main id="content">
+	<?php get_template_part( 'template-parts/content', 'front-page-hero' ); ?>
+	<?php get_template_part( 'template-parts/content', 'front-page-services' ); ?>
+	<?php get_template_part( 'template-parts/content', 'front-page-work' ); ?>
+	<?php get_template_part( 'template-parts/content', 'front-page-process' ); ?>
+	<?php get_template_part( 'template-parts/content', 'front-page-cta' ); ?>
+</main>
+<?php get_footer();

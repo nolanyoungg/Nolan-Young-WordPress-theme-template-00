@@ -1,1 +1,4 @@
-export const debounce = (fn, wait = 150) => { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), wait); }; };
+export const debounce = (callback, wait = 160) => {
+	let timeout;
+	return (...args) => { window.clearTimeout(timeout); timeout = window.setTimeout(() => callback(...args), wait); };
+};

@@ -1,1 +1,39 @@
-<?php defined( 'ABSPATH' ) || exit; ?><!doctype html><html <?php language_attributes(); ?>><head><meta charset="<?php bloginfo( 'charset' ); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head><body <?php body_class(); ?>><a class="skip-link" href="#content"><?php esc_html_e( 'Skip to content', 'nolan-young-theme-template-99-master' ); ?></a><?php wp_body_open(); ?><header class="site-header"><a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">NORTH<span>STAR</span></a><button class="nav-toggle" aria-expanded="false" aria-controls="site-navigation"><span class="screen-reader-text"><?php esc_html_e( 'Open menu', 'nolan-young-theme-template-99-master' ); ?></span><span></span><span></span></button><nav id="site-navigation" class="site-navigation" aria-label="<?php esc_attr_e( 'Primary navigation', 'nolan-young-theme-template-99-master' ); ?>"><?php wp_nav_menu( array( 'theme_location' => 'primary', 'container' => false, 'fallback_cb' => 'wp_page_menu' ) ); ?><?php nytt99_cta( 'Let’s talk' ); ?></nav></header>
+<?php
+/**
+ * Shared site header.
+ *
+ * @package NolanYoungThemeTemplate99Master
+ */
+
+defined( 'ABSPATH' ) || exit;
+?><!doctype html>
+<html class="no-js" <?php language_attributes(); ?>>
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+	<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<?php wp_body_open(); ?>
+<a class="skip-link" href="#content"><?php esc_html_e( 'Skip to content', 'nolan-young-theme-template-99-master' ); ?></a>
+<header class="site-header" data-site-header>
+	<div class="content-wrap site-header__inner">
+		<div class="site-brand">
+			<?php if ( has_custom_logo() ) : ?>
+				<?php the_custom_logo(); ?>
+			<?php else : ?>
+				<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+					<span class="brand__mark" aria-hidden="true"><?php echo esc_html( strtoupper( substr( get_bloginfo( 'name' ), 0, 1 ) ) ); ?></span>
+					<span class="brand__name"><?php bloginfo( 'name' ); ?></span>
+				</a>
+			<?php endif; ?>
+		</div>
+		<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
+			<span class="screen-reader-text"><?php esc_html_e( 'Toggle menu', 'nolan-young-theme-template-99-master' ); ?></span>
+			<span></span><span></span>
+		</button>
+		<?php nytt99_primary_navigation(); ?>
+		<?php nytt99_button( __( 'Start a project', 'nolan-young-theme-template-99-master' ) ); ?>
+	</div>
+</header>
