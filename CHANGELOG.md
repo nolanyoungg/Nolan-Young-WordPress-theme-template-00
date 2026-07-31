@@ -6,6 +6,8 @@ All notable repository-level changes are documented in this file.
 
 ### Added
 
+- Added `nolan-young-demo-theme-003` as an independently namespaced classic WordPress theme with a modernist design system, six generated photographic assets, distinct page templates, and validated packaging automation.
+- Added a 50/50 image-led Services mega menu to Demo Theme 003 with five service categories and hover, focus, click, and arrow-key interaction.
 - Added `nolan-young-demo-theme-002` on its own development branch as a complete, independently namespaced classic WordPress theme with an editorial atelier design system, six locally generated photographic assets, and a full development and packaging workflow.
 - Added an accessible image-led 50/50 Services mega menu to Demo Theme 002 with hover, focus, click, arrow-key, Home, and End interactions across five service categories.
 - Added `nolan-young-demo-theme-001` as a complete, independently namespaced classic WordPress theme with the full PHP template hierarchy, development sources, build tooling, accessibility guidance, translation catalog, and validated packaging workflow.
