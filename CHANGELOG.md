@@ -6,6 +6,8 @@ All notable repository-level changes are documented in this file.
 
 ### Added
 
+- Added `nolan-young-demo-theme-003` as an independently namespaced classic WordPress theme with a modernist design system, six generated photographic assets, distinct page templates, and validated packaging automation.
+- Added a 50/50 image-led Services mega menu to Demo Theme 003 with five service categories and hover, focus, click, and arrow-key interaction.
 - Added `nolan-young-demo-theme-002` on its own development branch as a complete, independently namespaced classic WordPress theme with an editorial atelier design system, six locally generated photographic assets, and a full development and packaging workflow.
 - Added an accessible image-led 50/50 Services mega menu to Demo Theme 002 with hover, focus, click, arrow-key, Home, and End interactions across five service categories.
 - Added `nolan-young-demo-theme-001` as a complete, independently namespaced classic WordPress theme with the full PHP template hierarchy, development sources, build tooling, accessibility guidance, translation catalog, and validated packaging workflow.
@@ -23,6 +25,7 @@ All notable repository-level changes are documented in this file.
 
 ### Fixed
 
+- Constrained the Demo Theme 002 and 003 desktop mega menus to roughly half the viewport, removed internal scrolling, and dimmed the page behind each open menu to 50% opacity.
 - Made Master 99 packaging create `wp-content/zipped-theme/` automatically when it is missing.
 - Replaced Master 99's external `unzip` dependency with Node-based ZIP central-directory inventory validation for cross-platform packaging.
 - Removed horizontal viewport overflow from Master 99's fixed desktop and mobile navigation layers.
