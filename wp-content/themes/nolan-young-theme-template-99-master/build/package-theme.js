@@ -2,7 +2,6 @@
 
 const fs = require( 'node:fs' );
 const path = require( 'node:path' );
-const { execFileSync } = require( 'node:child_process' );
 const { ZipArchive } = require( 'archiver' );
 
 const root = path.resolve( __dirname, '..' );
@@ -20,7 +19,7 @@ const runtimeEntries = [
 
 function verifyPackageDirectory() {
 	if ( !fs.existsSync( packageDirectory ) ) {
-		throw new Error( `Package destination does not exist: ${ packageDirectory }` );
+		fs.mkdirSync( packageDirectory, { recursive: true } );
 	}
 
 	if ( !fs.statSync( packageDirectory ).isDirectory() ) {
@@ -28,6 +27,79 @@ function verifyPackageDirectory() {
 	}
 
 	fs.accessSync( packageDirectory, fs.constants.W_OK );
+}
+
+function listArchiveFiles( archivePath ) {
+	const archive = fs.readFileSync( archivePath );
+	const endSignature = 0x06054b50;
+	const centralSignature = 0x02014b50;
+	const minimumEndSize = 22;
+	const maximumCommentSize = 0xffff;
+	const searchStart = Math.max( 0, archive.length - minimumEndSize - maximumCommentSize );
+	let endOffset = -1;
+
+	for ( let offset = archive.length - minimumEndSize; offset >= searchStart; offset-- ) {
+		if (
+			archive.readUInt32LE( offset ) === endSignature &&
+			offset + minimumEndSize + archive.readUInt16LE( offset + 20 ) === archive.length
+		) {
+			endOffset = offset;
+			break;
+		}
+	}
+
+	if ( endOffset === -1 ) {
+		throw new Error( 'Archive inventory validation failed: ZIP end record was not found.' );
+	}
+
+	const diskNumber = archive.readUInt16LE( endOffset + 4 );
+	const centralDisk = archive.readUInt16LE( endOffset + 6 );
+	const diskEntryCount = archive.readUInt16LE( endOffset + 8 );
+	const entryCount = archive.readUInt16LE( endOffset + 10 );
+	const centralSize = archive.readUInt32LE( endOffset + 12 );
+	const centralOffset = archive.readUInt32LE( endOffset + 16 );
+
+	if (
+		diskNumber !== 0 ||
+		centralDisk !== 0 ||
+		diskEntryCount !== entryCount ||
+		entryCount === 0xffff ||
+		centralSize === 0xffffffff ||
+		centralOffset === 0xffffffff
+	) {
+		throw new Error( 'Archive inventory validation failed: unsupported multi-disk or ZIP64 archive.' );
+	}
+
+	if ( centralOffset + centralSize > endOffset ) {
+		throw new Error( 'Archive inventory validation failed: invalid central directory bounds.' );
+	}
+
+	const entries = [];
+	let offset = centralOffset;
+
+	for ( let index = 0; index < entryCount; index++ ) {
+		if ( offset + 46 > archive.length || archive.readUInt32LE( offset ) !== centralSignature ) {
+			throw new Error( 'Archive inventory validation failed: invalid central directory entry.' );
+		}
+
+		const nameLength = archive.readUInt16LE( offset + 28 );
+		const extraLength = archive.readUInt16LE( offset + 30 );
+		const commentLength = archive.readUInt16LE( offset + 32 );
+		const entryEnd = offset + 46 + nameLength + extraLength + commentLength;
+
+		if ( entryEnd > archive.length ) {
+			throw new Error( 'Archive inventory validation failed: truncated central directory entry.' );
+		}
+
+		entries.push( archive.toString( 'utf8', offset + 46, offset + 46 + nameLength ) );
+		offset = entryEnd;
+	}
+
+	if ( offset !== centralOffset + centralSize ) {
+		throw new Error( 'Archive inventory validation failed: incomplete central directory.' );
+	}
+
+	return entries.filter( ( entry ) => !entry.endsWith( '/' ) ).sort();
 }
 
 function listSourceFiles( source, relativePath ) {
@@ -44,11 +116,7 @@ function listSourceFiles( source, relativePath ) {
 }
 
 function validateArchiveInventory( archivePath ) {
-	const archiveEntries = execFileSync( 'unzip', [ '-Z1', archivePath ], { encoding: 'utf8' } )
-		.split( /\r?\n/ )
-		.filter( Boolean )
-		.filter( ( entry ) => !entry.endsWith( '/' ) )
-		.sort();
+	const archiveEntries = listArchiveFiles( archivePath );
 	const expectedEntries = runtimeEntries.flatMap( ( entry ) => listSourceFiles( path.join( root, entry ), entry ) ).sort();
 	const invalidRoots = archiveEntries.filter( ( entry ) => !entry.startsWith( `${ slug }/` ) );
 	const missingEntries = expectedEntries.filter( ( entry ) => !archiveEntries.includes( entry ) );

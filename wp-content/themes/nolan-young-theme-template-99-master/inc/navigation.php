@@ -63,39 +63,96 @@ function nytt99_mega_menu_data() {
 	return array(
 		'services' => array(
 			'label'       => __( 'Services', 'nolan-young-theme-template-99-master' ),
-			'eyebrow'     => __( 'Enterprise capabilities', 'nolan-young-theme-template-99-master' ),
-			'heading'     => __( 'Build the system behind better growth.', 'nolan-young-theme-template-99-master' ),
-			'description' => __( 'Strategy, experience, engineering, and long-term stewardship connected as one practical delivery system.', 'nolan-young-theme-template-99-master' ),
+			'eyebrow'     => __( 'Digital capabilities', 'nolan-young-theme-template-99-master' ),
+			'heading'     => __( 'Choose what you want to move forward.', 'nolan-young-theme-template-99-master' ),
+			'description' => __( 'Explore focused services designed to turn ambitious ideas into useful, measurable digital systems.', 'nolan-young-theme-template-99-master' ),
 			'url'         => nytt99_primary_menu_url( 'services', '/services/' ),
-			'metric'      => __( 'Four connected service tracks', 'nolan-young-theme-template-99-master' ),
+			'metric'      => __( 'Five specialties. One connected delivery team.', 'nolan-young-theme-template-99-master' ),
 			'items'       => array(
 				array(
-					'title'       => __( 'Service 1', 'nolan-young-theme-template-99-master' ),
-					'description' => __( 'Turn a defined business need into a clear, measurable implementation plan.', 'nolan-young-theme-template-99-master' ),
-					'url'         => home_url( '/services/#service-1' ),
-					'links'       => array( __( 'Overview', 'nolan-young-theme-template-99-master' ), __( 'Capabilities', 'nolan-young-theme-template-99-master' ), __( 'Process', 'nolan-young-theme-template-99-master' ) ),
+					'title'       => __( 'Website Development', 'nolan-young-theme-template-99-master' ),
+					'description' => __( 'Fast, accessible websites built around clear content, confident interactions, and maintainable systems.', 'nolan-young-theme-template-99-master' ),
+					'url'         => home_url( '/services/#website-development' ),
+					'links'       => array(
+						__( 'WordPress Development', 'nolan-young-theme-template-99-master' ),
+						__( 'Custom Website Development', 'nolan-young-theme-template-99-master' ),
+						__( 'Headless CMS Development', 'nolan-young-theme-template-99-master' ),
+						__( 'React Development', 'nolan-young-theme-template-99-master' ),
+						__( 'Shopify Development', 'nolan-young-theme-template-99-master' ),
+						__( 'Landing Page Builds', 'nolan-young-theme-template-99-master' ),
+						__( 'Website Redesigns', 'nolan-young-theme-template-99-master' ),
+					),
 					'code'        => '01',
+					'visual'      => 'website',
+					'glyph'       => '</>',
 				),
 				array(
-					'title'       => __( 'Service 2', 'nolan-young-theme-template-99-master' ),
-					'description' => __( 'Improve the structure, usability, and accessibility of an existing experience.', 'nolan-young-theme-template-99-master' ),
-					'url'         => home_url( '/services/#service-2' ),
-					'links'       => array( __( 'Experience review', 'nolan-young-theme-template-99-master' ), __( 'Accessibility', 'nolan-young-theme-template-99-master' ), __( 'Optimization', 'nolan-young-theme-template-99-master' ) ),
+					'title'       => __( 'Plugin Development', 'nolan-young-theme-template-99-master' ),
+					'description' => __( 'Purpose-built WordPress functionality that fits the editorial workflow instead of fighting it.', 'nolan-young-theme-template-99-master' ),
+					'url'         => home_url( '/services/#plugin-development' ),
+					'links'       => array(
+						__( 'SEO Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'Form Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'Menu Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'Custom WordPress Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'API Integration Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'Booking Plugins', 'nolan-young-theme-template-99-master' ),
+						__( 'Admin Dashboard Extensions', 'nolan-young-theme-template-99-master' ),
+					),
 					'code'        => '02',
+					'visual'      => 'plugin',
+					'glyph'       => '+',
 				),
 				array(
-					'title'       => __( 'Service 3', 'nolan-young-theme-template-99-master' ),
-					'description' => __( 'Production engineering for maintainable WordPress systems and integrations.', 'nolan-young-theme-template-99-master' ),
-					'url'         => home_url( '/services/#service-3' ),
-					'links'       => array( __( 'WordPress', 'nolan-young-theme-template-99-master' ), __( 'Integrations', 'nolan-young-theme-template-99-master' ), __( 'Release systems', 'nolan-young-theme-template-99-master' ) ),
+					'title'       => __( 'SEO', 'nolan-young-theme-template-99-master' ),
+					'description' => __( 'Search foundations and content signals that help the right audience discover—and trust—your expertise.', 'nolan-young-theme-template-99-master' ),
+					'url'         => home_url( '/services/#seo' ),
+					'links'       => array(
+						__( 'Technical SEO', 'nolan-young-theme-template-99-master' ),
+						__( 'On-Page SEO', 'nolan-young-theme-template-99-master' ),
+						__( 'Local SEO', 'nolan-young-theme-template-99-master' ),
+						__( 'Keyword Research', 'nolan-young-theme-template-99-master' ),
+						__( 'Content Optimization', 'nolan-young-theme-template-99-master' ),
+						__( 'Schema Markup', 'nolan-young-theme-template-99-master' ),
+						__( 'Site Speed Improvements', 'nolan-young-theme-template-99-master' ),
+					),
 					'code'        => '03',
+					'visual'      => 'seo',
+					'glyph'       => '↑',
 				),
 				array(
-					'title'       => __( 'Service 4', 'nolan-young-theme-template-99-master' ),
-					'description' => __( 'Ongoing stewardship for performance, stability, security, and improvement.', 'nolan-young-theme-template-99-master' ),
-					'url'         => home_url( '/services/#service-4' ),
-					'links'       => array( __( 'Maintenance', 'nolan-young-theme-template-99-master' ), __( 'Performance', 'nolan-young-theme-template-99-master' ), __( 'Support', 'nolan-young-theme-template-99-master' ) ),
+					'title'       => __( 'Analytics', 'nolan-young-theme-template-99-master' ),
+					'description' => __( 'Decision-ready measurement that turns noisy traffic and campaign data into a useful operating picture.', 'nolan-young-theme-template-99-master' ),
+					'url'         => home_url( '/services/#analytics' ),
+					'links'       => array(
+						__( 'GA4 Setup', 'nolan-young-theme-template-99-master' ),
+						__( 'Conversion Tracking', 'nolan-young-theme-template-99-master' ),
+						__( 'Dashboard Creation', 'nolan-young-theme-template-99-master' ),
+						__( 'Event Tracking', 'nolan-young-theme-template-99-master' ),
+						__( 'Funnel Analysis', 'nolan-young-theme-template-99-master' ),
+						__( 'Marketing Reports', 'nolan-young-theme-template-99-master' ),
+						__( 'Data Cleanup', 'nolan-young-theme-template-99-master' ),
+					),
 					'code'        => '04',
+					'visual'      => 'analytics',
+					'glyph'       => '∿',
+				),
+				array(
+					'title'       => __( 'AI Development', 'nolan-young-theme-template-99-master' ),
+					'description' => __( 'Practical AI tools and automations shaped around real workflows, useful guardrails, and human control.', 'nolan-young-theme-template-99-master' ),
+					'url'         => home_url( '/services/#ai-development' ),
+					'links'       => array(
+						__( 'AI Chatbots', 'nolan-young-theme-template-99-master' ),
+						__( 'Automation Workflows', 'nolan-young-theme-template-99-master' ),
+						__( 'AI-Powered Search', 'nolan-young-theme-template-99-master' ),
+						__( 'Content Generation Tools', 'nolan-young-theme-template-99-master' ),
+						__( 'Custom GPT Integrations', 'nolan-young-theme-template-99-master' ),
+						__( 'Lead Qualification Bots', 'nolan-young-theme-template-99-master' ),
+						__( 'Internal AI Assistants', 'nolan-young-theme-template-99-master' ),
+					),
+					'code'        => '05',
+					'visual'      => 'ai',
+					'glyph'       => 'AI',
 				),
 			),
 		),
@@ -176,6 +233,119 @@ function nytt99_mega_menu_data() {
 			),
 		),
 	);
+}
+
+/**
+ * Render the interactive services mega panel.
+ *
+ * @param array<string, mixed> $data Services panel data.
+ * @return void
+ */
+function nytt99_render_services_panel( $data ) {
+	$panel_id = 'nytt99-mega-services';
+	?>
+	<li class="site-menu__item site-menu__item--mega" data-mega-item>
+		<button
+			class="site-menu__trigger"
+			type="button"
+			aria-expanded="false"
+			aria-controls="<?php echo esc_attr( $panel_id ); ?>"
+			data-mega-trigger
+		>
+			<span><?php echo esc_html( $data['label'] ); ?></span>
+			<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.25 6 8l4-3.75"/></svg>
+		</button>
+		<div id="<?php echo esc_attr( $panel_id ); ?>" class="mega-panel mega-panel--services" data-mega-panel>
+			<div class="mega-panel__context content-wrap">
+				<div>
+					<strong><?php echo esc_html( $data['label'] ); ?></strong>
+					<span><?php echo esc_html( $data['metric'] ); ?></span>
+				</div>
+				<a href="<?php echo esc_url( $data['url'] ); ?>">
+					<?php esc_html_e( 'Explore every service', 'nolan-young-theme-template-99-master' ); ?>
+					<span aria-hidden="true"> ↗</span>
+				</a>
+			</div>
+			<div class="mega-services content-wrap" data-service-tabs>
+				<section class="mega-services__categories" aria-labelledby="nytt99-services-heading">
+					<div class="mega-services__intro">
+						<p class="eyebrow"><?php echo esc_html( $data['eyebrow'] ); ?></p>
+						<h2 id="nytt99-services-heading"><?php echo esc_html( $data['heading'] ); ?></h2>
+						<p><?php echo esc_html( $data['description'] ); ?></p>
+					</div>
+					<div class="mega-services__list" role="tablist" aria-label="<?php esc_attr_e( 'Service categories', 'nolan-young-theme-template-99-master' ); ?>" aria-orientation="vertical">
+						<?php foreach ( $data['items'] as $index => $item ) : ?>
+							<?php
+							$tab_id     = 'nytt99-service-tab-' . sanitize_html_class( $item['visual'] );
+							$content_id = 'nytt99-service-panel-' . sanitize_html_class( $item['visual'] );
+							?>
+							<button
+								id="<?php echo esc_attr( $tab_id ); ?>"
+								class="mega-service-tab<?php echo 0 === $index ? ' is-active' : ''; ?>"
+								type="button"
+								role="tab"
+								aria-controls="<?php echo esc_attr( $content_id ); ?>"
+								aria-selected="<?php echo 0 === $index ? 'true' : 'false'; ?>"
+								tabindex="<?php echo 0 === $index ? '0' : '-1'; ?>"
+								data-service-tab
+							>
+								<span class="mega-service-tab__code"><?php echo esc_html( $item['code'] ); ?></span>
+								<span><?php echo esc_html( $item['title'] ); ?></span>
+								<span aria-hidden="true">→</span>
+							</button>
+						<?php endforeach; ?>
+					</div>
+				</section>
+				<div class="mega-services__stage">
+					<?php foreach ( $data['items'] as $index => $item ) : ?>
+						<?php
+						$tab_id     = 'nytt99-service-tab-' . sanitize_html_class( $item['visual'] );
+						$content_id = 'nytt99-service-panel-' . sanitize_html_class( $item['visual'] );
+						?>
+						<section
+							id="<?php echo esc_attr( $content_id ); ?>"
+							class="mega-service-panel<?php echo 0 === $index ? ' is-active' : ''; ?>"
+							role="tabpanel"
+							aria-labelledby="<?php echo esc_attr( $tab_id ); ?>"
+							tabindex="0"
+							data-service-panel
+							<?php echo 0 === $index ? '' : 'hidden'; ?>
+						>
+							<header class="mega-service-panel__header">
+								<div>
+									<p class="eyebrow"><?php esc_html_e( 'Featured capability', 'nolan-young-theme-template-99-master' ); ?></p>
+									<h3><?php echo esc_html( $item['title'] ); ?></h3>
+									<p><?php echo esc_html( $item['description'] ); ?></p>
+								</div>
+								<div class="service-visual service-visual--<?php echo esc_attr( $item['visual'] ); ?>" aria-hidden="true">
+									<span class="service-visual__orbit"></span>
+									<span class="service-mascot service-mascot--<?php echo esc_attr( $item['visual'] ); ?>">
+										<span class="service-mascot__eyes"><i></i><i></i></span>
+										<span class="service-mascot__glyph"><?php echo esc_html( $item['glyph'] ); ?></span>
+									</span>
+									<span class="service-visual__spark service-visual__spark--one"></span>
+									<span class="service-visual__spark service-visual__spark--two"></span>
+								</div>
+							</header>
+							<div class="mega-service-panel__details">
+								<span><?php esc_html_e( 'What we build', 'nolan-young-theme-template-99-master' ); ?></span>
+								<ul>
+									<?php foreach ( $item['links'] as $link ) : ?>
+										<li><span aria-hidden="true">✓</span><?php echo esc_html( $link ); ?></li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+							<a class="mega-service-panel__cta" href="<?php echo esc_url( $item['url'] ); ?>">
+								<span><?php echo esc_html( sprintf( __( 'Explore %s', 'nolan-young-theme-template-99-master' ), $item['title'] ) ); ?></span>
+								<span aria-hidden="true">↗</span>
+							</a>
+						</section>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+	</li>
+	<?php
 }
 
 /**
@@ -389,10 +559,11 @@ function nytt99_primary_menu_fallback( $args = array() ) {
 		<li class="menu-item menu-item-has-children">
 			<a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Services', 'nolan-young-theme-template-99-master' ); ?></a>
 			<ul class="sub-menu">
-				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#service-1' ) ); ?>"><?php esc_html_e( 'Service 1', 'nolan-young-theme-template-99-master' ); ?></a></li>
-				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#service-2' ) ); ?>"><?php esc_html_e( 'Service 2', 'nolan-young-theme-template-99-master' ); ?></a></li>
-				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#service-3' ) ); ?>"><?php esc_html_e( 'Service 3', 'nolan-young-theme-template-99-master' ); ?></a></li>
-				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#service-4' ) ); ?>"><?php esc_html_e( 'Service 4', 'nolan-young-theme-template-99-master' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#website-development' ) ); ?>"><?php esc_html_e( 'Website Development', 'nolan-young-theme-template-99-master' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#plugin-development' ) ); ?>"><?php esc_html_e( 'Plugin Development', 'nolan-young-theme-template-99-master' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#seo' ) ); ?>"><?php esc_html_e( 'SEO', 'nolan-young-theme-template-99-master' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#analytics' ) ); ?>"><?php esc_html_e( 'Analytics', 'nolan-young-theme-template-99-master' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( home_url( '/services/#ai-development' ) ); ?>"><?php esc_html_e( 'AI Development', 'nolan-young-theme-template-99-master' ); ?></a></li>
 			</ul>
 		</li>
 		<li class="menu-item menu-item-has-children">
@@ -434,7 +605,7 @@ function nytt99_primary_navigation() {
 	?>
 	<nav id="site-navigation" class="site-navigation" aria-label="<?php esc_attr_e( 'Primary navigation', 'nolan-young-theme-template-99-master' ); ?>">
 		<ul class="site-menu site-menu--enhanced">
-			<?php nytt99_render_mega_panel( 'services', $data['services'] ); ?>
+			<?php nytt99_render_services_panel( $data['services'] ); ?>
 			<?php nytt99_render_mega_panel( 'about', $data['about'] ); ?>
 			<?php nytt99_render_mega_panel( 'work', $data['work'] ); ?>
 			<?php nytt99_render_blog_panel(); ?>
