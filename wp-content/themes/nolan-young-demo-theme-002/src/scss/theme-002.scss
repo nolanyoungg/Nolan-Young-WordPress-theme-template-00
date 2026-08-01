@@ -172,25 +172,28 @@ h3 { font-size: clamp(1.45rem, 2.3vw, 2.25rem); }
 .mega-service-tab.is-active::before { transform: scaleY(1); }
 .mega-service-tab__code { font-family: Georgia, serif; font-size: .68rem; font-style: italic; }
 .mega-service-tab > span:nth-child(2) { font-size: .74rem; font-weight: 800; }
-.mega-services__stage { background: $aubergine; color: $parchment; }
+.mega-services__stage { position: relative; overflow: hidden; border-left: 1px solid $line-dark; background: radial-gradient(circle at 92% 8%, rgba($rose, .16), transparent 36%), $aubergine; color: $parchment; }
+.mega-services__stage::before { position: absolute; top: -7rem; right: -4rem; width: 16rem; height: 16rem; border: 1px solid rgba($rose, .26); border-radius: 50%; content: ""; pointer-events: none; }
 .mega-service-panel { display: grid; height: 100%; min-width: 0; min-height: 0; grid-template-rows: auto 1fr auto; gap: .65rem; padding: 1.1rem clamp(1rem, 2vw, 2rem) .9rem; }
+.mega-service-panel { position: relative; z-index: 1; }
 .mega-service-panel[hidden] { display: none; }
 .mega-service-panel.is-entering { animation: service-panel-in 520ms both; }
-.mega-service-panel__header { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) 5.5rem; align-items: start; gap: 1rem; }
+.mega-service-panel__header { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) 7rem; align-items: start; gap: 1rem; border-bottom: 1px solid $line-dark; padding-bottom: .8rem; }
 .mega-service-panel__header > div { min-width: 0; }
 .mega-service-panel .eyebrow { margin-bottom: .45rem; color: $rose; }
 .mega-service-panel h3 { margin: 0 0 .4rem; color: $parchment; font-size: clamp(1.7rem, 2.8vw, 3.1rem); line-height: .92; }
 .mega-service-panel__header p:last-child { max-width: 30rem; margin: 0; color: rgba($parchment, .72); font-size: .72rem; line-height: 1.35; }
-.service-portrait { position: relative; margin: 0; }
-.service-portrait img { width: 5.5rem; aspect-ratio: 1; border-radius: 50% 50% 8% 50%; object-fit: cover; box-shadow: 0 0 0 .25rem rgba($rose, .16); transition: border-radius 500ms ease, transform 500ms ease; }
+.service-portrait { position: relative; margin: 0; border: 1px solid rgba($rose, .45); padding: .3rem; background: rgba($parchment, .06); }
+.service-portrait img { width: 6rem; aspect-ratio: 1; border-radius: 50% 50% 8% 50%; object-fit: cover; box-shadow: 0 0 0 .25rem rgba($rose, .16); transition: border-radius 500ms ease, transform 500ms ease; }
 .mega-service-panel:hover .service-portrait img { border-radius: 8% 50% 50% 50%; transform: rotate(2deg) scale(1.03); }
-.service-portrait figcaption { margin-top: .4rem; color: $rose; font-size: .48rem; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
-.mega-service-panel__details { min-width: 0; margin: 0; padding-top: .65rem; border-top: 1px solid $line-dark; }
+.service-portrait figcaption { display: flex; justify-content: space-between; gap: .4rem; margin-top: .35rem; color: $rose; font-size: .44rem; letter-spacing: .06em; line-height: 1; white-space: nowrap; text-transform: uppercase; }
+.mega-service-panel__details { min-width: 0; margin: 0; border: 1px solid $line-dark; padding: .65rem .75rem .7rem; background: rgba($parchment, .055); }
 .mega-service-panel__details > span { display: block; margin-bottom: .4rem; color: $rose; font-size: .56rem; letter-spacing: .15em; text-transform: uppercase; }
 .mega-service-panel__details ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .28rem .9rem; padding: 0; margin: 0; list-style: none; }
 .mega-service-panel__details li { min-width: 0; color: rgba($parchment, .85); font-size: .64rem; line-height: 1.25; }
 .mega-service-panel__details li span { margin-right: .35rem; color: $brass; }
-.mega-service-panel__cta { display: flex; align-items: center; justify-content: space-between; margin: 0; border-top: 1px solid $line-dark; padding-top: .6rem; color: $parchment; font-size: .64rem; font-weight: 800; text-decoration: none; }
+.mega-service-panel__cta { display: flex; align-items: center; justify-content: space-between; margin: 0; border: 1px solid $rose; padding: .55rem .75rem; background: $rose; color: $aubergine-deep; font-size: .64rem; font-weight: 800; text-decoration: none; transition: background $ease, color $ease, transform $ease; }
+.mega-service-panel__cta:hover, .mega-service-panel__cta:focus-visible { background: $parchment; color: $aubergine; transform: translateX(.2rem); }
 @keyframes service-panel-in { from { opacity: 0; transform: translateX(1rem); } }
 .mega-panel:not(.mega-panel--services) { padding-bottom: 2rem; }
 .mega-panel__body { display: grid; grid-template-columns: .8fr 1fr 1fr; gap: 2rem; padding-block: 2.5rem; }
