@@ -25,6 +25,7 @@ All notable repository-level changes are documented in this file.
 
 ### Fixed
 
+- Redesigned the Demo Theme 002 and 003 Services mega menus with compact fit-to-panel intro rails, equal category rows, and bounded capability cards so every service detail and CTA remains visible at desktop sizes.
 - Moved the Demo Theme 002 and 003 mega-menu dimming layers outside the blurred sticky header so the 50% overlay covers the page content beneath an open menu.
 - Constrained the Demo Theme 002 and 003 desktop mega menus to roughly half the viewport, removed internal scrolling, and dimmed the page behind each open menu to 50% opacity.
 - Made Master 99 packaging create `wp-content/zipped-theme/` automatically when it is missing.
