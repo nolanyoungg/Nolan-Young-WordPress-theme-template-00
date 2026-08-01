@@ -25,6 +25,7 @@ All notable repository-level changes are documented in this file.
 
 ### Fixed
 
+- Rebuilt the complete Demo Theme 002 and 003 right-hand service stages as inset feature cards with contained media, capability matrices, accent geometry, and height-aware spacing across the full interaction.
 - Fixed short desktop viewport clipping in the Demo Theme 002 and 003 service stages by containing media captions, using a three-column capability matrix, and adding a compact height-aware stage layout that keeps the CTA visible without introducing scrolling.
 - Reworked the Demo Theme 002 and 003 stage cards with framed imagery, contained capability matrices, decorative accents, and dedicated CTA rails so the right-hand experience feels complete inside the fixed panel.
 - Redesigned the Demo Theme 002 and 003 Services mega menus with compact fit-to-panel intro rails, equal category rows, and bounded capability cards so every service detail and CTA remains visible at desktop sizes.
