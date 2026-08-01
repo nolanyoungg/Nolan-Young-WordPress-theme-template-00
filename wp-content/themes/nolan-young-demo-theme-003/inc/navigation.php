@@ -618,5 +618,6 @@ function nydemo003_primary_navigation() {
 		);
 		?>
 	</nav>
+	<div class="mega-overlay" data-mega-overlay aria-hidden="true"></div>
 	<?php
 }

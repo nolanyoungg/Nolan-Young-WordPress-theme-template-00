@@ -37,4 +37,3 @@ defined( 'ABSPATH' ) || exit;
 		<?php nydemo003_button( __( 'Start a project', 'nolan-young-demo-theme-003' ) ); ?>
 	</div>
 </header>
-<div class="mega-overlay" data-mega-overlay aria-hidden="true"></div>
