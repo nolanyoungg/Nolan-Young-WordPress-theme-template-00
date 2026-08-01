@@ -25,6 +25,7 @@ All notable repository-level changes are documented in this file.
 
 ### Fixed
 
+- Moved the Demo Theme 002 and 003 mega-menu dimming layers outside the blurred sticky header so the 50% overlay covers the page content beneath an open menu.
 - Constrained the Demo Theme 002 and 003 desktop mega menus to roughly half the viewport, removed internal scrolling, and dimmed the page behind each open menu to 50% opacity.
 - Made Master 99 packaging create `wp-content/zipped-theme/` automatically when it is missing.
 - Replaced Master 99's external `unzip` dependency with Node-based ZIP central-directory inventory validation for cross-platform packaging.
